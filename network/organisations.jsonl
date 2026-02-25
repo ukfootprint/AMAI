@@ -1,0 +1,1 @@
+{"_example": true, "id": "org_001", "name": "Organisation Name", "type": "customer | prospect | partner | investor | competitor | other", "sector": "Their sector", "size": "e.g. 50-200 employees", "relationship_status": "active | warm | cold", "key_contacts": ["contact_001"], "context": "What you know about this organisation and why it matters to your work", "notes": ""}

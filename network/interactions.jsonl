@@ -1,0 +1,1 @@
+{"_example": true, "date": "YYYY-MM-DD", "contact_id": "contact_001", "type": "call | meeting | email | message | event | other", "summary": "What was discussed or what happened", "outcomes": ["Any agreed actions or next steps"], "sentiment": "positive | neutral | mixed | negative", "follow_up_by": "YYYY-MM-DD", "notes": ""}
