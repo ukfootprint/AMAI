@@ -1,0 +1,1 @@
+{"_example": true, "date": "YYYY-MM-DD", "source": "experience | conversation | reading | observation", "insight": "The specific thing you learned — be precise, not vague", "context": "Brief description of the situation that produced this learning", "applies_to": ["domain", "product", "commercial", "people"], "confidence": "high | medium | low"}

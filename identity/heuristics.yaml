@@ -1,0 +1,102 @@
+_schema: heuristics
+_version: "1.0"
+_description: >
+  Fast, operational decision rules — distilled from experience and aligned to
+  your values. These are shortcuts for consistent judgment under time pressure.
+  For the fuller reasoning behind each domain, see identity/principles.md.
+  For the values underpinning these rules, see identity/values.yaml.
+
+# ─────────────────────────────────────────────
+# UNIVERSAL HEURISTICS
+# Apply across all domains and decision types.
+# ─────────────────────────────────────────────
+
+universal:
+
+  - id: integrity_test
+    rule: "Would I be comfortable if this decision were made public?"
+    use_when: Any decision where you feel slight discomfort you cannot name
+    source: values/integrity_honesty
+
+  - id: long_term_test
+    rule: "Am I optimising for 3 years or 3 months?"
+    use_when: Evaluating opportunities, partnerships, or tradeoffs
+    source: values/long_term_thinking
+
+  - id: value_test
+    rule: "Does this make what I do more valuable, or just cheaper to deliver?"
+    use_when: Product, commercial, and strategic decisions
+    source: values/high_value_over_commodity
+
+  - id: reversibility_test
+    rule: >
+      Is this a two-way door (reversible, cheap to undo) or a one-way door
+      (hard to reverse)? Two-way: decide fast. One-way: slow down.
+    use_when: Any decision with significant resource or relationship implications
+    source: frameworks/reversibility
+
+  - id: regret_test
+    rule: "At 80, which option will I regret not choosing?"
+    use_when: Choosing between safe and bold
+    source: frameworks/regret_minimisation
+
+# ─────────────────────────────────────────────
+# DOMAIN HEURISTICS
+# Replace or extend these with rules specific to your work.
+# ─────────────────────────────────────────────
+
+domain:  # Rename this section to match your domain (e.g. product:, commercial:, etc.)
+
+  - id: example_heuristic_1
+    rule: "[Replace with a fast rule you use in your main domain]"
+    rationale: "[Why this rule exists and what problem it prevents]"
+
+  - id: example_heuristic_2
+    rule: "[Replace with another domain-specific rule]"
+    rationale: "[Why this rule exists]"
+
+  # Add more domain heuristics here
+
+# ─────────────────────────────────────────────
+# COMMERCIAL HEURISTICS
+# ─────────────────────────────────────────────
+
+commercial:
+
+  - id: no_discount_growth
+    rule: "Don't discount your way to growth. It devalues what you offer and attracts the wrong customers."
+    rationale: Price anchors expectation. Starting low is very hard to reverse.
+
+  - id: walk_away_on_price
+    rule: "Walk away from deals where the client's primary concern is price, not outcomes."
+    rationale: Price-led customers become the worst long-term relationships.
+
+  - id: integrity_over_deal
+    rule: "A deal that compromises integrity is not worth having."
+    rationale: One bad deal can cost ten good ones in a relationship-driven market.
+
+# ─────────────────────────────────────────────
+# PEOPLE & HIRING HEURISTICS
+# ─────────────────────────────────────────────
+
+people:
+
+  - id: integrity_non_negotiable
+    rule: "Integrity is non-negotiable in any hire. Skills can be developed, character cannot."
+
+  - id: honesty_about_unknowns
+    rule: "Prefer people who are honest about what they don't know over people who perform certainty."
+
+# ─────────────────────────────────────────────
+# WHEN STUCK
+# ─────────────────────────────────────────────
+
+when_stuck:
+  steps:
+    - Write the decision down in one sentence
+    - List the top 3 reasons for and against each option
+    - Check memory/decisions.jsonl for a similar past choice
+    - Ask: what would I advise someone I respected to do in this situation?
+    - Sleep on it — if the answer changes by morning, the original choice was fear-based
+
+last_reviewed: null  # ISO date — update quarterly

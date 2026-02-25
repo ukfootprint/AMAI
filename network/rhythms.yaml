@@ -1,0 +1,56 @@
+_schema: rhythms
+_version: "1.0"
+_description: >
+  Touchpoint frequency targets by relationship circle. Used alongside
+  circles.yaml (tier definitions) and contacts.jsonl (individual records).
+  These are defaults — context and relationship specifics always override.
+
+rhythms:
+
+  - circle: inner
+    label: Inner Circle
+    target_frequency: monthly
+    max_gap: 6_weeks
+    touchpoint_types:
+      - Personal message or call
+      - Shared meal or activity where possible
+    notes: >
+      Inner circle relationships require real investment. A brief message
+      is not enough — aim for meaningful exchanges that advance mutual context.
+
+  - circle: active
+    label: Active Network
+    target_frequency: monthly
+    max_gap: 6_weeks
+    touchpoint_types:
+      - Professional check-in
+      - Sharing something relevant to their work
+      - Meeting or call where a project is in motion
+    notes: >
+      Active relationships require regular maintenance. Even when no specific
+      project is live, a brief value-add touchpoint keeps the relationship warm.
+
+  - circle: warm
+    label: Warm Network
+    target_frequency: quarterly
+    max_gap: 6_months
+    touchpoint_types:
+      - Personal message — not asking for anything, just maintaining contact
+      - Sharing something genuinely relevant to them
+      - Event or conference as opportunity
+    notes: >
+      Warm network touchpoints should feel natural, not forced.
+      Quality over frequency.
+
+  - circle: sector
+    label: Sector Network
+    target_frequency: as_relevant
+    max_gap: null
+    touchpoint_types:
+      - Engagement with their content
+      - Brief message when something specific is relevant
+    notes: >
+      Sector network maintenance is ambient. No calendar-driven obligation —
+      engage when you have genuine reason to.
+
+last_reviewed: null

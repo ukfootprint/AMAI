@@ -1,0 +1,45 @@
+_schema: current_focus
+_version: "1.0"
+_description: >
+  Your live weekly priority stack. Update this every Monday (or at your
+  weekly review). The AI uses this to understand what matters right now
+  versus what is on the horizon or parked.
+
+week_of: null  # ISO date of Monday — update weekly
+
+# ─────────────────────────────────────────────
+# THIS WEEK'S PRIORITIES
+# List in order. Top item is the one thing that must get done.
+# ─────────────────────────────────────────────
+
+priorities:
+  - rank: 1
+    item: "[The single most important thing this week]"
+    goal_ref: goal_1   # References id in goals.yaml
+    why_now: "[Why is this the priority this specific week?]"
+
+  - rank: 2
+    item: "[Second priority]"
+    goal_ref: goal_2
+    why_now: "[Why now?]"
+
+  - rank: 3
+    item: "[Third priority]"
+    goal_ref: null
+    why_now: ""
+
+# ─────────────────────────────────────────────
+# NOT THIS WEEK
+# Things explicitly parked — prevents them from creeping back in.
+# ─────────────────────────────────────────────
+
+not_this_week:
+  - "[Something important but not this week's job]"
+  - "[Something you are choosing to defer deliberately]"
+
+# ─────────────────────────────────────────────
+# THE ONE THING
+# If everything else falls apart, what must be done?
+# ─────────────────────────────────────────────
+
+the_one_thing: "[If you only accomplished one thing this week, what would it be?]"

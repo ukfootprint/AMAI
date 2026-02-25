@@ -1,0 +1,43 @@
+_schema: goals
+_version: "1.0"
+_description: >
+  Your current goals in OKR-style format. Each goal has a status field
+  AI can query. Update status when goals change, pause, or complete.
+  For the long-term vision behind these goals, see goals/north_star.md.
+
+# ─────────────────────────────────────────────
+# CURRENT GOALS
+# status options: active | on_hold | completed | abandoned
+# ─────────────────────────────────────────────
+
+goals:
+
+  - id: goal_1
+    label: "[Replace with your first goal — e.g. 'Launch v1 to first 10 customers']"
+    status: active
+    horizon: "[e.g. Q1 2026]"
+    why: >
+      [Why does this goal matter? What does achieving it unlock?]
+    key_results:
+      - "[Measurable result 1 — e.g. '10 signed contracts by end of quarter']"
+      - "[Measurable result 2]"
+      - "[Measurable result 3]"
+    constraints:
+      - "[Any constraints on how this goal should be pursued]"
+    notes: ""
+
+  - id: goal_2
+    label: "[Replace with your second goal]"
+    status: active
+    horizon: "[Timeframe]"
+    why: >
+      [Why does this goal matter?]
+    key_results:
+      - "[Measurable result 1]"
+      - "[Measurable result 2]"
+    constraints: []
+    notes: ""
+
+  # Add more goals here following the same structure
+
+last_reviewed: null  # ISO date — review quarterly

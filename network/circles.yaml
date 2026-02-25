@@ -1,0 +1,97 @@
+_schema: circles
+_version: "1.0"
+_description: >
+  Relationship tier definitions — how your network is structured and what
+  each tier requires. Used alongside rhythms.yaml (frequency) and
+  contacts.jsonl (individual records).
+
+# ─────────────────────────────────────────────
+# RELATIONSHIP CIRCLES
+# Customise labels and criteria to match how you actually think about your network.
+# ─────────────────────────────────────────────
+
+circles:
+
+  - id: inner
+    label: Inner Circle
+    description: >
+      People whose success you are personally invested in, and who are
+      genuinely invested in yours. Highest trust, most honest feedback,
+      deepest mutual context.
+    criteria:
+      - Mutual personal investment — they want you to succeed, you want them to succeed
+      - High context — they understand what you're building and follow its progress
+      - Honest feedback — they will tell you difficult truths without agenda
+      - Relationship exists outside of professional utility
+    capacity: 5            # Hard limit — inner circle is rare by design
+    touchpoint_type: personal   # personal | professional | either
+    current_count: 0
+
+  - id: active
+    label: Active Network
+    description: >
+      Key professional relationships that are live and important to your
+      work right now. Active value exchange happening in both directions.
+    criteria:
+      - Currently relevant to your work or growth
+      - Relationship is reciprocal — they engage as well as receive
+      - Regular value exchange is happening
+    capacity: 20
+    touchpoint_type: professional
+    current_count: 0
+
+  - id: warm
+    label: Warm Network
+    description: >
+      Meaningful connections not actively engaged right now but worth
+      maintaining. Past collaborators, future advisors, peers whose path
+      may intersect with yours again.
+    criteria:
+      - Relationship has real history or strong future potential
+      - Not currently active but could become active
+      - Worth keeping warm without forcing regular contact
+    capacity: 50
+    touchpoint_type: either
+    current_count: 0
+
+  - id: sector
+    label: Sector Network
+    description: >
+      People you know professionally in your field. Wider awareness —
+      they know who you are and what you're building, but the relationship
+      is more ambient than active.
+    criteria:
+      - Known from events, online, or past professional interactions
+      - Relevant to your sector even if not directly to current work
+    capacity: null          # No hard limit
+    touchpoint_type: professional
+    current_count: 0
+
+# ─────────────────────────────────────────────
+# CIRCLE MOVEMENT CRITERIA
+# What it takes to move someone up or down a tier.
+# ─────────────────────────────────────────────
+
+movement_criteria:
+
+  promotion:
+    sector_to_warm: >
+      A meaningful one-to-one conversation has happened.
+      There is now a reason to maintain a relationship beyond sector awareness.
+    warm_to_active: >
+      An active project, deal, collaboration, or shared goal has opened up.
+      Value exchange is becoming regular and mutual.
+    active_to_inner: >
+      Deep, sustained trust has developed. The relationship has become
+      genuinely personal, not just professionally useful.
+
+  demotion:
+    active_to_warm: >
+      The project or collaboration that made the relationship active has
+      concluded. The relationship remains valuable but no longer requires
+      regular attention.
+    warm_to_sector: >
+      Time has passed, context has diverged. Better to keep ambient
+      awareness than force a warm relationship that has naturally faded.
+
+last_reviewed: null  # ISO date — review quarterly

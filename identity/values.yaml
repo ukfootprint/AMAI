@@ -1,0 +1,92 @@
+_schema: values
+_version: "1.0"
+_description: >
+  Your core values — structured for AI querying and decision-checking.
+  Replace the examples below with your own. Priority order matters:
+  when values conflict, higher priority wins.
+  For narrative context on how these play out, see identity/principles.md.
+
+# ─────────────────────────────────────────────
+# CORE VALUES
+# Priority order matters: when values conflict, higher priority wins.
+# Add, remove, or rename these to reflect what you actually believe.
+# ─────────────────────────────────────────────
+
+core_values:
+
+  - id: integrity_honesty
+    label: Integrity & Honesty
+    priority: 1
+    description: >
+      The most sustainable foundation for any relationship is trust.
+      Say what you mean, mean what you say.
+    in_practice:
+      - Never overstate capability or create false urgency
+      - Be transparent about what you do not know
+      - Admit mistakes early and fix them
+    test: "Would I be comfortable if this decision were made public?"
+
+  - id: long_term_thinking
+    label: Long-Term Thinking
+    priority: 2
+    description: >
+      Optimise for outcomes that compound over years, not wins that feel
+      good today. Be patient when doing things the right way.
+    in_practice:
+      - Choose partners who will be there in five years over the shiniest pitch today
+      - Weight 3-year outcomes more heavily than 3-month wins
+      - Make decisions you would be comfortable explaining to yourself in [year+5]
+    test: "What does this look like in 3 years?"
+
+  - id: high_value_over_commodity
+    label: High Value Over Commodity
+    priority: 3
+    description: >
+      Compete on depth and quality of outcome, not price.
+      The world does not need more cheap, generic solutions.
+    in_practice:
+      - Charge appropriately for the value delivered
+      - Walk away from clients whose primary concern is lowest cost
+      - Every decision should increase value, not just reduce cost
+    test: "Does this make what I do more valuable, or just cheaper to deliver?"
+
+# ─────────────────────────────────────────────
+# SECONDARY VALUES
+# Deeply held — inform culture and day-to-day decisions.
+# Add your own below.
+# ─────────────────────────────────────────────
+
+secondary_values:
+
+  - id: evidence_based_practice
+    label: Evidence-Based Practice
+    description: >
+      Beliefs should be testable. Decisions should be documented.
+      Outcomes should be tracked.
+
+  - id: simplicity
+    label: Simplicity
+    description: >
+      Complexity is the enemy of adoption. Build and communicate things
+      that people can actually use and understand.
+
+  # Add more secondary values here:
+  # - id: your_value_id
+  #   label: Your Value Label
+  #   description: >
+  #     What this value means to you and why it matters.
+
+# ─────────────────────────────────────────────
+# ETHICAL RED LINES
+# Absolute. No justification overrides these.
+# Replace these examples with your own non-negotiables.
+# ─────────────────────────────────────────────
+
+ethical_red_lines:
+  - "[Replace with your first absolute constraint]"
+  - "[Replace with your second absolute constraint]"
+  - "[Example: Never mislead a client or customer about capability or readiness]"
+  - "[Example: Never use customer data in ways not explicitly consented to]"
+  - "[Example: Never prioritise short-term metrics over the people you serve]"
+
+last_reviewed: null  # ISO date — update quarterly

@@ -1,0 +1,33 @@
+# ─────────────────────────────────────────────
+# AMAI — Personal Data Protection
+# ─────────────────────────────────────────────
+# These files contain private information.
+# They are ignored by default to prevent accidental public commits.
+# If you want to version-control your personal data (e.g. in a private repo),
+# remove the relevant lines below.
+
+# Network — relationship records are private
+network/contacts.jsonl
+network/organisations.jsonl
+network/interactions.jsonl
+
+# Memory — personal history is private
+memory/experiences.jsonl
+memory/decisions.jsonl
+memory/failures.jsonl
+
+# Signals — raw session observations are private
+signals/observations.jsonl
+
+# Calibration — divergence log may contain personal reflections
+calibration/divergence.jsonl
+
+# ─────────────────────────────────────────────
+# OS & Editor files
+# ─────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
