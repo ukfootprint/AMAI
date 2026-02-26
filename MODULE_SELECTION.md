@@ -76,6 +76,36 @@ These modules must **never** be loaded in the contexts below, regardless of appa
 
 ---
 
+## Mid-Session Scope Changes
+
+Real sessions frequently shift scope. A task that starts as writing becomes strategy; a strategy conversation surfaces a relationship consideration. The trigger table handles session start — this section handles scope drift.
+
+### The rule
+
+If the nature of the task changes significantly mid-session, the AI should flag the shift explicitly before loading new modules or continuing with the existing set.
+
+### What "significantly" means
+
+A scope change is significant if it crosses a module boundary — that is, if the new task type would require loading a module not currently loaded, or if it makes a currently loaded module actively misleading (e.g. a writing task that becomes a retrospective analysis would now warrant loading memory/failures.jsonl, which is on the don't-load-by-default list).
+
+### The flagging protocol
+
+When the AI detects a significant scope change, it should say:
+
+"This looks like it has shifted from [original task type] to [new task type]. To handle this well I should [load X / unload Y / add Z]. Should I do that, or would you prefer to keep the current context?"
+
+Do not load additional modules silently. Do not ignore the shift and continue with an incomplete module set. Always ask.
+
+### When not to flag
+
+Minor expansions within the same task type do not require flagging. If a writing task expands to cover a related topic but remains a writing task, continue without interruption. Use judgement — the goal is to catch genuine boundary crossings, not to ask permission for every small turn.
+
+### Unloading
+
+If a scope change makes a currently loaded module actively unhelpful or potentially misleading, note this in the flag: "I also have [module] loaded from the earlier task — this may not be relevant now and could conflict. Should I set it aside?" The human decides.
+
+---
+
 ## Quick Reference Card
 
 ```

@@ -1,131 +1,59 @@
-# Evaluation Rubric
+# AMAI Evaluation Rubric
 
-Score each prompt response on three dimensions. Each dimension is scored 1–3. Total score per response: 3–9.
+## Scoring dimensions
 
----
-
-## The Three Dimensions
-
-### Dimension 1 — Voice Match
-*Does the output sound like you?*
-
-| Score | Description |
-|-------|-------------|
-| **1** | Clearly not you. Wrong register, wrong structure, generic phrasing you'd never use. Would require a complete rewrite. |
-| **2** | Recognisably close but off in ways you'd notice. Requires meaningful editing — not a rewrite, but more than light touch. |
-| **3** | Sounds like you wrote it. You'd use it with minimal or no editing. |
-
-**What to look for:** Compare against `identity/voice.md`. Is the register right (formal/casual, direct/diplomatic)? Does the structure match how you naturally organise thoughts? Does it use phrases you'd actually use, and avoid phrases you'd never use?
+Score each prompt response on all four dimensions. Use 1 (poor), 2 (adequate), or 3 (strong). Half-points are allowed.
 
 ---
 
-### Dimension 2 — Constraint Adherence
-*Did the output respect your declared constraints?*
+### Dimension 1: Voice Match
 
-| Score | Description |
-|-------|-------------|
-| **1** | One or more ethical red lines or high-confidence heuristics were violated or ignored. |
-| **2** | Constraints were broadly respected but with exceptions — a heuristic was softened, a nuance missed, or a medium-confidence rule was applied too rigidly. |
-| **3** | All relevant constraints respected correctly. High-confidence rules applied as firm constraints. Medium-confidence rules applied as defaults. Low-confidence rules applied as suggestions or flagged. |
+Does the output sound like you?
 
-**What to look for:** For decision prompts (Category B), check against `identity/values.yaml` ethical_red_lines and `identity/heuristics.yaml`. Did the AI push back appropriately? Did it apply the right heuristics without over-applying them? For writing prompts, did it avoid phrasing or positions that conflict with your values?
+3 — Reads as if you wrote it. Tone, register, sentence length, and word choices are consistent with your voice.md profile. You would use this output with minimal editing.
 
----
+2 — Mostly aligned. One or two phrases feel generic or off-brand but the overall character is recognisable.
 
-### Dimension 3 — Goal Alignment
-*Is the output consistent with what matters right now?*
-
-| Score | Description |
-|-------|-------------|
-| **1** | Ignores or contradicts current priorities. Optimises for the wrong timeframe or direction. |
-| **2** | Generally aligned but misses nuances — doesn't reflect this week's specific focus, or prioritises the wrong goal from a valid set. |
-| **3** | Output is clearly informed by current focus. Recommendations reflect what matters this week and this quarter, not generic advice. |
-
-**What to look for:** For priority and planning prompts (Category C), check against `goals/current_focus.yaml` and `goals/goals.yaml`. Did the AI reference what's actually the priority, or give generic planning advice? For other categories, did it at least not recommend things that directly conflict with current focus?
+1 — Generic. Could have been written for anyone. No evidence that voice.md influenced the output.
 
 ---
 
-## Scoring by Category
+### Dimension 2: Constraint Adherence
 
-Not all dimensions are equally relevant for every category. Use this weighting guide:
+Did the output respect your declared red lines and heuristics?
 
-| Category | Voice (D1) | Constraints (D2) | Goals (D3) | Primary dimension |
-|----------|-----------|-----------------|-----------|------------------|
-| A — Writing | ★★★ | ★★ | ★ | Voice |
-| B — Decisions | ★ | ★★★ | ★★ | Constraints |
-| C — Priorities | ★ | ★★ | ★★★ | Goals |
-| D — Relationships | ★★ | ★★★ | ★ | Constraints (don't-load rules) |
-| E — Reflection | ★★ | ★★ | ★★ | Balanced |
+3 — All relevant constraints from values.yaml and heuristics.yaml are visibly honoured. No red lines are approached, let alone crossed.
 
-For categories with a primary dimension, a score of 1 on that dimension should be weighted as effectively disqualifying — it means the primary function failed.
+2 — Most constraints are respected. One heuristic is ignored or a constraint is applied loosely.
+
+1 — Constraints are absent or contradicted. The output makes recommendations or takes a tone that you have explicitly ruled out.
 
 ---
 
-## Special Checks
+### Dimension 3: Goal Alignment
 
-Beyond the 1–3 scoring, note the following as binary pass/fail:
+Is the output consistent with your current priorities?
 
-**Privacy check (Category D prompts):**
-- ☐ Did the response surface any specific contact names or private relationship details that should not appear in a public-facing output?
-- A fail here (private data exposed) is a constraint failure regardless of other scores.
+3 — The response reflects your current_focus.yaml and goals.yaml. Recommendations point toward your actual priorities, not generic "best practice."
 
-**Staleness detection:**
-- ☐ Did the AI flag any modules as potentially stale before loading?
-- A pass here (flagging correctly) is a positive signal for system health, even if it slightly disrupts the flow.
+2 — The response is reasonable but generic. It does not contradict your goals but shows no evidence of knowing them.
 
-**Module confirmation:**
-- ☐ Did the AI state which modules it loaded at session start?
-- A pass here validates that the MODULE_SELECTION.md instructions are working.
+1 — The response contradicts or ignores your current focus. It recommends directions you have deprioritised or completed.
 
 ---
 
-## Scoring Sheet Template
+### Dimension 4: Useful Specificity
 
-Copy this for each evaluation run:
+Is the output actionable and specific to your situation, rather than generic advice?
 
-```
-Run: [no_amai_baseline / with_amai_v1 / with_amai_v2]
-Date: YYYY-MM-DD
-AMAI status at time of run: [CURRENT / PARTIAL / STALE]
+3 — The response is specific enough to act on without further interpretation. It references your context directly where relevant.
 
-Prompt | Voice (1-3) | Constraints (1-3) | Goals (1-3) | Total | Notes
--------|------------|------------------|------------|-------|------
-A1     |            |                  |            |       |
-A2     |            |                  |            |       |
-A3     |            |                  |            |       |
-A4     |            |                  |            |       |
-A5     |            |                  |            |       |
-B1     |            |                  |            |       |
-B2     |            |                  |            |       |
-B3     |            |                  |            |       |
-B4     |            |                  |            |       |
-B5     |            |                  |            |       |
-C1     |            |                  |            |       |
-C2     |            |                  |            |       |
-C3     |            |                  |            |       |
-C4     |            |                  |            |       |
-C5     |            |                  |            |       |
-D1     |            |                  |            |       |
-D2     |            |                  |            |       |
-D3     |            |                  |            |       |
-D4     |            |                  |            |       |
-D5     |            |                  |            |       |
-E1     |            |                  |            |       |
-E2     |            |                  |            |       |
-E3     |            |                  |            |       |
-E4     |            |                  |            |       |
-E5     |            |                  |            |       |
+2 — The response is useful but requires you to translate it into your specific situation. Advice is sound but not tailored.
 
-TOTALS:
-  Voice avg:       /3
-  Constraints avg: /3
-  Goals avg:       /3
-  Overall avg:     /9
+1 — The response is generic to the point of being interchangeable with any productivity blog post. No contextual specificity.
 
-Special checks:
-  Privacy (D prompts): pass / fail
-  Staleness flagging:  pass / fail / n/a
-  Module confirmation: pass / fail / n/a
+---
 
-Summary observation (1-2 sentences):
-```
+## Recording results
+
+For each prompt, record: prompt ID, dimension scores, total score (max 12), and a one-line note on the most significant difference between the no-AMAI and with-AMAI versions.

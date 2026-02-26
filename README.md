@@ -18,6 +18,12 @@ The AI reads `BRAIN.md`, loads only the modules relevant to the task, and operat
 
 ---
 
+## How it works — the honest version
+
+Before using AMAI, read [HOW_THIS_WORKS.md](HOW_THIS_WORKS.md) for an honest account of what the system does and does not enforce.
+
+---
+
 ## AI Environment Guide
 
 AMAI works with any AI model. What you can rely on — and what requires your discipline — depends entirely on your environment. This section is honest about both.
@@ -40,6 +46,8 @@ AMAI is designed for AI environments that can read files directly from your loca
 ### Browser sessions — environment-dependent
 
 Browser-based sessions at claude.ai, chatgpt.com, or gemini.google.com cannot access your local file system. You bring context to the AI; the AI does not pull it. Each environment has different persistence models, and each comes with different tradeoffs.
+
+For browser-based sessions, read [SYNC_STRATEGY.md](SYNC_STRATEGY.md) before your first session.
 
 The approaches below are ordered from most reliable to least.
 

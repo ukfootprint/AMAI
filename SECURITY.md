@@ -177,4 +177,53 @@ This preserves the utility of the context for the AI while protecting third-part
 
 ---
 
+---
+
+## Realistic Threat Scenarios
+
+**Scenario 1: Shared or family device**
+Risk: another person uses the same machine and opens the AMAI folder, or a sync client (Dropbox, iCloud, OneDrive) makes files visible to a shared account.
+Mitigation: store the entire AMAI folder inside an OS-encrypted container (on macOS: a locked Disk Image; on Windows: BitLocker folder; on Linux: gocryptfs or equivalent). Do not store AMAI in a path that is auto-synced to a shared cloud account. If you must sync, use a service with per-folder access control and ensure the AMAI folder is excluded from shared spaces.
+
+**Scenario 2: Cloud sync compromise or accidental public commit**
+Risk: a sync service is breached, or you accidentally push to a public GitHub repo.
+Mitigation: add the Tier 1 and Tier 2 files listed in this document to .gitignore before your first commit. Treat this as mandatory, not optional. For cloud sync, use client-side encryption (e.g. Cryptomator) for Tier 1 files. Assume anything in Tier 3 may be seen — write it accordingly.
+
+**Scenario 3: Browser-based AI session**
+Risk: when you paste or upload AMAI files into a browser-based AI session (Claude.ai, ChatGPT, Gemini), that content is transmitted to and processed by the AI provider's servers. It may be used for training, safety review, or stored in logs depending on the provider's policies and your account settings.
+Mitigation: before uploading any file containing Tier 1 or Tier 2 content to a browser session, apply the redaction patterns in this document. Consider maintaining a "browser-safe" version of BRAIN.md and identity files that contains only Tier 3 content. Store it as BRAIN_PUBLIC.md and use it for browser sessions.
+
+---
+
+## Encryption at Rest — Minimum Viable Approach
+
+You do not need a complex setup. The minimum viable approach is:
+
+For macOS: create an encrypted Disk Image (Disk Utility → New Image → choose AES-256 encryption). Store the AMAI folder inside it. The image locks when ejected.
+
+For Windows: use BitLocker on the drive or folder containing AMAI, or use Veracrypt to create an encrypted container.
+
+For Linux: use gocryptfs or fscrypt to create an encrypted directory. Mount it when working, unmount when done.
+
+For all platforms: if you sync to cloud storage, use Cryptomator (free, open source) to encrypt the AMAI folder client-side before it leaves your device. Cryptomator is compatible with Dropbox, iCloud, Google Drive, and OneDrive.
+
+Do not rely on the cloud provider's encryption alone — that protects against infrastructure breach but not against account compromise or provider-side access.
+
+---
+
+## Creating a Public-Safe Export
+
+If you want to share your AMAI setup — to help others get started, to open-source your structure, or to use in a shared team context — follow this pattern:
+
+1. Duplicate the AMAI folder. Name the duplicate AMAI_PUBLIC.
+2. Delete all Tier 1 files from AMAI_PUBLIC: identity/values.yaml red_lines section, memory/failures.jsonl, network/contacts.jsonl, network/interactions.jsonl.
+3. In Tier 2 files, replace any specific names, organisations, financial figures, or personal details with placeholders in square brackets: [ORGANISATION], [PERSON], [AMOUNT].
+4. In BRAIN.md, remove or redact any section that references specific people, specific failures, or specific financial or health context.
+5. Review every remaining file for third-party personal data — anything written about a person who did not consent to being in your system. Either remove it or reduce it to a role description with no identifying detail.
+6. What remains is your structural setup: your voice model, your frameworks, your module selection protocol, your evaluation rubric. This is safe to share.
+
+Never share the live AMAI folder directly. Always export from a deliberate duplication.
+
+---
+
 *This document does not constitute legal or security advice. Threat models vary by context. If you operate in a regulated industry or hold sensitive professional obligations, consult appropriate guidance for your situation.*
