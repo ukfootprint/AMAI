@@ -22,6 +22,12 @@ signals/observations.jsonl
 # Calibration — divergence log may contain personal reflections
 calibration/divergence.jsonl
 
+# Evaluation results — scored outputs contain personal context
+# Keep evaluation/results/ tracked in a private repo; exclude from public
+evaluation/results/no_amai_baseline.md
+evaluation/results/with_amai_*.md
+evaluation/results/scores_*.md
+
 # ─────────────────────────────────────────────
 # OS & Editor files
 # ─────────────────────────────────────────────
