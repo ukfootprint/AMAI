@@ -6,6 +6,17 @@ _description: >
   For the fuller reasoning behind each domain, see identity/principles.md.
   For the values underpinning these rules, see identity/values.yaml.
 
+# ─── CONFIDENCE FIELD ────────────────────────────────────────────────────────
+# Every heuristic has a confidence level. The AI treats these differently:
+#   high   — well-tested rule; apply as a firm constraint
+#   medium — reasonably reliable; apply as a strong default, flag exceptions
+#   low    — aspirational or recently added; treat as a suggestion, not a rule
+#
+# AI instruction: For any low-confidence heuristic, prefix your output with:
+# "Note: [heuristic_id] is low-confidence — applying as a suggestion."
+# Do not apply low-confidence heuristics as hard constraints.
+# ─────────────────────────────────────────────────────────────────────────────
+
 # ─────────────────────────────────────────────
 # UNIVERSAL HEURISTICS
 # Apply across all domains and decision types.
@@ -17,16 +28,19 @@ universal:
     rule: "Would I be comfortable if this decision were made public?"
     use_when: Any decision where you feel slight discomfort you cannot name
     source: values/integrity_honesty
+    confidence: high
 
   - id: long_term_test
     rule: "Am I optimising for 3 years or 3 months?"
     use_when: Evaluating opportunities, partnerships, or tradeoffs
     source: values/long_term_thinking
+    confidence: high
 
   - id: value_test
     rule: "Does this make what I do more valuable, or just cheaper to deliver?"
     use_when: Product, commercial, and strategic decisions
     source: values/high_value_over_commodity
+    confidence: high
 
   - id: reversibility_test
     rule: >
@@ -34,11 +48,13 @@ universal:
       (hard to reverse)? Two-way: decide fast. One-way: slow down.
     use_when: Any decision with significant resource or relationship implications
     source: frameworks/reversibility
+    confidence: high
 
   - id: regret_test
     rule: "At 80, which option will I regret not choosing?"
     use_when: Choosing between safe and bold
     source: frameworks/regret_minimisation
+    confidence: medium
 
 # ─────────────────────────────────────────────
 # DOMAIN HEURISTICS
@@ -70,6 +86,7 @@ domain:  # Rename this section to match your domain (e.g. product:, content:, co
       action, and any specific thresholds or constraints — e.g. "When writing
       for [channel]: [do X], [max/min Y], [avoid Z]"]
     rationale: "[Why this rule exists and what failure mode it prevents]"
+    confidence: low  # Start new heuristics at low; promote as they prove reliable
 
   - id: example_heuristic_2
     rule: >
@@ -77,6 +94,7 @@ domain:  # Rename this section to match your domain (e.g. product:, content:, co
       explicitly — e.g. "When [situation arises]: [specific response or action]
       rather than [common failure mode]"]
     rationale: "[Why this rule exists]"
+    confidence: low  # Start new heuristics at low; promote as they prove reliable
 
   # Add more domain heuristics here — err on the side of specificity
 
@@ -89,14 +107,17 @@ commercial:
   - id: no_discount_growth
     rule: "Don't discount your way to growth. It devalues what you offer and attracts the wrong customers."
     rationale: Price anchors expectation. Starting low is very hard to reverse.
+    confidence: high
 
   - id: walk_away_on_price
     rule: "Walk away from deals where the client's primary concern is price, not outcomes."
     rationale: Price-led customers become the worst long-term relationships.
+    confidence: high
 
   - id: integrity_over_deal
     rule: "A deal that compromises integrity is not worth having."
     rationale: One bad deal can cost ten good ones in a relationship-driven market.
+    confidence: high
 
 # ─────────────────────────────────────────────
 # PEOPLE & HIRING HEURISTICS
@@ -106,9 +127,11 @@ people:
 
   - id: integrity_non_negotiable
     rule: "Integrity is non-negotiable in any hire. Skills can be developed, character cannot."
+    confidence: high
 
   - id: honesty_about_unknowns
     rule: "Prefer people who are honest about what they don't know over people who perform certainty."
+    confidence: high
 
 # ─────────────────────────────────────────────
 # WHEN STUCK
@@ -122,4 +145,5 @@ when_stuck:
     - Ask: what would I advise someone I respected to do in this situation?
     - Sleep on it — if the answer changes by morning, the original choice was fear-based
 
-last_reviewed: null  # ISO date — update quarterly
+last_updated: null  # ISO date — update when heuristics change, or at quarterly review
+                    # AI: flag to user if this is null or > 60 days ago before loading

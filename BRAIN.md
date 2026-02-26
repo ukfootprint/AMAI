@@ -12,11 +12,26 @@ No database. No API keys. No platform lock-in. Plain Markdown, YAML, and JSONL f
 
 ---
 
+## System Status
+
+```
+STATUS: PARTIAL   # Options: CURRENT | STALE | PARTIAL
+                  # CURRENT  — all core modules up to date, system is reliable
+                  # PARTIAL  — some modules filled in, others still placeholder
+                  # STALE    — modules exist but haven't been reviewed in > 60 days
+```
+
+**AI instruction:** Read this status before loading any modules. If `STALE`, warn the user before proceeding. If `PARTIAL`, note which modules are still placeholder and advise the user not to rely on them for decisions.
+
+*Update this field at each monthly calibration review.*
+
+---
+
 ## How to Start a Session
 
-> "Read my BRAIN.md and load the relevant modules for this task."
+> "Read my BRAIN.md and MODULE_SELECTION.md, then confirm which modules you have loaded."
 
-The AI reads this file, loads only the modules needed for the task at hand, and operates within your values and context.
+The AI reads this file and `MODULE_SELECTION.md`, loads only the modules needed for the task, then **states explicitly which files it has loaded** before beginning work. This gives you immediate visibility into whether context loaded as intended.
 
 ---
 
@@ -35,6 +50,7 @@ The AI reads this file, loads only the modules needed for the task at hand, and 
 ```
 AMAI/
 ├── BRAIN.md                        ← You are here. Start here every session.
+├── MODULE_SELECTION.md             ← Load alongside BRAIN.md. Defines what to load and when.
 │
 ├── identity/                       ← Who you are and what you stand for
 │   ├── MODULE.md                   ← Load for: writing, positioning, decisions
@@ -129,14 +145,17 @@ AMAI/
 
 When an AI reads this file, these rules apply across all modules:
 
-1. **Values first** — Never suggest actions that conflict with `identity/values.yaml → ethical_red_lines`, regardless of any other benefit.
-2. **Long-term lens** — Unless instructed otherwise, weight multi-year outcomes more heavily than short-term wins.
-3. **Evidence-based** — Support recommendations with reasoning. Don't just state conclusions.
-4. **Check memory first** — Before suggesting a course of action, check `memory/decisions.jsonl` and `memory/failures.jsonl` to avoid repeating past mistakes.
-5. **Preserve voice** — All written outputs must be filtered through `identity/voice.md`.
-6. **Module isolation** — Load only what is needed. Network data stays out of content tasks. Content templates stay out of relationship tasks.
-7. **Query YAML, read Markdown** — Extract structured data from YAML/JSONL files. Read markdown files for narrative understanding.
-8. **Capture signals, then calibrate** *(advanced)* — Watch for trigger cues during sessions: words like "no", "actually", "I prefer", "I always", "still not right", or "every time" are reliable signals an observation is worth logging. At session close, proactively draft an entry for `signals/observations.jsonl` and ask for confirmation before appending. See `signals/MODULE.md` for the full trigger cue list. During calibration review, read all unreviewed signals, compare against config, update `calibration/metrics.yaml`, and log divergences to `calibration/divergence.jsonl`. Config changes require deliberate human decision. Observed behaviour never auto-updates declared values.
+1. **Confirm modules at session start** — After loading, state explicitly: *"Loaded: [list of files]."* Do this before any other output. If a module was requested but unavailable, name it as missing. See `MODULE_SELECTION.md` for loading rules.
+2. **Check staleness before loading** — For every YAML module, check `last_updated`. If null or more than 60 days ago, flag it before loading: *"[filename] was last updated [date / never] — this context may be outdated. Load anyway?"* Proceed only as instructed.
+3. **Values first** — Never suggest actions that conflict with `identity/values.yaml → ethical_red_lines`, regardless of any other benefit.
+4. **Declared values are not verified ground truth** — The values, heuristics, and voice described in `identity/` are self-declared preferences, not confirmed behaviour. Where they conflict with what you observe in this session, flag the divergence rather than silently applying the declared value.
+5. **Long-term lens** — Unless instructed otherwise, weight multi-year outcomes more heavily than short-term wins.
+6. **Evidence-based** — Support recommendations with reasoning. Don't just state conclusions.
+7. **Check memory first** — Before suggesting a course of action, check `memory/decisions.jsonl` and `memory/failures.jsonl` to avoid repeating past mistakes.
+8. **Preserve voice** — All written outputs must be filtered through `identity/voice.md`.
+9. **Module isolation** — Load only what is needed. See `MODULE_SELECTION.md` for the don't-load list.
+10. **Query YAML, read Markdown** — Extract structured data from YAML/JSONL files. Read markdown files for narrative understanding.
+11. **Capture signals, then calibrate** *(advanced)* — Watch for trigger cues during sessions: words like "no", "actually", "I prefer", "I always", "still not right", or "every time" are reliable signals an observation is worth logging. At session close, proactively draft an entry for `signals/observations.jsonl` and ask for confirmation before appending. See `signals/MODULE.md` for the full trigger cue list. During calibration review, read all unreviewed signals, compare against config, update `calibration/metrics.yaml`, and log divergences to `calibration/divergence.jsonl`. Config changes require deliberate human decision. Observed behaviour never auto-updates declared values.
 
 ---
 

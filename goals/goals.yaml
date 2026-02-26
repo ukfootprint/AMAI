@@ -40,4 +40,5 @@ goals:
 
   # Add more goals here following the same structure
 
-last_reviewed: null  # ISO date — review quarterly
+last_updated: null  # ISO date — update when goals change, or at quarterly review
+                    # AI: flag to user if this is null or > 60 days ago before loading

@@ -89,4 +89,5 @@ ethical_red_lines:
   - "[Example: Never use customer data in ways not explicitly consented to]"
   - "[Example: Never prioritise short-term metrics over the people you serve]"
 
-last_reviewed: null  # ISO date — update quarterly
+last_updated: null  # ISO date — update when values change, or at quarterly review
+                    # AI: flag to user if this is null or > 60 days ago before loading

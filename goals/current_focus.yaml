@@ -5,7 +5,8 @@ _description: >
   weekly review). The AI uses this to understand what matters right now
   versus what is on the horizon or parked.
 
-week_of: null  # ISO date of Monday — update weekly
+week_of: null     # ISO date of Monday — update weekly
+last_updated: null  # AI: flag to user if this is null or > 7 days ago before loading
 
 # ─────────────────────────────────────────────
 # THIS WEEK'S PRIORITIES

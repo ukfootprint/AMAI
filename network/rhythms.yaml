@@ -53,4 +53,5 @@ rhythms:
       Sector network maintenance is ambient. No calendar-driven obligation —
       engage when you have genuine reason to.
 
-last_reviewed: null
+last_updated: null  # ISO date — update when rhythm targets change
+                    # AI: flag to user if this is null or > 60 days ago before loading

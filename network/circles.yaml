@@ -94,4 +94,5 @@ movement_criteria:
       Time has passed, context has diverged. Better to keep ambient
       awareness than force a warm relationship that has naturally faded.
 
-last_reviewed: null  # ISO date — review quarterly
+last_updated: null  # ISO date — update when circle structure changes, or at quarterly review
+                    # AI: flag to user if this is null or > 60 days ago before loading
