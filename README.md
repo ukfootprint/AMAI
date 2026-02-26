@@ -18,6 +18,122 @@ The AI reads `BRAIN.md`, loads only the modules relevant to the task, and operat
 
 ---
 
+## AI Compatibility
+
+AMAI works with any AI model. How well it works depends on how much file access your AI environment has.
+
+### Best experience — desktop apps and code assistants
+
+AMAI is specifically designed for AI environments that can read files directly from your local system. These include:
+
+- **AI desktop apps** (e.g. Claude desktop with Cowork, local AI tools)
+- **AI code assistants** (e.g. Claude Code, Cursor, Copilot with workspace access)
+
+In these environments the instruction *"Read my BRAIN.md"* works literally — the AI reads the file from disk and loads modules as needed. The full system works as designed.
+
+### Browser sessions — workarounds required
+
+Browser-based AI sessions at claude.ai, chatgpt.com, or gemini.google.com cannot access your local file system. You need to bring your context to the AI rather than letting the AI read it. The three approaches below are ordered from best to most manual.
+
+---
+
+#### Claude — claude.ai
+
+**Using Projects (recommended)**
+
+Claude Projects let you upload files that persist across every conversation in that project.
+
+1. Go to [claude.ai](https://claude.ai) and click **Projects → New Project**
+2. Name it *AMAI* (or your name)
+3. Open **Project Knowledge** and upload:
+   - `BRAIN.md`
+   - `identity/values.yaml`
+   - `identity/voice.md`
+   - `identity/heuristics.yaml`
+   - Any other modules you use regularly
+4. Start every conversation in this project with the usual instruction
+
+Files in Project Knowledge are available to every conversation automatically — no re-uploading needed.
+
+**Using Custom Instructions (lighter alternative)**
+
+Go to **Settings → Custom Instructions** and paste the contents of `BRAIN.md`. This works for all conversations, not just a project, but has a character limit so you may need to condense it.
+
+---
+
+#### ChatGPT — chatgpt.com
+
+**Using Projects (recommended, Plus/Pro)**
+
+ChatGPT Projects function similarly to Claude Projects.
+
+1. In the sidebar, click **New Project**
+2. Name it *AMAI*
+3. Upload your core AMAI files using the attachment button
+4. ChatGPT will reference these files across all conversations in the project
+
+**Using Custom Instructions (available to all users)**
+
+Go to **Settings → Personalization → Custom Instructions** and paste a condensed version of `BRAIN.md` in the *"What would you like ChatGPT to know about you?"* field. This applies globally to all conversations.
+
+**Using Custom GPTs (Plus/Pro)**
+
+You can create a personal GPT pre-loaded with your AMAI context:
+
+1. Go to **Explore GPTs → Create**
+2. Paste `BRAIN.md` content into the system instructions
+3. Upload your module files under **Knowledge**
+4. Save as a private GPT for personal use
+
+**Per-session upload (any plan)**
+
+Upload your files as attachments at the start of each conversation, then give the instruction. Less convenient but always available.
+
+---
+
+#### Gemini — gemini.google.com
+
+**Using Gems (recommended, Gemini Advanced)**
+
+Gems are Gemini's persistent custom AI configurations.
+
+1. Go to [gemini.google.com](https://gemini.google.com) and click **Gems → New Gem**
+2. Paste `BRAIN.md` content into the instructions field
+3. Upload your core module files
+4. Save the Gem and use it for all AMAI sessions
+
+**Using Google Drive integration**
+
+Gemini can read directly from your Google Drive — which makes it uniquely suited to a file-based system like AMAI.
+
+1. Save your AMAI files (or a curated subset) to a folder in Google Drive
+2. In a Gemini conversation, click the Google Drive icon to connect
+3. Reference the files directly: *"Read my BRAIN.md from Drive and load the relevant modules"*
+
+This approach means your AMAI files stay on Drive, sync across devices, and are always current without re-uploading.
+
+**Per-session upload (any plan)**
+
+Upload files as attachments at the start of each conversation, then give the instruction.
+
+---
+
+### Recommended file set for browser sessions
+
+You don't need to upload every file. A practical minimum that covers most sessions:
+
+| File | Why |
+|------|-----|
+| `BRAIN.md` | The AI's onboarding document and operating instructions |
+| `identity/values.yaml` | Ethical red lines — needed for any decision |
+| `identity/voice.md` | Needed for any writing task |
+| `identity/heuristics.yaml` | Fast decision rules |
+| `goals/current_focus.yaml` | What matters this week |
+
+Load additional module files when the task calls for them — network files for relationship tasks, memory files for reflection, and so on.
+
+---
+
 ## Getting Started
 
 **Step 1 — Fill in your identity (30 minutes)**
