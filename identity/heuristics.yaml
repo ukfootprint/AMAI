@@ -6,6 +6,23 @@ _description: >
   For the fuller reasoning behind each domain, see identity/principles.md.
   For the values underpinning these rules, see identity/values.yaml.
 
+# ─── AI STANDING INSTRUCTION ────────────────────────────────────────────────
+# These are declared decision rules, not verified ground truth.
+# They represent how the user intends to make decisions, not necessarily how
+# they consistently do.
+#
+# Where a heuristic here appears to conflict with behaviour you observe in this
+# session, DO NOT silently apply the declared rule as if it were reliable fact.
+# Instead:
+#   1. Flag the apparent divergence to the user
+#   2. Ask whether the rule or the observed behaviour better reflects intent
+#   3. If appropriate, note it as a candidate for signals/observations.jsonl
+#
+# Treat high-confidence heuristics as firm constraints.
+# Treat medium-confidence as strong defaults — flag exceptions.
+# Treat low-confidence as suggestions — never as constraints.
+# ─────────────────────────────────────────────────────────────────────────────
+
 # ─── CONFIDENCE FIELD ────────────────────────────────────────────────────────
 # Every heuristic has a confidence level. The AI treats these differently:
 #   high   — well-tested rule; apply as a firm constraint

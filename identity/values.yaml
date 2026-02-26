@@ -6,6 +6,21 @@ _description: >
   when values conflict, higher priority wins.
   For narrative context on how these play out, see identity/principles.md.
 
+# ─── AI STANDING INSTRUCTION ────────────────────────────────────────────────
+# These are declared preferences, not verified ground truth.
+# They represent how the user intends to behave, not necessarily how they do.
+#
+# Where the values declared here appear to conflict with behaviour you observe
+# in this session, DO NOT silently apply the declared value as if it were fact.
+# Instead:
+#   1. Flag the apparent divergence to the user
+#   2. Ask whether the declared value or the observed behaviour reflects intent
+#   3. If appropriate, note it as a candidate for signals/observations.jsonl
+#
+# Ethical red lines are the exception: apply these unconditionally regardless
+# of observed behaviour. They are constraints, not descriptions.
+# ─────────────────────────────────────────────────────────────────────────────
+
 # ─────────────────────────────────────────────
 # CORE VALUES
 # Priority order matters: when values conflict, higher priority wins.
