@@ -283,6 +283,8 @@ If REJECT: behaviour corrected, config unchanged
 
 **[Daniel Miessler](https://danielmiessler.com)** — whose [Personal AI Infrastructure (PAI)](https://github.com/danielmiessler/Personal_AI_Infrastructure) project explored the agentic end of the same problem space, and directly inspired the signals/calibration layer.
 
+**[Joel Hans](https://ngrok.com/blog/bmo-self-improving-coding-agent)** — whose write-up of BMO, a self-improving coding agent built at Ngrok, provided the empirical grounding for six specific improvements to AMAI: explicit trigger cues for signal capture, quantitative telemetry in the calibration layer, the deferred_with_reason anti-pattern fix, typed learning logs, hyper-specific heuristics, and the meta-learner prompt.
+
 ---
 
 ## Licence
