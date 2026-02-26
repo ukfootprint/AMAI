@@ -18,28 +18,36 @@ The AI reads `BRAIN.md`, loads only the modules relevant to the task, and operat
 
 ---
 
-## AI Compatibility
+## AI Environment Guide
 
-AMAI works with any AI model. How well it works depends on how much file access your AI environment has.
+AMAI works with any AI model. What you can rely on — and what requires your discipline — depends entirely on your environment. This section is honest about both.
 
-### Best experience — desktop apps and code assistants
+---
 
-AMAI is specifically designed for AI environments that can read files directly from your local system. These include:
+### Desktop apps and code assistants — full reliability
+
+AMAI is designed for AI environments that can read files directly from your local system:
 
 - **AI desktop apps** (e.g. Claude desktop with Cowork, local AI tools)
 - **AI code assistants** (e.g. Claude Code, Cursor, Copilot with workspace access)
 
-In these environments the instruction *"Read my BRAIN.md"* works literally — the AI reads the file from disk and loads modules as needed. The full system works as designed.
+**What AMAI can guarantee here:** The instruction *"Read my BRAIN.md"* works literally. The AI reads the file from disk, loads modules on demand, and sees the current version of every file. The full system works as designed.
 
-### Browser sessions — workarounds required
+**What you still need to do:** Keep your files up to date. The AI reads what's there — if `current_focus.yaml` is three weeks old, the AI will work from three-week-old priorities.
 
-Browser-based AI sessions at claude.ai, chatgpt.com, or gemini.google.com cannot access your local file system. You need to bring your context to the AI rather than letting the AI read it. The three approaches below are ordered from best to most manual.
+---
+
+### Browser sessions — environment-dependent
+
+Browser-based sessions at claude.ai, chatgpt.com, or gemini.google.com cannot access your local file system. You bring context to the AI; the AI does not pull it. Each environment has different persistence models, and each comes with different tradeoffs.
+
+The approaches below are ordered from most reliable to least.
 
 ---
 
 #### Claude — claude.ai
 
-**Using Projects (recommended)**
+**Using Projects**
 
 Claude Projects let you upload files that persist across every conversation in that project.
 
@@ -53,17 +61,19 @@ Claude Projects let you upload files that persist across every conversation in t
    - Any other modules you use regularly
 4. Start every conversation in this project with the usual instruction
 
-Files in Project Knowledge are available to every conversation automatically — no re-uploading needed.
+**What AMAI can guarantee here:** Files in Project Knowledge are present in every conversation — no re-uploading needed, and the AI can reference them reliably.
+
+**What it cannot guarantee:** Project Knowledge files are not live-synced to your local repo. If you update `current_focus.yaml` locally, the Project copy is stale until you manually re-upload it. AMAI is only as current as your last upload. Check `last_updated` fields regularly and re-upload when modules are stale.
 
 **Using Custom Instructions (lighter alternative)**
 
-Go to **Settings → Custom Instructions** and paste the contents of `BRAIN.md`. This works for all conversations, not just a project, but has a character limit so you may need to condense it.
+Go to **Settings → Custom Instructions** and paste the contents of `BRAIN.md`. Applies globally to all conversations but has a character limit — you may need to condense. Module files are not available unless uploaded per-session.
 
 ---
 
 #### ChatGPT — chatgpt.com
 
-**Using Projects (recommended, Plus/Pro)**
+**Using Projects (Plus/Pro)**
 
 ChatGPT Projects function similarly to Claude Projects.
 
@@ -72,59 +82,69 @@ ChatGPT Projects function similarly to Claude Projects.
 3. Upload your core AMAI files using the attachment button
 4. ChatGPT will reference these files across all conversations in the project
 
-**Using Custom Instructions (available to all users)**
+**What AMAI can guarantee here:** Files are persistently available within the project. The core session-start instruction works as intended.
 
-Go to **Settings → Personalization → Custom Instructions** and paste a condensed version of `BRAIN.md` in the *"What would you like ChatGPT to know about you?"* field. This applies globally to all conversations.
+**What it cannot guarantee:** Same as Claude Projects — uploaded files are a snapshot, not a live sync. Your AMAI context is only as current as your last upload. Re-upload `current_focus.yaml` at minimum when priorities shift.
+
+**Using Custom Instructions (all users)**
+
+Go to **Settings → Personalization → Custom Instructions** and paste a condensed version of `BRAIN.md`. Applies globally but cannot hold full module files.
 
 **Using Custom GPTs (Plus/Pro)**
 
-You can create a personal GPT pre-loaded with your AMAI context:
-
-1. Go to **Explore GPTs → Create**
-2. Paste `BRAIN.md` content into the system instructions
-3. Upload your module files under **Knowledge**
-4. Save as a private GPT for personal use
-
-**Per-session upload (any plan)**
-
-Upload your files as attachments at the start of each conversation, then give the instruction. Less convenient but always available.
-
----
-
-#### Gemini — gemini.google.com
-
-**Using Gems (recommended, Gemini Advanced)**
-
-Gems are Gemini's persistent custom AI configurations.
-
-1. Go to [gemini.google.com](https://gemini.google.com) and click **Gems → New Gem**
-2. Paste `BRAIN.md` content into the instructions field
-3. Upload your core module files
-4. Save the Gem and use it for all AMAI sessions
-
-**Using Google Drive integration**
-
-Gemini can read directly from your Google Drive — which makes it uniquely suited to a file-based system like AMAI.
-
-1. Save your AMAI files (or a curated subset) to a folder in Google Drive
-2. In a Gemini conversation, click the Google Drive icon to connect
-3. Reference the files directly: *"Read my BRAIN.md from Drive and load the relevant modules"*
-
-This approach means your AMAI files stay on Drive, sync across devices, and are always current without re-uploading.
+Create a private GPT with `BRAIN.md` pasted into system instructions and module files under Knowledge. Persistent and reliable, but the same staleness caveat applies — Knowledge files are not live.
 
 **Per-session upload (any plan)**
 
 Upload files as attachments at the start of each conversation, then give the instruction.
 
+**What AMAI can guarantee here:** Nothing across sessions. **What it cannot guarantee:** Anything. This is as reliable as your upload discipline, every single session.
+
 ---
 
-### Recommended file set for browser sessions
+#### Gemini — gemini.google.com
 
-You don't need to upload every file. A practical minimum that covers most sessions:
+**Using Google Drive integration (most reliable for Gemini)**
+
+Gemini can read directly from Google Drive — which makes it the most live-sync-capable browser environment for AMAI.
+
+1. Save your AMAI files (or a curated subset) to a folder in Google Drive
+2. Keep this folder in sync with your local repo (manual copy, or a sync tool)
+3. In a Gemini conversation, click the Google Drive icon to connect
+4. Reference the files directly: *"Read my BRAIN.md from Drive and load the relevant modules"*
+
+**What AMAI can guarantee here:** If your Drive folder is current, Gemini reads current files. This is the closest browser environments get to the desktop experience.
+
+**What it cannot guarantee:** Drive sync is your responsibility. If your local repo has diverged from your Drive folder, Gemini reads the Drive version — which may be stale.
+
+**Using Gems (Gemini Advanced)**
+
+Gems are persistent custom AI configurations. Paste `BRAIN.md` into the instructions field and upload core module files.
+
+**What AMAI can guarantee:** Persistent instructions across sessions. **What it cannot guarantee:** Same staleness caveat as Claude/ChatGPT Projects — uploaded files are a snapshot.
+
+**Per-session upload (any plan)**
+
+Upload files as attachments at the start of each conversation. Same as above: reliable only as far as your upload discipline extends.
+
+---
+
+### What every browser session requires from you
+
+Regardless of platform, browser-based AMAI has one dependency that desktop environments remove: **your maintenance discipline.**
+
+| Maintenance task | Frequency | What breaks if you skip it |
+|-----------------|-----------|---------------------------|
+| Re-upload `current_focus.yaml` | When priorities shift | AI works from stale priorities |
+| Re-upload `goals/goals.yaml` | When goals change status | Goal alignment prompts miss current state |
+| Re-upload `identity/heuristics.yaml` | After calibration reviews | AI misses updated rules |
+| Re-upload full module set | After major life/work changes | AI operates on outdated context |
+
+The minimum upload set that covers most sessions:
 
 | File | Why |
 |------|-----|
-| `BRAIN.md` | The AI's onboarding document and operating instructions |
+| `BRAIN.md` | AI onboarding and operating instructions |
 | `identity/values.yaml` | Ethical red lines — needed for any decision |
 | `identity/voice.md` | Needed for any writing task |
 | `identity/heuristics.yaml` | Fast decision rules |
