@@ -202,7 +202,7 @@ AMAI/
 │   ├── goals.yaml                  ← OKR-style goals with status tracking
 │   ├── current_focus.yaml          ← Live weekly priority stack
 │   ├── north_star.md               ← Long-term narrative vision (3–10 years)
-│   └── backlog.md                  ← Good ideas parked for later
+│   └── deferred_with_reason.md     ← Ideas deferred with explicit reasoning
 │
 ├── knowledge/                      ← What you know and are learning
 │   ├── learning.jsonl              ← Append-only insight and lesson log

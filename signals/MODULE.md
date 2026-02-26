@@ -43,6 +43,31 @@ Do not log if the session was routine and nothing felt notable. Signal, not volu
 
 ---
 
+## Trigger Cue List
+
+The following words and phrases in your own responses are reliable signals that a log entry is warranted. When you say any of these during a session, treat it as an automatic flag:
+
+**Override cues** — you rejected or changed a suggestion:
+- "No", "Actually", "Not that", "That's not right", "Ignore that"
+- "Instead, do X", "Let me reframe this", "Start again"
+
+**Preference cues** — you stated how you like things done:
+- "I prefer", "I always", "I never", "I tend to", "I don't like it when"
+- "Make it more X", "Make it less Y", "That's too [formal / casual / long / short]"
+
+**Friction cues** — something required repeated correction:
+- Second or third edit of the same output
+- "Still not right", "Again", "You keep doing X"
+- "Why does it always do X?"
+
+**Pattern cues** — recurring observation across sessions:
+- "Every time", "This always happens", "Again with the X"
+- "Third time this week", "I keep having to fix this"
+
+When any of these surface, note it — even informally. The formal log entry happens at session end.
+
+---
+
 ## Log Format
 
 ```jsonl

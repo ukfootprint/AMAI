@@ -45,17 +45,40 @@ universal:
 # Replace or extend these with rules specific to your work.
 # ─────────────────────────────────────────────
 
-domain:  # Rename this section to match your domain (e.g. product:, commercial:, etc.)
+domain:  # Rename this section to match your domain (e.g. product:, content:, consulting:, etc.)
+
+  # ─── HOW TO WRITE GOOD HEURISTICS ───────────────────────────────────────
+  # Specificity is reliability. Vague rules ("be concise") fail because they
+  # leave too many decisions to the model in the moment. Specific rules
+  # ("max 5 lines before the break on LinkedIn") give the model fewer
+  # degrees of freedom — and fewer failure modes.
+  #
+  # Compare:
+  #   BAD:  rule: "Write clearly and concisely for your audience"
+  #   GOOD: rule: "For LinkedIn: lead with the claim, max 5 lines before
+  #               the break, no jargon, one idea per post"
+  #
+  # BAD:  rule: "Handle client feedback professionally"
+  # GOOD: rule: "When a client pushes back on a recommendation: acknowledge
+  #               first ('that's a fair challenge'), then explain the reasoning,
+  #               never concede on quality to preserve the relationship"
+  # ─────────────────────────────────────────────────────────────────────────
 
   - id: example_heuristic_1
-    rule: "[Replace with a fast rule you use in your main domain]"
-    rationale: "[Why this rule exists and what problem it prevents]"
+    rule: >
+      [Replace with a hyper-specific rule: name the exact context, the exact
+      action, and any specific thresholds or constraints — e.g. "When writing
+      for [channel]: [do X], [max/min Y], [avoid Z]"]
+    rationale: "[Why this rule exists and what failure mode it prevents]"
 
   - id: example_heuristic_2
-    rule: "[Replace with another domain-specific rule]"
+    rule: >
+      [Replace with another domain-specific rule. Include the trigger condition
+      explicitly — e.g. "When [situation arises]: [specific response or action]
+      rather than [common failure mode]"]
     rationale: "[Why this rule exists]"
 
-  # Add more domain heuristics here
+  # Add more domain heuristics here — err on the side of specificity
 
 # ─────────────────────────────────────────────
 # COMMERCIAL HEURISTICS

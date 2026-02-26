@@ -49,9 +49,15 @@ No one manages your time but you. Rituals create the structure that prevents dri
 ### Calibration Review *(advanced layer — see calibration/MODULE.md)*
 - **When:** During or immediately after monthly review
 - **Duration:** 20–30 minutes
-- **Files:** `calibration/pending_review.md`, `calibration/divergence.jsonl`
-- **What:** Review all CANDIDATE and WARNING items. Disposition each one: INCORPORATE, REJECT, or continue DEFER. If incorporating, update the relevant config file and log the decision in `memory/decisions.jsonl`.
+- **Files:** `calibration/pending_review.md`, `calibration/divergence.jsonl`, `calibration/metrics.yaml`
+- **What:** Review all CANDIDATE and WARNING items. Disposition each one: INCORPORATE, REJECT, or continue DEFER. If incorporating, update the relevant config file and log the decision in `memory/decisions.jsonl`. Update quantitative counts in `calibration/metrics.yaml`.
 - **Non-negotiable:** Yes — this is the main mechanism for keeping your config current without values eroding through drift
+
+**Meta-learner prompt** — ask yourself this at the start of every calibration review, before reading the signals log:
+
+> *"What have I been correcting the AI on this month that I haven't explicitly logged in signals?"*
+
+The uncaptured corrections are exactly where calibration fails. You are the only part of the system capable of noticing what the system is missing. If you recall repeated corrections that aren't in `signals/observations.jsonl`, add them now before running the review — they are likely your most important signals.
 
 ### Strategic Read
 - **What:** One long-form article, report, or chapter relevant to your sector

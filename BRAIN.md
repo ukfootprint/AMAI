@@ -49,7 +49,7 @@ AMAI/
 │   ├── goals.yaml                  ← OKR-style goals with status fields              [YAML]
 │   ├── current_focus.yaml          ← Live weekly priority stack                      [YAML]
 │   ├── north_star.md               ← Long-term narrative vision (3–10 years)         [MD]
-│   └── backlog.md                  ← Good ideas parked for later                     [MD]
+│   └── deferred_with_reason.md     ← Ideas deferred with explicit reasoning           [MD]
 │
 ├── knowledge/                      ← What you know and are learning
 │   ├── MODULE.md                   ← Load for: research, writing, analysis
@@ -89,6 +89,7 @@ AMAI/
 └── calibration/                    ← Where declared self meets observed self
     ├── MODULE.md                   ← Load for: monthly calibration review
     ├── protocol.md                 ← Divergence taxonomy and incorporation rules     [MD]
+    ├── metrics.yaml                ← Quantitative tracking across sessions            [YAML]
     ├── divergence.jsonl            ← Append-only log of detected divergences         [JSONL]
     └── pending_review.md           ← Active items awaiting deliberate review         [MD]
 ```
@@ -110,7 +111,7 @@ AMAI/
 | Reflecting on a decision | `memory/decisions.jsonl`, `identity/principles.md` |
 | Product / feature thinking | `goals/north_star.md`, `knowledge/frameworks.md`, `identity/heuristics.yaml` |
 | End-of-session capture *(advanced)* | `signals/MODULE.md`, `signals/observations.jsonl` |
-| Calibration review *(advanced)* | `calibration/MODULE.md`, `calibration/pending_review.md`, `signals/observations.jsonl` |
+| Calibration review *(advanced)* | `calibration/MODULE.md`, `calibration/pending_review.md`, `calibration/metrics.yaml`, `signals/observations.jsonl` |
 
 ---
 
@@ -135,7 +136,7 @@ When an AI reads this file, these rules apply across all modules:
 5. **Preserve voice** — All written outputs must be filtered through `identity/voice.md`.
 6. **Module isolation** — Load only what is needed. Network data stays out of content tasks. Content templates stay out of relationship tasks.
 7. **Query YAML, read Markdown** — Extract structured data from YAML/JSONL files. Read markdown files for narrative understanding.
-8. **Capture signals, then calibrate** *(advanced)* — At the close of any session where you (a) rejected or significantly edited an AI suggestion, (b) noticed output that felt off-brand, (c) noticed something surprisingly right, or (d) observed a recurring pattern — proactively draft an entry for `signals/observations.jsonl` and ask for confirmation before appending. During calibration review, read all unreviewed signals, compare against config, and log divergences to `calibration/divergence.jsonl`. Config changes require deliberate human decision. Observed behaviour never auto-updates declared values.
+8. **Capture signals, then calibrate** *(advanced)* — Watch for trigger cues during sessions: words like "no", "actually", "I prefer", "I always", "still not right", or "every time" are reliable signals an observation is worth logging. At session close, proactively draft an entry for `signals/observations.jsonl` and ask for confirmation before appending. See `signals/MODULE.md` for the full trigger cue list. During calibration review, read all unreviewed signals, compare against config, update `calibration/metrics.yaml`, and log divergences to `calibration/divergence.jsonl`. Config changes require deliberate human decision. Observed behaviour never auto-updates declared values.
 
 ---
 

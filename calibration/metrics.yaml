@@ -1,0 +1,112 @@
+_schema: calibration_metrics
+_version: "1.0"
+_description: >
+  Quantitative tracking for the calibration layer. Where signals/observations.jsonl
+  captures qualitative observations, this file tracks counts and frequencies —
+  the objective ground truth that narrative summaries tend to obscure over time.
+  Update during your monthly calibration review. Review trends quarterly.
+
+# ─────────────────────────────────────────────
+# SIGNAL VOLUME
+# How many signals are being captured, and of what kind?
+# ─────────────────────────────────────────────
+
+signal_volume:
+  total_observations: 0        # Running total of entries in signals/observations.jsonl
+  by_type:
+    override: 0                # Count of "Override:" prefix entries
+    friction: 0                # Count of "Friction:" prefix entries
+    positive: 0                # Count of "Positive:" prefix entries
+    pattern: 0                 # Count of "Pattern:" prefix entries
+    inference: 0               # Count of "Inference:" prefix entries
+  sessions_with_no_signal: 0   # Sessions where nothing was logged — high numbers suggest under-capture
+
+# ─────────────────────────────────────────────
+# DIVERGENCE VOLUME
+# How many divergences are being detected and how are they being dispositioned?
+# ─────────────────────────────────────────────
+
+divergence_volume:
+  total_detected: 0
+  by_disposition:
+    confirm: 0
+    candidate: 0
+    warning: 0
+    defer: 0
+    incorporated: 0
+    rejected: 0
+  pending_review_count: 0      # Items currently in pending_review.md — high numbers suggest review backlog
+
+# ─────────────────────────────────────────────
+# OVERRIDE FREQUENCY BY DOMAIN
+# Which domains require the most correction?
+# High numbers indicate config gaps — heuristics or voice rules may need tightening.
+# ─────────────────────────────────────────────
+
+overrides_by_domain:
+  # Add domains relevant to your work. Examples:
+  # writing: 0
+  # strategy: 0
+  # communication: 0
+  # technical: 0
+
+# ─────────────────────────────────────────────
+# MODULE LOAD FREQUENCY
+# Which modules are loaded most often?
+# Useful for identifying which context is doing the most work.
+# ─────────────────────────────────────────────
+
+module_load_frequency:
+  identity: 0
+  goals: 0
+  knowledge: 0
+  network: 0
+  operations: 0
+  memory: 0
+  signals: 0
+  calibration: 0
+
+# ─────────────────────────────────────────────
+# LEARNING LOG VOLUME
+# Track insight accumulation and type distribution.
+# Imbalances reveal where learning is happening — and where it isn't.
+# ─────────────────────────────────────────────
+
+learning_log:
+  total_entries: 0
+  by_type:
+    correction: 0   # You were wrong about something and updated your model
+    preference: 0   # You discovered or clarified a working preference
+    pattern: 0      # A recurring pattern became visible
+    insight: 0      # A new idea or framework worth retaining
+
+# ─────────────────────────────────────────────
+# CALIBRATION REVIEW HISTORY
+# A lightweight log of monthly reviews — not what was decided (see memory/decisions.jsonl)
+# but whether the review happened and what the system health was.
+# ─────────────────────────────────────────────
+
+review_history:
+  - date: null                 # ISO date of review — replace null with actual date
+    signals_reviewed: 0        # Number of signal entries processed
+    divergences_found: 0
+    incorporated: 0
+    rejected: 0
+    deferred: 0
+    health_note: ""            # One line: system health observation for this month
+
+# ─────────────────────────────────────────────
+# AI INSTRUCTIONS
+# ─────────────────────────────────────────────
+
+# During monthly calibration review:
+# 1. Update signal_volume counts by scanning signals/observations.jsonl
+# 2. Update divergence_volume counts from calibration/divergence.jsonl
+# 3. Update overrides_by_domain by categorising override entries
+# 4. Append a new review_history entry
+# 5. Flag to the user if any single domain has disproportionately high overrides
+#    (threshold: more than 40% of total overrides in one domain)
+# 6. Flag if sessions_with_no_signal > 5 in a month (likely under-capture)
+# 7. Flag if pending_review_count > 10 (review backlog building up)
+
+last_updated: null  # ISO date — update at each monthly calibration review
