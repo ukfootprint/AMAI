@@ -57,3 +57,51 @@ For each WARNING, decide:
 
 *Last reviewed: —*
 *Next scheduled review: —*
+
+---
+
+## Org Tension Review
+
+Complete this section at monthly calibration if you are using an org overlay.
+
+### Step 1: Review tension_log.jsonl
+
+Read org/overlays/<org_id>/tension_log.jsonl for the past month.
+Count entries by severity and tension_type.
+
+Questions to answer:
+- Are there any HIGH severity tension entries? What pattern do they point to?
+- Is the frequency of tension entries increasing, stable, or decreasing?
+- Which tension_type appears most often? What does that tell you about the
+  fit between your personal values and this org context?
+
+### Step 2: Review band calibration
+
+Look at your behaviour_bands.yaml context_type_defaults (in overlay.yaml).
+For each context type you used this month, ask:
+- Did the band levels feel right, or were you consistently overriding them?
+- If you were overriding, should the defaults change, or was the override
+  situational?
+
+Update overlay.yaml context_type_defaults if a systematic mismatch is evident.
+Log the change in CHANGELOG.md.
+
+### Step 3: Extreme band check
+
+Review overlay.yaml context_type_defaults for any dimension set to L1 or L5.
+Extremes should be deliberate. Ask:
+- Is this extreme still warranted, or has the org context changed?
+- Is an extreme setting suppressing something that should be expressed?
+
+### Step 4: Structural misalignment flag
+
+If HIGH severity tension entries are increasing month on month, or if the
+same tension_type appears more than three times in a single month, flag this
+explicitly in pending_review.md:
+
+STRUCTURAL_TENSION_FLAG: [date] — [description]
+
+A structural tension flag is not an action item — it is a signal that the
+relationship between your personal values and this org context may warrant
+a deliberate conversation, a role adjustment, or a values reconsideration.
+It should not be resolved by updating config files.

@@ -6,6 +6,44 @@ Format: `[version] — date — description`. Schema changes that affect existin
 
 ---
 
+## v2.0 — Phase 7: Organisation Overlay Layer — 2026-02-27
+
+### Added
+- `org/` module folder with `org_index.yaml` and `MODULE.md`
+- `org/overlays/example-org/` overlay structure with:
+  - `overlay.yaml` (precedence stack, conflict protocol, context defaults, session banner)
+  - `behaviour_bands.yaml` (5 dimensions × 5 levels with rules and examples)
+  - `SESSION_STATES.md` (S0–S4 state machine with explicit transition rules)
+  - `policy/data_classes.yaml` (org data classification mapped to personal tiers)
+  - `policy/disclosure_rules.yaml` (allowed classes by context, mandatory redactions)
+  - `tension_log.jsonl` (append-only personal/org friction log)
+- `scripts/amai_lint.sh` (overlay schema validation)
+- `scripts/amai_export.sh` (browser-safe bundle generator with manifest)
+- Org trigger rows added to `MODULE_SELECTION.md`
+- Org overlay reference added to `BRAIN.md`
+- Org tension review section added to `calibration/pending_review.md`
+- Org overlay evaluation prompts and two additional scoring dimensions
+  added to `evaluation/baseline_prompts.md`
+
+### Changed
+- `MODULE_SELECTION.md`: added 5 org-context trigger table rows and updated
+  loading instruction (rule 7) to reference `SESSION_STATES.md` and `amai_export.sh`
+- `BRAIN.md`: added org overlay section with activation and browser guidance
+- `calibration/pending_review.md`: added org tension review section (4-step process
+  with structural tension flag)
+- `.gitignore`: added `EXPORT/` and `org/overlays/*/tension_log.jsonl` exclusions
+
+### Design decisions
+- Numeric dials replaced by behavioural bands with observable criteria and examples
+- Formal precedence lattice (8 levels) replaces informal "values first" guidance
+- Session state machine makes overlay transitions explicit and user-confirmed
+- Data classification system maps org classes to existing personal sensitivity tiers
+- Export tooling generates browser-safe bundles with manifest — closes browser sync gap
+- `tension_log.jsonl` feeds into monthly calibration — structural tension flagged,
+  not resolved by config changes
+
+---
+
 ## [1.4] — 2026-02-26 — Phase 3: Durability
 
 ### Added

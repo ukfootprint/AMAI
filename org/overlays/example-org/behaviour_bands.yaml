@@ -1,0 +1,216 @@
+# org/overlays/[org-id]/behaviour_bands.yaml
+# schema_version: "1.0"
+# last_updated: YYYY-MM-DD
+#
+# Each dimension has 5 levels (L1-L5).
+# L1 = most personal / least org-constrained
+# L5 = most org-constrained / least personal
+# Each level defines: rules, a positive example, and a negative example.
+# The negative example shows what NOT to do at that level.
+
+schema_version: "1.0"
+last_updated: "YYYY-MM-DD"
+
+dimensions:
+
+  formality:
+    description: "Register and tone of written and spoken output"
+    levels:
+      L1:
+        rules:
+          - Use casual language, contractions, colloquialisms
+          - First-name address always
+          - Short sentences, conversational rhythm
+        positive_example: "Hey — quick thought on this. I'd push back a bit."
+        negative_example: "We would like to respectfully submit the following observations."
+      L2:
+        rules:
+          - Professional but warm
+          - Contractions acceptable
+          - Occasional informality to signal approachability
+        positive_example: "Happy to share my thinking on this — here's where I've landed."
+        negative_example: "Hey mate, here's what I reckon."
+      L3:
+        rules:
+          - Standard professional register
+          - No contractions in formal documents; contractions acceptable in email
+          - Clear structure, no slang
+        positive_example: "I would like to share some initial observations on this proposal."
+        negative_example: "Quick heads-up — I've had a look and here's my take."
+      L4:
+        rules:
+          - Formal register throughout
+          - No contractions
+          - Third-person or passive construction acceptable for formal docs
+          - Salutations and closings required in written communication
+        positive_example: "Please find attached our assessment of the proposal for your consideration."
+        negative_example: "I've had a look and here's my take."
+      L5:
+        rules:
+          - Highest formal register
+          - Legal or board-level language where appropriate
+          - No informality of any kind
+          - Full titles on first reference
+        positive_example: "The Board of Directors has reviewed the matter and resolved as follows."
+        negative_example: "We've reviewed this and wanted to share some thoughts."
+
+  directness:
+    description: "How plainly conclusions, disagreements, and recommendations are stated"
+    levels:
+      L1:
+        rules:
+          - State conclusions immediately, without preamble
+          - Disagreement stated plainly without softening
+          - No hedging language
+        positive_example: "This approach won't work. Here's why and what I'd do instead."
+        negative_example: "There may be some considerations worth exploring here."
+      L2:
+        rules:
+          - Lead with the conclusion
+          - One sentence of context before the recommendation
+          - Softening language only for interpersonal topics
+        positive_example: "My recommendation is X. The main reason is Y."
+        negative_example: "It might be worth considering whether X could potentially be an option."
+      L3:
+        rules:
+          - Conclusion within the first paragraph
+          - Brief rationale before recommendation
+          - Hedge once when genuinely uncertain; not as a stylistic default
+        positive_example: "Based on the available information, I'd recommend X, primarily because Y."
+        negative_example: "This is a complex area and there are many perspectives to consider."
+      L4:
+        rules:
+          - Context and rationale before conclusion
+          - One mitigation acknowledged before recommendation
+          - Avoid language that could be read as critical of stakeholders
+        positive_example: "Having considered the constraints, and acknowledging the challenges with Y,
+          our recommended approach is X."
+        negative_example: "This is clearly the wrong approach and needs to be changed."
+      L5:
+        rules:
+          - Comprehensive context before any conclusion
+          - All significant alternatives acknowledged
+          - Diplomatic framing even for strong disagreements
+          - Final decision language deferred to appropriate authority
+        positive_example: "The following analysis presents three approaches for consideration.
+          Each has merits. The preferred option for discussion is X."
+        negative_example: "X is wrong. Do Y instead."
+
+  risk_language:
+    description: "How risk, uncertainty, and downside are described"
+    levels:
+      L1:
+        rules:
+          - Name risks plainly including worst case
+          - Quantify where possible
+          - No softening of downside scenarios
+        positive_example: "There is a real chance this fails. If it does, the impact is X."
+        negative_example: "There are some considerations that may warrant attention."
+      L2:
+        rules:
+          - Name the risk clearly
+          - Include likelihood indicator (low / medium / high)
+          - One mitigation per named risk
+        positive_example: "The main risk here is X (medium likelihood). The mitigation would be Y."
+        negative_example: "This is fine — risks are minimal."
+      L3:
+        rules:
+          - Risk named with context
+          - Likelihood and severity indicated
+          - Mitigation required
+          - Framing is factual not alarming
+        positive_example: "There is execution risk associated with the timeline (high severity,
+          medium likelihood). We would mitigate by Z."
+        negative_example: "There's a chance something could go wrong."
+      L4:
+        rules:
+          - Risk framed as "considerations" or "factors to manage"
+          - Avoid catastrophe language
+          - Always pair risk with mitigation or owner
+          - Escalation path stated for high severity risks
+        positive_example: "Key considerations for this phase include X. These are being actively
+          managed through Y, with Z as the escalation path if needed."
+        negative_example: "This could easily fail if we're not careful."
+      L5:
+        rules:
+          - Risk described in governance-appropriate language
+          - Quantified where possible
+          - Board or committee language for high severity
+          - No speculative scenarios without data
+        positive_example: "The risk register identifies X as a Category 2 risk. Current controls
+          are assessed as adequate. A formal review is scheduled for Q3."
+        negative_example: "This is risky and we should be worried about it."
+
+  personal_disclosure:
+    description: "Degree to which personal context, opinions, or identity is present in output"
+    levels:
+      L1:
+        rules:
+          - Personal opinions and experience actively included
+          - First-person voice throughout
+          - Personal context used to establish credibility
+        positive_example: "In my experience running teams through this kind of transition,
+          the thing that consistently matters most is X."
+        negative_example: "The organisation's view is that X is important."
+      L2:
+        rules:
+          - Personal perspective acknowledged where relevant
+          - Balance between personal voice and professional frame
+        positive_example: "My view, informed by work on similar challenges, is that X."
+        negative_example: "It has been observed by relevant parties that X."
+      L3:
+        rules:
+          - Personal perspective present but secondary
+          - Professional framing leads; personal view supports
+        positive_example: "The data points to X. That aligns with what I've seen in practice."
+        negative_example: "I personally feel very strongly that this is the right approach."
+      L4:
+        rules:
+          - Personal opinion absent or minimal
+          - Org voice leads throughout
+          - First person only for process ("I will send..."), not opinion
+        positive_example: "Our analysis indicates X. We recommend Y."
+        negative_example: "I think we should do X because in my experience that works better."
+      L5:
+        rules:
+          - No personal opinion or experience referenced
+          - Org or role identity only
+          - Completely collective voice
+        positive_example: "The organisation's position is X. This is consistent with our
+          stated policy on Y."
+        negative_example: "I personally believe this is the right path."
+
+  collective_framing:
+    description: "Balance between individual and collective voice (I vs we)"
+    levels:
+      L1:
+        rules:
+          - First person singular throughout
+          - Own the view explicitly
+        positive_example: "I recommend X. I will own the outcome."
+        negative_example: "We feel that collectively it would be advisable to consider X."
+      L2:
+        rules:
+          - First person primary; "we" for shared decisions or team actions
+        positive_example: "I'd recommend X. We'll need the team to execute Y."
+        negative_example: "The team collectively agrees that X is the preferred path."
+      L3:
+        rules:
+          - Mix of I and we depending on ownership
+          - Clear about who is speaking vs who has decided collectively
+        positive_example: "My recommendation is X. We agreed in the last session that Y."
+        negative_example: "It is felt by all involved that X would be the best approach."
+      L4:
+        rules:
+          - Collective voice leads; individual voice only for personal accountability
+          - "We" for recommendations, positions, and plans
+        positive_example: "We recommend X. Our rationale is Y."
+        negative_example: "I think X and I'm recommending we do it."
+      L5:
+        rules:
+          - Collective voice throughout
+          - Organisation as subject, not individuals
+          - No personal attribution
+        positive_example: "The organisation has determined that X represents the preferred
+          approach going forward."
+        negative_example: "I've decided we should do X."

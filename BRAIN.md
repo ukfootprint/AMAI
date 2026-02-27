@@ -112,6 +112,22 @@ AMAI/
 
 ---
 
+## Org Overlay
+
+If this session involves organisational context, read org/MODULE.md before
+proceeding. Check org/org_index.yaml to identify which overlay applies.
+Do not activate any overlay without explicit user confirmation.
+Follow the session state machine in the relevant overlay's SESSION_STATES.md
+for all transitions, including mid-session context changes.
+
+If running in a browser session with org context, ask the user whether they
+have run scripts/amai_export.sh to generate a current browser-safe bundle.
+If they have not, note that the session will proceed with whatever files are
+currently loaded, which may not reflect the correct disclosure rules for
+the active context.
+
+---
+
 ## Module Loading Rules
 
 | Task Type | Load These Files |

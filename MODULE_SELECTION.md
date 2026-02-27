@@ -40,6 +40,11 @@ Once the task type is clear, load the additional modules below. Load only what i
 | **Product or feature thinking** | `goals/north_star.md`, `knowledge/frameworks.md` |
 | **End-of-session signal capture** *(advanced)* | `signals/MODULE.md`, `signals/observations.jsonl` |
 | **Calibration review** *(advanced)* | `calibration/MODULE.md`, `calibration/pending_review.md`, `calibration/metrics.yaml`, `signals/observations.jsonl` |
+| **org: internal communication** | `org/MODULE.md` + org overlay (internal) + `identity/voice.md` + `identity/heuristics.yaml` |
+| **org: client-facing deliverable** | `org/MODULE.md` + org overlay (client_facing) — personal Tier 1/2 excluded |
+| **org: thought leadership** | `org/MODULE.md` + org overlay (thought_leadership) + `identity/voice.md` |
+| **org: executive communication** | `org/MODULE.md` + org overlay (executive_comms) + `goals/current_focus.yaml` |
+| **org: context switch mid-session** | Follow `SESSION_STATES.md` transition rules — flag before reloading |
 
 ---
 
@@ -73,6 +78,8 @@ These modules must **never** be loaded in the contexts below, regardless of appa
 5. **Do not reload mid-session** unless the task materially changes. If scope shifts significantly, note it and ask whether to load additional modules.
 
 6. **Staleness check.** Before loading any YAML module, check its `last_updated` field. If `last_updated` is null or more than 60 days ago, flag it: *"[filename] was last updated [date / never]. This context may be outdated — do you want to proceed with it or update it first?"* Then load as instructed.
+
+7. **For org-context sessions:** always confirm which org and context type before loading any overlay. Never activate an overlay speculatively. Follow the state machine in `org/overlays/<org_id>/SESSION_STATES.md` for all transitions. Run `scripts/amai_export.sh` to generate a browser-safe bundle before any browser-based org session.
 
 ---
 

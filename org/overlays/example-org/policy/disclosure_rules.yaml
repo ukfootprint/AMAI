@@ -1,0 +1,78 @@
+# org/overlays/[org-id]/policy/disclosure_rules.yaml
+# schema_version: "1.0"
+# last_updated: YYYY-MM-DD
+#
+# Defines which data classes are permitted in which session contexts,
+# and what mandatory redactions apply.
+
+schema_version: "1.0"
+last_updated: "YYYY-MM-DD"
+
+# allowed_classes_by_context: what data classes the AI may reference
+# when a given context type is active
+allowed_classes_by_context:
+
+  internal:
+    allowed:
+      - PUBLIC
+      - INTERNAL
+      - PERSONAL_TIER2    # personal goals and decisions can inform internal work
+    prohibited:
+      - CLIENT_CONFIDENTIAL
+      - PERSONAL_TIER1
+      - CONFIDENTIAL      # confidential org data requires explicit unlock
+
+  client_facing:
+    allowed:
+      - PUBLIC
+      - CLIENT_CONFIDENTIAL   # only data about the specific client in session
+    prohibited:
+      - INTERNAL
+      - CONFIDENTIAL
+      - PERSONAL_TIER1
+      - PERSONAL_TIER2
+
+  thought_leadership:
+    allowed:
+      - PUBLIC
+      - PERSONAL_TIER2    # personal perspective is the point; goals can inform
+    prohibited:
+      - INTERNAL
+      - CONFIDENTIAL
+      - CLIENT_CONFIDENTIAL
+      - PERSONAL_TIER1
+
+  executive_comms:
+    allowed:
+      - PUBLIC
+      - INTERNAL
+      - CONFIDENTIAL      # exec comms may reference confidential org data
+    prohibited:
+      - CLIENT_CONFIDENTIAL   # unless client is explicit subject of communication
+      - PERSONAL_TIER1
+      - PERSONAL_TIER2
+
+# mandatory_redactions: patterns that must always be applied
+# when output will leave an internal context
+mandatory_redactions:
+
+  names_to_roles:
+    applies_in_contexts: [client_facing, thought_leadership]
+    rule: "Replace individual names with role titles unless the person has given
+      explicit consent to be named. E.g. 'our lead engineer' not 'James Smith'."
+
+  exact_financials_to_ranges:
+    applies_in_contexts: [client_facing, thought_leadership]
+    rule: "Replace exact financial figures with ranges or relative references
+      unless figures are already public. E.g. 'significant investment' not '£2.3M'."
+
+  third_party_assessments:
+    applies_in_contexts: [client_facing, thought_leadership, executive_comms]
+    rule: "Never include assessments of named individuals who have not consented.
+      Remove or paraphrase to role level."
+
+# never_include: absolute prohibitions regardless of context
+never_include:
+  - Content from network/contacts.jsonl assessments in any org output
+  - Content from memory/failures.jsonl in any org output
+  - Anything that would identify a client to another client

@@ -28,6 +28,12 @@ evaluation/results/no_amai_baseline.md
 evaluation/results/with_amai_*.md
 evaluation/results/scores_*.md
 
+# Org export bundles — never commit
+EXPORT/
+
+# Org tension logs contain personal data — exclude from public repos by default
+org/overlays/*/tension_log.jsonl
+
 # ─────────────────────────────────────────────
 # OS & Editor files
 # ─────────────────────────────────────────────

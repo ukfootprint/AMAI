@@ -1,0 +1,15 @@
+# tension_log.jsonl
+# Append-only log of moments where personal and org contexts pulled in
+# different directions. Feeds into monthly calibration review.
+# Do not edit or delete existing entries.
+#
+# Schema per line:
+# {
+#   "date": "YYYY-MM-DD",
+#   "session_type": "internal|client_facing|thought_leadership|executive_comms",
+#   "context": "[description of the task]",
+#   "tension_type": "values_conflict|voice_suppression|risk_framing|disclosure_pressure|other",
+#   "description": "[what pulled in different directions and what you did]",
+#   "severity": "low|medium|high",
+#   "resolved": "suppressed_personal|suppressed_org|compromise|escalated|deferred"
+# }

@@ -1,0 +1,33 @@
+# org/org_index.yaml
+# schema_version: "1.0"
+# last_updated: YYYY-MM-DD
+#
+# Lists all organisations for which overlays exist in this AMAI instance.
+# Add one entry per organisation. For most people this will be one entry.
+# For consultants or portfolio workers, add one entry per client or employer.
+
+schema_version: "1.0"
+last_updated: "YYYY-MM-DD"
+
+orgs:
+
+  - org_id: "example-org"           # short identifier, no spaces — replace with e.g. "acme-corp"
+    display_name: "[Organisation Name]"
+    default_overlay_mode: SUGGEST   # OFF | SUGGEST | ON
+                                    # OFF: never activate automatically
+                                    # SUGGEST: detect context and ask
+                                    # ON: activate whenever org tasks are detected
+    allowed_contexts:               # valid context types for this org
+      - internal
+      - client_facing
+      - thought_leadership
+      - executive_comms
+    sensitivity_profile: standard   # standard | elevated | restricted
+                                    # elevated: require explicit confirmation
+                                    #   before loading any Tier 2+ data
+                                    # restricted: never load Tier 1 or 2 data
+                                    #   in any org session
+    overlay_path: "org/overlays/example-org"
+    last_updated: "YYYY-MM-DD"
+
+# To add a second organisation, duplicate the block above with a new org_id.

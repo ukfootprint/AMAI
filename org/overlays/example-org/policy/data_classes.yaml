@@ -1,0 +1,60 @@
+# org/overlays/[org-id]/policy/data_classes.yaml
+# schema_version: "1.0"
+# last_updated: YYYY-MM-DD
+#
+# Defines data classification levels and maps them to AMAI's existing
+# personal sensitivity tiers (from SECURITY.md).
+# Used by disclosure_rules.yaml to determine what can appear in which context.
+
+schema_version: "1.0"
+last_updated: "YYYY-MM-DD"
+
+# Org data classes
+classes:
+
+  PUBLIC:
+    description: "Information approved for external publication"
+    maps_to_personal_tier: 3
+    examples:
+      - Org website copy
+      - Published case studies
+      - Public-facing bios
+
+  INTERNAL:
+    description: "Information for internal use only; not for external distribution"
+    maps_to_personal_tier: 2
+    examples:
+      - Team updates
+      - Internal strategy documents
+      - Process documentation
+
+  CONFIDENTIAL:
+    description: "Restricted to specific roles or teams; not general internal circulation"
+    maps_to_personal_tier: 2
+    examples:
+      - Financial performance data
+      - Personnel matters
+      - Unreleased product plans
+
+  CLIENT_CONFIDENTIAL:
+    description: "Information provided by or about a client under implied or explicit NDA"
+    maps_to_personal_tier: 1
+    examples:
+      - Client financials
+      - Client internal processes shared in delivery context
+      - Anything a client would not expect to see in our internal documents
+
+  PERSONAL_TIER1:
+    description: "Highest sensitivity personal data (maps directly from SECURITY.md Tier 1)"
+    maps_to_personal_tier: 1
+    examples:
+      - identity/values.yaml red lines
+      - memory/failures.jsonl
+      - network/contacts.jsonl
+
+  PERSONAL_TIER2:
+    description: "Moderate sensitivity personal data (maps from SECURITY.md Tier 2)"
+    maps_to_personal_tier: 2
+    examples:
+      - memory/decisions.jsonl
+      - goals/goals.yaml

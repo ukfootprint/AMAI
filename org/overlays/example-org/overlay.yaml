@@ -1,0 +1,92 @@
+# org/overlays/[org-id]/overlay.yaml
+# schema_version: "1.0"
+# last_updated: YYYY-MM-DD
+
+schema_version: "1.0"
+last_updated: "YYYY-MM-DD"
+org_id: "[org-id]"
+display_name: "[Organisation Name]"
+
+# overlay_scope: what dimensions this overlay is permitted to influence
+overlay_scope:
+  - comms_style
+  - risk_language
+  - decision_framing
+  - personal_disclosure_level
+  - collective_vs_individual_framing
+
+# requires_explicit_activation: if true, assistant must always ask before
+# activating this overlay. Recommended: true.
+requires_explicit_activation: true
+
+# session_disclosure_banner: exact text the assistant outputs at session start
+# when this overlay is active. Customise the bracketed fields.
+session_disclosure_banner: |
+  Overlay active: [Organisation Name]
+  Context: {context_type}
+  Loaded: {loaded_modules}
+  Data policy: {allowed_classes}
+  Personal Tier 1 data: NOT loaded in this session.
+  Type "personal mode" at any time to deactivate this overlay.
+
+# prohibited_modules: modules that must never load when this overlay is active,
+# regardless of task type. These extend (do not replace) the global don't-load list.
+prohibited_modules:
+  - memory/failures.jsonl
+  - network/contacts.jsonl
+  - network/interactions.jsonl
+  - signals/observations.jsonl   # personal signal data stays personal
+
+# context_type_defaults: which behaviour band levels apply by default
+# per context type. Band levels are defined in behaviour_bands.yaml.
+# Each value references a level (L1-L5) in the corresponding band.
+context_type_defaults:
+  internal:
+    formality: L2
+    directness: L3
+    risk_language: L2
+    personal_disclosure: L3
+    collective_framing: L2
+
+  client_facing:
+    formality: L4
+    directness: L3
+    risk_language: L4
+    personal_disclosure: L1
+    collective_framing: L4
+
+  thought_leadership:
+    formality: L2
+    directness: L4
+    risk_language: L2
+    personal_disclosure: L3
+    collective_framing: L2
+
+  executive_comms:
+    formality: L4
+    directness: L4
+    risk_language: L3
+    personal_disclosure: L1
+    collective_framing: L3
+
+# precedence: defines how conflicts between personal and org constraints resolve.
+# Do not change the order — it is normative, not customisable.
+precedence:
+  1: law_and_safety           # cannot be overridden by anything
+  2: personal_ethical_redlines  # from identity/values.yaml
+  3: org_compliance_policies    # from policy/data_classes.yaml and disclosure_rules.yaml
+  4: org_decision_authority     # org-level approvals and escalation rules
+  5: personal_heuristics        # from identity/heuristics.yaml
+  6: org_comms_style            # from behaviour_bands.yaml
+  7: personal_voice             # from identity/voice.md
+  8: task_instructions          # user instructions for this session
+
+# conflict_protocol: what the assistant must output when a precedence conflict
+# is detected between two layers.
+conflict_protocol: |
+  When a conflict between layers is detected, output:
+  1. CONFLICT: [state what conflicts with what]
+  2. PRECEDENCE: [state which layer wins and why, citing the precedence stack]
+  3. OPTIONS: [offer 1-2 alternatives that satisfy both layers if possible]
+  4. ACTION: [state what you will do next]
+  Do not proceed silently. Do not resolve conflicts by ignoring a layer.
