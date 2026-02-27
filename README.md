@@ -201,6 +201,10 @@ Add to `network/` as you log relationships. Add to `memory/` as you make signifi
 
 Once the core modules feel natural, add `signals/` and `calibration/` to close the feedback loop between how you intend to behave and how you actually behave. See the Advanced Layer section below.
 
+**If your work involves an organisation — add the Org Layer**
+
+If you work within an organisation — as an employee, consultant, or portfolio worker — add `org/` to separate your personal identity from how you show up in an institutional context. See the Org Layer section below.
+
 ---
 
 ## File format design
@@ -218,6 +222,10 @@ Once the core modules feel natural, add `signals/` and `calibration/` to close t
 ```
 AMAI/
 ├── BRAIN.md                        ← Master onboarding document. Start here.
+├── MODULE_SELECTION.md             ← Which modules to load for which tasks
+├── HOW_THIS_WORKS.md               ← Honest account of what the system enforces
+├── SYNC_STRATEGY.md                ← Browser session staleness management
+├── SECURITY.md                     ← Sensitivity tiering, encryption, safe export
 │
 ├── identity/                       ← Who you are and what you stand for
 │   ├── values.yaml                 ← Core values with priorities and ethical red lines
@@ -250,10 +258,43 @@ AMAI/
 │   ├── tools.md                    ← Tool stack
 │   └── rituals.md                  ← Weekly, monthly, and quarterly rhythms
 │
-└── memory/                         ← What you have lived and learned
-    ├── experiences.jsonl           ← Key moments and their weight
-    ├── decisions.jsonl             ← Important decisions and reasoning
-    └── failures.jsonl              ← Failures and what they taught you
+├── memory/                         ← What you have lived and learned
+│   ├── experiences.jsonl           ← Key moments and their weight
+│   ├── decisions.jsonl             ← Important decisions and reasoning
+│   └── failures.jsonl              ← Failures and what they taught you
+│
+│   ── ADVANCED LAYER ─────────────────────────────────────────────────────────
+│   Add these once your core modules are working. See sections below.
+│
+├── signals/                        ← Raw observations from AI sessions
+│   └── observations.jsonl          ← Append-only log of overrides, friction, patterns
+│
+├── calibration/                    ← Where declared self meets observed self
+│   ├── protocol.md                 ← Divergence taxonomy and incorporation rules
+│   ├── metrics.yaml                ← Quantitative tracking across sessions
+│   ├── divergence.jsonl            ← Append-only log of detected divergences
+│   └── pending_review.md           ← Items awaiting deliberate human review
+│
+│   ── ORG LAYER ──────────────────────────────────────────────────────────────
+│   Add this if your work involves an organisational context. See section below.
+│
+├── org/                            ← Organisation overlay
+│   ├── MODULE.md                   ← When and how to load the org layer
+│   ├── org_index.yaml              ← Registry of overlays in this instance
+│   └── overlays/
+│       └── <org-id>/               ← One folder per organisation
+│           ├── overlay.yaml        ← Precedence, conflict protocol, session banner
+│           ├── behaviour_bands.yaml← 5 dimensions × 5 levels with rules and examples
+│           ├── SESSION_STATES.md   ← S0–S4 state machine for overlay transitions
+│           ├── tension_log.jsonl   ← Append-only personal/org friction log
+│           └── policy/
+│               ├── data_classes.yaml      ← Org data classification
+│               └── disclosure_rules.yaml  ← Allowed classes by context
+│
+└── scripts/                        ← Validation and export tooling
+    ├── validate.sh                 ← Schema and date integrity checks
+    ├── amai_lint.sh                ← Org overlay completeness validation
+    └── amai_export.sh              ← Browser-safe bundle generator
 ```
 
 ---
@@ -271,6 +312,8 @@ AMAI/
 **Values-first AI** — `BRAIN.md` contains standing instructions across all sessions. `identity/values.yaml` defines ethical red lines. `identity/heuristics.yaml` gives AI fast, domain-specific rules before recommending anything.
 
 **Model agnostic** — AMAI works with any AI assistant. The system is plain files and plain instructions. No platform dependency, no API keys, no configuration beyond filling in your own context.
+
+**Identity is the substrate, org is the overlay** — The org layer modifies how your identity is expressed in an institutional context; it does not replace it. Your personal ethical red lines sit above all org constraints in the precedence stack. Tension between personal and org context is logged and reviewed, not suppressed.
 
 ---
 
@@ -302,6 +345,32 @@ If REJECT: behaviour corrected, config unchanged
 ```
 
 **The governing principle:** Observed behaviour never auto-updates declared values. You always decide.
+
+---
+
+## Org Layer — Organisation Overlay
+
+*Add this if your work involves an organisational context. Estimated setup: 30 minutes.*
+
+The org layer separates two contexts that often collide: who you are as a person (declared in `identity/`) and how you need to show up within a specific institution. It does not change your identity — it modifies how certain dimensions of it are expressed depending on the organisational context you're working in.
+
+**`org/overlays/<org-id>/overlay.yaml`** defines the precedence stack when personal and org values conflict (8 levels from law to task instructions), the conflict protocol the AI must output visibly, and the session disclosure banner.
+
+**`behaviour_bands.yaml`** replaces abstract tone settings with five concrete dimensions — formality, directness, risk language, personal disclosure, collective framing — each with five levels that have explicit rules and examples. The AI can verify it's applying the right level; so can you.
+
+**`SESSION_STATES.md`** is a S0–S4 state machine. Every overlay transition requires your explicit confirmation. The AI never activates an overlay speculatively, never silently changes context type, and never resolves a precedence conflict without showing its work.
+
+**`policy/`** maps org data classes to AMAI's personal sensitivity tiers and defines what can appear in each context type — internal, client-facing, thought leadership, executive comms.
+
+**`tension_log.jsonl`** is an append-only log of moments where personal and org context pulled in different directions. It feeds into monthly calibration. Structural tension — recurring high-severity conflicts between your personal values and your org context — is flagged rather than resolved by config changes.
+
+To set up the org layer:
+
+1. Duplicate `org/overlays/example-org/` and rename it to your org slug (e.g. `acme-corp`)
+2. Update `org/org_index.yaml` with your org_id and display name
+3. Customise `overlay.yaml` context defaults and `behaviour_bands.yaml` examples for your org's culture
+4. Run `bash scripts/amai_lint.sh <org-id>` to validate
+5. For browser sessions with org context, run `bash scripts/amai_export.sh --org=<org-id> --context=<context_type>` to generate a safe upload bundle
 
 ---
 
