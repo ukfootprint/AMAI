@@ -1,0 +1,9 @@
+{
+  "name": "amai",
+  "version": "0.1.0",
+  "description": "Automatic context loading, module selection, org overlay management, signal capture, and identity application for AMAI",
+  "author": {
+    "name": "Simon"
+  },
+  "hooks": "./hooks/hooks.json"
+}

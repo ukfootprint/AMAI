@@ -8,6 +8,16 @@ No database. No app. No API keys. No platform lock-in. Plain files that both hum
 
 ---
 
+## Native plugin for Claude Cowork
+
+> **The best AMAI experience is zero-ceremony.** The `amai.plugin` for [Claude Cowork](https://claude.ai/download) eliminates the manual session-start prompt entirely.
+
+Install `amai.plugin` with your AMAI folder as the Cowork workspace and every session starts already loaded — values, heuristics, current focus, and the full module trigger table injected automatically. Commands like `/amai:status`, `/amai:calibrate`, and `/amai:capture` are available from the first message. Signal-worthy moments are detected and offered for logging at session end without you having to remember.
+
+The plugin is included in this repository alongside your AMAI files. See [PLUGIN.md](PLUGIN.md) for full details, and [Getting Started](#getting-started) for installation instructions.
+
+---
+
 ## How it works
 
 Every session starts with one instruction:
@@ -15,6 +25,8 @@ Every session starts with one instruction:
 > *"Read my BRAIN.md and load the relevant modules for this task."*
 
 The AI reads `BRAIN.md`, loads only the modules relevant to the task, and operates within your values, voice, and context.
+
+With the Claude Cowork plugin installed, this instruction is issued automatically by the `SessionStart` hook — you don't type it.
 
 ---
 
@@ -34,12 +46,27 @@ AMAI works with any AI model. What you can rely on — and what requires your di
 
 AMAI is designed for AI environments that can read files directly from your local system:
 
-- **AI desktop apps** (e.g. Claude desktop with Cowork, local AI tools)
+- **Claude Cowork** (recommended — native plugin support)
 - **AI code assistants** (e.g. Claude Code, Cursor, Copilot with workspace access)
+- **Other AI desktop apps** with local file access
 
 **What AMAI can guarantee here:** The instruction *"Read my BRAIN.md"* works literally. The AI reads the file from disk, loads modules on demand, and sees the current version of every file. The full system works as designed.
 
 **What you still need to do:** Keep your files up to date. The AI reads what's there — if `current_focus.yaml` is three weeks old, the AI will work from three-week-old priorities.
+
+#### Claude Cowork + amai.plugin
+
+Using AMAI with Claude Cowork and the included plugin is the highest-fidelity experience available.
+
+| Without plugin | With plugin |
+|----------------|-------------|
+| Manual prompt every session: *"Read my BRAIN.md…"* | `SessionStart` hook loads defaults automatically |
+| User manages what modules to load | `context-loader` skill reads the trigger table and loads the right modules |
+| Signal capture requires remembering | `Stop` hook detects signal-worthy moments and offers to log them |
+| No slash commands | `/amai:status`, `/amai:calibrate`, `/amai:capture`, `/amai:validate`, `/amai:lint`, `/amai:export` |
+| Org overlays require manual activation | `org-overlay` skill handles S0/S1/S2 transitions with confirmation |
+
+**Setup:** Open Cowork, select your AMAI folder as the workspace, and install `amai.plugin`. That's it — the next session starts fully loaded.
 
 ---
 
@@ -164,6 +191,14 @@ Load additional module files when the task calls for them — network files for 
 
 ## Getting Started
 
+**Recommended path: Claude Cowork + plugin**
+
+If you're using Claude Cowork, install the plugin first — it makes every subsequent step better:
+
+1. Open Cowork and select your AMAI folder as the workspace
+2. Install `amai.plugin` (included in this repository)
+3. Your next session will auto-load your context — then fill in the files below and they're immediately live
+
 **Step 1 — Fill in your identity (30 minutes)**
 
 Start with the `identity/` module. This is the foundation everything else draws from.
@@ -226,6 +261,25 @@ AMAI/
 ├── HOW_THIS_WORKS.md               ← Honest account of what the system enforces
 ├── SYNC_STRATEGY.md                ← Browser session staleness management
 ├── SECURITY.md                     ← Sensitivity tiering, encryption, safe export
+├── PLUGIN.md                       ← Claude Cowork plugin documentation
+├── amai.plugin                     ← Installable plugin for Claude Cowork
+│
+│   ── COWORK PLUGIN ──────────────────────────────────────────────────────────
+│
+├── .claude-plugin/
+│   └── plugin.json                 ← Plugin manifest
+├── hooks/
+│   └── hooks.json                  ← SessionStart (auto-load) + Stop (signal capture)
+├── commands/                       ← Slash commands: /amai:status, :calibrate,
+│   │                                 :validate, :lint, :export, :capture
+│   └── *.md
+├── skills/                         ← On-demand intelligence layer
+│   ├── context-loader/             ← Trigger table → auto-load right modules
+│   ├── org-overlay/                ← Session states, behaviour bands, tension log
+│   ├── signal-capture/             ← Guided JSONL observation logging
+│   └── identity-voice/             ← Active voice + values + heuristics application
+│
+│   ── AMAI DATA ─────────────────────────────────────────────────────────────
 │
 ├── identity/                       ← Who you are and what you stand for
 │   ├── values.yaml                 ← Core values with priorities and ethical red lines

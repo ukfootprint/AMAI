@@ -1,0 +1,26 @@
+{
+  "SessionStart": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "printf '\\n=== AMAI CONTEXT LOADED ===\\n\\n--- BRAIN.md ---\\n' && cat \"${CLAUDE_PLUGIN_ROOT}/BRAIN.md\" && printf '\\n--- identity/values.yaml ---\\n' && cat \"${CLAUDE_PLUGIN_ROOT}/identity/values.yaml\" && printf '\\n--- identity/heuristics.yaml ---\\n' && cat \"${CLAUDE_PLUGIN_ROOT}/identity/heuristics.yaml\" && printf '\\n--- goals/current_focus.yaml ---\\n' && cat \"${CLAUDE_PLUGIN_ROOT}/goals/current_focus.yaml\" && printf '\\n--- MODULE_SELECTION.md (trigger table for on-demand loading) ---\\n' && cat \"${CLAUDE_PLUGIN_ROOT}/MODULE_SELECTION.md\" && printf '\\n=== END AMAI CONTEXT ===\\n'",
+          "timeout": 10
+        }
+      ]
+    }
+  ],
+  "Stop": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "prompt",
+          "prompt": "Inspect the single most recent exchange (the user's last message and your response only). Was this specific exchange about: (1) a significant strategic or personal decision, (2) a non-obvious insight or learning, or (3) a meaningful real-world interaction with another person? If YES to any of these, append exactly one line: '💡 Signal-worthy? Use `/amai:capture` to log this to observations.' If NO, output absolutely nothing — no commentary, no silence confirmation, nothing.",
+          "timeout": 30
+        }
+      ]
+    }
+  ]
+}
