@@ -242,110 +242,288 @@ After completing the conversation:
 ## Stage 2 — Foundation (~30 minutes)
 
 **Goal:** Populate `identity/voice.md`, `goals/north_star.md`, `goals/goals.yaml`,
-`knowledge/frameworks.md`, `knowledge/domain_landscape.md`.
+`knowledge/frameworks.md`, `knowledge/domain_landscape.md` through structured
+conversation.
 
 Read `schemas/goals.schema.json` before writing `goals/goals.yaml`.
+
+**Files to check before starting:** Read `identity/voice.md`, `goals/north_star.md`,
+`goals/goals.yaml`, `knowledge/frameworks.md`, and `knowledge/domain_landscape.md`.
+If any contain non-placeholder data (no `[Replace`, `[Fill`, `[Add` markers), say:
+"It looks like [file] already has some content. Want to replace it, or add to it?"
+Wait for confirmation before overwriting.
 
 ---
 
 ### Voice (~10 minutes)
 
-> "Let's capture how you communicate. I'll ask you a few questions about your writing
-> and speaking style, then write it up."
+Open with:
 
-Ask:
-- Formality level (very formal, professional, conversational, casual)
-- Sentence length preference (concise and punchy, or detailed and explanatory)
-- Use of jargon — do they embrace domain language or translate for non-experts?
-- How they handle uncertainty in writing (hedge with qualifiers, or state clearly
-  with acknowledged uncertainty)
-- Tone: direct vs diplomatic, use of humour, how they push back on disagreement
-- Ask for a writing sample or description of a recent important email or message
+> "Now let's capture how you communicate. This isn't about grammar rules — I want
+> to understand your natural tone, the way you phrase things, what makes writing
+> sound like you vs. generic."
 
-Write `identity/voice.md` as a narrative document (not YAML). Structure:
+Draw out the following dimensions through natural conversation — **do not turn this
+into a form or checklist**. Let the answers flow and probe for specifics:
 
+1. **Formality range** — "How does your writing change depending on who you're
+   writing to — say, a client versus a colleague versus a friend?"
+
+2. **Sentence length tendency** — "Do you tend to write in short, punchy sentences,
+   or longer flowing ones? What feels more natural to you when you're not editing
+   yourself?"
+
+3. **Jargon comfort** — "In your field, do you use insider vocabulary freely, or do
+   you prefer to translate everything into plain terms? Does it depend on the
+   audience?"
+
+4. **Expressing uncertainty** — "When you're not sure of something in writing, how
+   do you typically flag that? Like 'I think', 'possibly', 'my read is', 'the data
+   suggests' — what's your instinct?"
+
+5. **Openings** — "How do you tend to start messages, emails, or documents? Do you
+   get straight to the point, or set context first?"
+
+6. **Closings and sign-offs** — "How do you close out a piece of writing? Do you
+   typically end with a call to action, a summary, something warmer?"
+
+7. **Delivering bad news or pushing back** — "When you have to tell someone
+   something they won't want to hear — a missed deadline, a changed position — what
+   does that look like in writing?"
+
+8. **Use of humour** — "Is humour ever part of your written voice? If so, how would
+   you describe it — dry, self-deprecating, situational, rare?"
+
+**Derive from answers:** Write a narrative `identity/voice.md` that captures these
+dimensions with concrete examples drawn from the conversation. This is **not** a
+bullet list — it should read as a document an AI can use to produce writing that
+sounds like the user. Use the user's own phrases and examples where possible.
+
+**Quality check:** After drafting (but before confirming), read back 2 short
+sentences written in the captured voice and ask:
+
+> "Does this sound like you — or is it off? Too formal, too casual, or about right?"
+
+Adjust based on the answer before writing the file.
+
+**Document structure:**
 ```
 # Voice & Communication Style
 
 ## Formality
-[Paragraph on default register and how it shifts by context]
+[Narrative paragraph — default register, how it shifts by audience, with examples]
 
 ## Structure and Length
-[How they organise writing and default length]
+[How they organise writing, sentence length tendency, approach to brevity vs detail]
 
 ## Domain Language
-[Jargon usage philosophy]
+[Philosophy on jargon — when to use insider vocabulary vs. translate for outsiders]
 
 ## Tone
-[Directness, humour, handling uncertainty, conflict]
+[Directness, how they handle uncertainty, approach to conflict and bad news,
+use of humour if any — with characteristic phrases where possible]
 
-## Sample register
-[1–2 short examples of characteristic phrases or a paraphrased writing sample]
+## Signature Patterns
+[2–3 habits that make their writing distinctly theirs — openings, closings,
+framing moves — described so an AI can replicate them]
+
+## Voice Test
+[A personalised version: "Would I say this to [a specific person they named]?"]
 ```
 
 ---
 
 ### North Star (~5 minutes)
 
+Open with:
+
 > "Where are you heading in the next 3–10 years? Not a business plan — more like,
-> what does success look like if everything goes well?"
+> what does life and work look like if things go well?"
 
-Write `goals/north_star.md` with standard sections:
+Draw out **four distinct sections** through the conversation:
 
+1. **The Vision** — "Paint the picture: if things go well over the next decade, what
+   have you built, what have you changed, what are you known for?" Aim for 2–3
+   paragraphs. If the first answer is vague, probe: "What specifically would be true
+   that isn't true now?"
+
+2. **What Success Looks Like** — "Give me 3–5 observable markers — concrete states
+   of the world that would tell you you've succeeded. Not metrics, but things you'd
+   recognise. Try starting each one: 'I'd know I've succeeded when...'"
+
+3. **What This Is Not** — "What are you explicitly not trying to build or become?
+   Naming the non-goals is as useful as the goals — it stops scope creep and
+   misaligned advice. Try: 'I'm not trying to...'"
+
+4. **The 3-Year Waypoint** — "If the full vision is the 10-year destination, where
+   do you need to be in 3 years for it to still be reachable? What's the nearest
+   milestone that proves the direction is right?"
+
+**Write** `goals/north_star.md` with all four sections plus a `Last updated:` footer.
+
+**Document structure:**
 ```markdown
 # North Star
 
 ## The Vision
-[3–5 sentences on the long-horizon outcome]
+[2–3 paragraphs — specific enough to orient decisions, not so specific it becomes a plan]
 
 ## What Success Looks Like
-[3–5 specific, observable markers — not metrics, but recognisable states]
+- I'd know I've succeeded when [observable marker 1]
+- I'd know I've succeeded when [observable marker 2]
+[3–5 total]
 
 ## What This Is Not
-[2–3 explicit non-goals that clarify scope]
+- I'm not trying to [non-goal 1]
+- I'm not trying to [non-goal 2]
+[2–3 total]
 
 ## The 3-Year Waypoint
-[Where they need to be in 3 years for the longer vision to remain viable]
+[Bridge paragraph — where the user needs to be in 3 years for the vision to remain viable]
+
+---
+*Last updated: YYYY-MM-DD*
 ```
 
 ---
 
 ### Goals (~10 minutes)
 
-> "What are your active goals right now? Think OKR-style: what you're trying to
-> achieve and how you'll know you got there."
+Open with:
 
-Draw out 3–6 goals. For each: status, horizon (weeks/months/years), why this goal,
-and 2–4 key results (observable outcomes, not tasks).
+> "What are you actively working toward right now? Think outcomes, not activities.
+> What would you be measuring if you had a dashboard?"
 
-Write `goals/goals.yaml`:
+Draw out **3–6 goals**. For each goal, collect all fields before moving on:
+
+1. **Label** — "One line: what is this goal?"
+
+2. **Status** — "Is this active and in progress, or on hold?" (At initial setup,
+   use only `active` or `on_hold` — do not ask about completed or abandoned.)
+
+3. **Horizon** — "When do you expect meaningful progress by? A month, a quarter,
+   a year?"
+
+4. **Why** — "Why does this goal matter to you right now? What does achieving it
+   unlock — for you, your business, or the people you're trying to help?" Listen
+   for links back to values or the north star and make them explicit in the `why`
+   field.
+
+5. **Key results** — "How will you know it's working? Give me 1–3 measurable
+   outcomes — not tasks or activities, but observable results you could point at."
+
+6. **Constraints** (optional) — "Are there any guardrails on how this goal should
+   be pursued? Things that are off-limits even if they'd technically move the
+   needle?"
+
+**Cross-reference with current_focus.yaml:** After writing goals.yaml, if any goal
+maps to a priority already captured in `goals/current_focus.yaml` (from Stage 1),
+note the connection and offer:
+
+> "The goal IDs I've just written are: [list]. Your current_focus.yaml has
+> `goal_ref` fields — would you like me to update those to reference these IDs now?"
+
+**Write** `goals/goals.yaml` using the schema from `schemas/goals.schema.json`:
+
 ```yaml
 _schema: goals
 _version: "1.0"
 last_updated: YYYY-MM-DD
 goals:
-  - id: <snake_case>
-    label: <goal title>
-    status: active | on_hold | completed | abandoned
-    horizon: <timeframe>
-    why: <reason this goal matters>
+  - id: <snake_case — e.g. grow_consulting_revenue>
+    label: "<One-line goal description>"
+    status: active | on_hold
+    horizon: "<Timeframe — e.g. Q2 2026 or 12 months>"
+    why: >
+      <Why this goal matters. At least 20 words. State what it unlocks.>
     key_results:
-      - <observable outcome 1>
-      - <observable outcome 2>
+      - "<Observable outcome 1>"
+      - "<Observable outcome 2>"
+    constraints:
+      - "<Constraint if any — omit or use [] if none>"
+    notes: ""
 ```
 
 ---
 
 ### Knowledge (~5 minutes)
 
-> "What mental models do you rely on? Frameworks you use to think about problems?
-> And what's your domain — the landscape you operate in?"
+**Frameworks:**
 
-- Capture 3–5 frameworks in `knowledge/frameworks.md` (name, summary, when used)
-- Capture domain context in `knowledge/domain_landscape.md` (sector, competitive
-  landscape, key actors, current trends relevant to goals)
+Open with:
 
-Run `bash scripts/validate.sh --quiet` after all writes.
+> "What mental models or frameworks do you find yourself reaching for repeatedly?
+> The lenses you use to analyse situations — ones you've actually used recently,
+> not just ones you've read about."
+
+Capture **3–5 frameworks**. For each: what it is, when this person uses it, why it
+works for their context, and any limitations they've noticed or worked around. Write
+`knowledge/frameworks.md` as a narrative document — not a list of definitions. An
+AI reading it should understand when and how to apply these lenses in the user's
+specific work.
+
+**Domain landscape:**
+
+Open with:
+
+> "Paint me a picture of the landscape you operate in. Who are the players? What
+> are the forces? Where are the opportunities and threats?"
+
+Ask follow-up questions to get past surface description: "Who specifically do you
+watch closely — competitors, adjacent players?" "What's shifting in your market
+right now?" "What do you believe about this space that most people in it don't see
+yet?" "What could blow up your assumptions?"
+
+Write `knowledge/domain_landscape.md` as narrative — cover sector context,
+competitive dynamics, regulatory or structural forces, and technology or behavioural
+trends relevant to the user's goals.
+
+Both files should read as opinionated, first-person perspectives, not Wikipedia
+summaries. Use the user's language.
+
+---
+
+### Post-Write Steps
+
+After completing all five conversations:
+
+1. **Summarise in plain language** — NOT raw YAML or Markdown. Use this format:
+
+   > "Here's what I've captured:
+   >
+   > **Voice:** [2-sentence summary of the key voice characteristics]
+   > **North Star:** [one-line vision + 3-year waypoint in a phrase]
+   > **Goals ([N] active):** [comma-separated list of goal labels]
+   > **Frameworks ([N]):** [comma-separated list of framework names]
+   > **Domain:** [one-line characterisation of the sector description]
+   >
+   > Does this feel right, or should we adjust anything before I write the files?"
+
+2. **Wait for explicit confirmation** before writing any files.
+
+3. **Write all five files** using the Write tool:
+   - `identity/voice.md`
+   - `goals/north_star.md`
+   - `goals/goals.yaml`
+   - `knowledge/frameworks.md`
+   - `knowledge/domain_landscape.md`
+
+4. **Set `last_updated`** to today's date (YYYY-MM-DD) in `goals/goals.yaml`.
+   Add a `Last updated: YYYY-MM-DD` footer to the three Markdown files.
+
+5. **Run validation:**
+   ```bash
+   bash scripts/validate.sh --quiet
+   ```
+
+6. **Report results.** Only `goals/goals.yaml` is schema-validated; the Markdown
+   files are checked for presence. Surface WARNs plainly:
+
+   > "Validation flagged a few things: [list]. Want to sharpen these now, or
+   > leave them for the next review?"
+
+   If the user wants to address WARNs, make surgical edits to the specific fields —
+   do **not** re-run the full Stage 2 conversation.
 
 ---
 

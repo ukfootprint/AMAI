@@ -1,0 +1,411 @@
+# export/profiles.yaml
+# AMAI Export Profiles — single source of truth for platform-specific content packaging.
+#
+# Each profile defines:
+#   - Which files to include (in priority order — stop adding when budget is reached)
+#   - Which files are always excluded (security enforcement)
+#   - Character budgets (hard limits for the target platform's context window)
+#   - Output format and metadata behaviour
+#
+# Used by: scripts/amai_export.sh
+# Created:  2026-03-02
+# Part of:  AMAI Build Weeks 3–4, Session 7
+#
+# Priority tiers (lower number = higher priority):
+#   1 — Always included; values/identity core that must be present
+#   2 — Include if budget allows; important context modules
+#   3 — Include if budget allows; knowledge and longer-horizon context
+#   4 — Include if budget allows; operational detail
+#   5 — Include if budget allows; supplementary reference
+#
+# Character counting: len() of file contents (UTF-8 characters, not bytes).
+# Truncation: never mid-paragraph; always at section boundaries (## or --- for Markdown,
+#             top-level keys for YAML). See global.truncation_boundary below.
+
+global:
+  # Appended to a file that was cut short to fit within its per-file max_chars.
+  # {filename} is substituted by the export script.
+  truncation_marker: "\n\n[... TRUNCATED — see full file in AMAI repo ...]\n"
+
+  # Where truncation is allowed to cut. Never mid-line or mid-paragraph.
+  # "section" means: cut only at ## headers, --- dividers (Markdown),
+  # or top-level YAML key boundaries.
+  truncation_boundary: "section"
+
+  # Appended once per omitted file (budget-skipped or explicitly excluded).
+  # {filename} and {reason} are substituted by the export script.
+  omission_marker: "\n\n[OMITTED: {filename} — excluded by export profile ({reason})]\n"
+
+  # How stale a module can be before a warning appears in the export header.
+  staleness_thresholds:
+    current_focus_days: 14   # goals/current_focus.yaml — weekly rhythm; > 14 days = stale
+    general_module_days: 60  # all other modules — > 60 days without update = stale
+
+  # Fields written into the export metadata header.
+  metadata_fields:
+    - generated_on    # ISO 8601 timestamp of export run
+    - source_commit   # git rev-parse --short HEAD at time of export
+    - profile_name    # which profile generated this file
+    - amai_version    # extracted from STATUS line in BRAIN.md or CHANGELOG.md
+
+profiles:
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # PROFILE: claude_project
+  # Target:  Claude Projects — custom instructions field + project knowledge files
+  # Use:     Upload the generated .md file to a Claude Project's project knowledge.
+  #          Claude Projects allows ~100K chars across all project knowledge files;
+  #          this profile targets 90K to leave 10% headroom for future additions.
+  # ─────────────────────────────────────────────────────────────────────────────
+  - target: claude_project
+    description: "Claude Projects — custom instructions field + project knowledge files"
+    budget_chars: 90000  # Claude Projects ~100K limit; 10% headroom reserved
+    format: single_file_markdown  # All included files concatenated into one .md
+
+    include:
+      # Priority 1 — Core identity and immediate context. Always include.
+      - file: BRAIN.md
+        priority: 1
+        max_chars: 8000   # AI instructions section; truncate if needed but always present
+      - file: identity/values.yaml
+        priority: 1
+        max_chars: 5000   # Core values + red lines — ethical constraints for every session
+      - file: identity/heuristics.yaml
+        priority: 1
+        max_chars: 5000   # Fast decision rules — apply to everything
+      - file: goals/current_focus.yaml
+        priority: 1
+        max_chars: 3000   # This week's priorities — ensures outputs are directionally aligned
+
+      # Priority 2 — Important context; include before knowledge or narrative.
+      - file: MODULE_SELECTION.md
+        priority: 2
+        max_chars: 6000   # Trigger table — tells Claude which modules to load per task type
+      - file: identity/voice.md
+        priority: 2
+        max_chars: 4000   # Communication style; needed for any writing task
+      - file: goals/goals.yaml
+        priority: 2
+        max_chars: 5000   # Active strategic goals — context for prioritisation decisions
+
+      # Priority 3 — Knowledge and longer-horizon context.
+      - file: goals/north_star.md
+        priority: 3
+        max_chars: 4000   # 3–10 year vision; useful for strategic framing
+      - file: knowledge/frameworks.md
+        priority: 3
+        max_chars: 5000   # Mental models used for analysis
+      - file: knowledge/domain_landscape.md
+        priority: 3
+        max_chars: 5000   # Sector context, competitive dynamics, trends
+
+      # Priority 4 — Identity narrative and operational detail.
+      - file: identity/story.md
+        priority: 4
+        max_chars: 4000   # Background narrative; useful for positioning and comms tasks
+      - file: identity/principles.md
+        priority: 4
+        max_chars: 4000   # Reasoning behind decisions; useful for complex decisions
+      - file: operations/rituals.md
+        priority: 4
+        max_chars: 3000   # Regular rhythms; useful for review sessions
+
+      # Priority 5 — Supplementary reference; include only if budget remains.
+      - file: operations/workflows.md
+        priority: 5
+        max_chars: 3000   # How specific workflows are handled
+      - file: HOW_THIS_WORKS.md
+        priority: 5
+        max_chars: 3000   # AMAI orientation; useful if AI is unfamiliar with the system
+
+    exclude:
+      # Tier 1 — Never include. These files contain the most sensitive personal data.
+      - file: network/contacts.jsonl
+        reason: "Tier 1 — individual relationship records with personal assessments"
+      - file: network/interactions.jsonl
+        reason: "Tier 1 — candid interaction history; third-party privacy risk"
+      - file: memory/failures.jsonl
+        reason: "Tier 1 — candid failure records; professionally damaging if exposed"
+      - file: memory/experiences.jsonl
+        reason: "Tier 1 — personal experiences with emotional weight"
+      # Tier 2 — Sensitive; excluded from platform exports by default.
+      - file: network/organisations.jsonl
+        reason: "Tier 2 — organisation assessments; may contain confidential context"
+      - file: memory/decisions.jsonl
+        reason: "Tier 2 — decision reasoning; may reference confidential third-party context"
+      - file: signals/observations.jsonl
+        reason: "Tier 2 — raw session observations; candid and unresolved"
+      - file: calibration/divergence.jsonl
+        reason: "Tier 2 — classified divergences between declared and observed behaviour"
+      - file: calibration/pending_review.md
+        reason: "Tier 2 — unresolved calibration items"
+
+    staleness_header: true   # Prepend staleness warnings if any module is overdue
+    metadata: true           # Include generated_on, source_commit, profile_name, amai_version
+
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # PROFILE: chatgpt_project
+  # Target:  ChatGPT Projects — project instructions + uploaded files
+  # Use:     Upload the generated .md file to a ChatGPT Project's knowledge base.
+  #          ChatGPT project knowledge is more constrained than Claude's; this
+  #          profile targets 60K chars with tighter per-file limits throughout.
+  # ─────────────────────────────────────────────────────────────────────────────
+  - target: chatgpt_project
+    description: "ChatGPT Projects — project instructions + files"
+    budget_chars: 60000  # ChatGPT project knowledge is more constrained
+    format: single_file_markdown
+
+    include:
+      # Priority 1 — Core identity and immediate context. Always include.
+      - file: BRAIN.md
+        priority: 1
+        max_chars: 6000   # Tighter than claude_project; AI instructions only
+      - file: identity/values.yaml
+        priority: 1
+        max_chars: 4000   # Core values + red lines; reduced from claude_project
+      - file: identity/heuristics.yaml
+        priority: 1
+        max_chars: 4000   # Fast decision rules; reduced from claude_project
+      - file: goals/current_focus.yaml
+        priority: 1
+        max_chars: 2000   # This week's top priorities only
+
+      # Priority 2 — Important context; include before knowledge or narrative.
+      - file: MODULE_SELECTION.md
+        priority: 2
+        max_chars: 4000   # Trigger table; condensed for tighter budget
+      - file: identity/voice.md
+        priority: 2
+        max_chars: 3000   # Communication style
+      - file: goals/goals.yaml
+        priority: 2
+        max_chars: 3000   # Active goals; condensed
+
+      # Priority 3 — Knowledge and longer-horizon context.
+      - file: goals/north_star.md
+        priority: 3
+        max_chars: 3000   # Long-term vision
+      - file: knowledge/frameworks.md
+        priority: 3
+        max_chars: 3000   # Mental models; condensed
+      - file: knowledge/domain_landscape.md
+        priority: 3
+        max_chars: 3000   # Sector context; condensed
+
+      # Note: Priority 4–5 files are not included in this profile.
+      # The tighter budget means the export stops here in most cases.
+      # If budget allows (unlikely given the 60K limit), the script will
+      # attempt Priority 4 files in the order they appear — none defined here
+      # to keep the profile intentionally focused.
+
+    exclude:
+      # Same Tier 1 and Tier 2 exclusions as claude_project.
+      - file: network/contacts.jsonl
+        reason: "Tier 1 — individual relationship records with personal assessments"
+      - file: network/interactions.jsonl
+        reason: "Tier 1 — candid interaction history; third-party privacy risk"
+      - file: memory/failures.jsonl
+        reason: "Tier 1 — candid failure records; professionally damaging if exposed"
+      - file: memory/experiences.jsonl
+        reason: "Tier 1 — personal experiences with emotional weight"
+      - file: network/organisations.jsonl
+        reason: "Tier 2 — organisation assessments; may contain confidential context"
+      - file: memory/decisions.jsonl
+        reason: "Tier 2 — decision reasoning; may reference confidential third-party context"
+      - file: signals/observations.jsonl
+        reason: "Tier 2 — raw session observations; candid and unresolved"
+      - file: calibration/divergence.jsonl
+        reason: "Tier 2 — classified divergences between declared and observed behaviour"
+      - file: calibration/pending_review.md
+        reason: "Tier 2 — unresolved calibration items"
+
+    staleness_header: true
+    metadata: true
+
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # PROFILE: gemini_drive
+  # Target:  Gemini via Google Drive — files synced to a Drive folder
+  # Use:     Export produces a folder of separate files (multi_file_folder format).
+  #          Upload the entire folder contents to a Google Drive folder, then
+  #          reference that folder in your Gemini context/instructions.
+  #          Gemini has a larger context window; more files and larger limits apply.
+  # ─────────────────────────────────────────────────────────────────────────────
+  - target: gemini_drive
+    description: "Gemini via Google Drive — files in a Drive folder"
+    budget_chars: 120000  # Gemini context is larger; Drive folder holds multiple files
+    format: multi_file_folder  # Each included file becomes a separate file in a folder
+
+    include:
+      # Priority 1 — Core identity and immediate context. Always include.
+      - file: BRAIN.md
+        priority: 1
+        max_chars: 10000  # More generous; AI instructions + full orientation
+      - file: identity/values.yaml
+        priority: 1
+        max_chars: 6000   # Full values file including all sub-sections
+      - file: identity/heuristics.yaml
+        priority: 1
+        max_chars: 6000   # Full heuristics file
+      - file: goals/current_focus.yaml
+        priority: 1
+        max_chars: 3000   # Current priorities
+
+      # Priority 2 — Important context; include before knowledge or narrative.
+      - file: MODULE_SELECTION.md
+        priority: 2
+        max_chars: 8000   # Full trigger table; Gemini benefits from complete reference
+      - file: identity/voice.md
+        priority: 2
+        max_chars: 5000   # Full voice document
+      - file: goals/goals.yaml
+        priority: 2
+        max_chars: 6000   # Full goals file
+
+      # Priority 3 — Knowledge and longer-horizon context.
+      - file: goals/north_star.md
+        priority: 3
+        max_chars: 5000   # Long-term vision; full document
+      - file: knowledge/frameworks.md
+        priority: 3
+        max_chars: 6000   # Mental models; full document
+      - file: knowledge/domain_landscape.md
+        priority: 3
+        max_chars: 6000   # Sector context; full document
+      - file: identity/story.md
+        priority: 3
+        max_chars: 5000   # Background narrative; useful for positioning
+      - file: identity/principles.md
+        priority: 3
+        max_chars: 5000   # Decision-making principles
+
+      # Priority 4 — Operational detail; include if budget allows.
+      - file: operations/rituals.md
+        priority: 4
+        max_chars: 4000   # Regular rhythms and review cadence
+      - file: operations/workflows.md
+        priority: 4
+        max_chars: 4000   # Workflow protocols
+      - file: operations/tools.md
+        priority: 4
+        max_chars: 3000   # Tool stack and preferences
+
+      # Priority 5 — Supplementary reference; include only if budget remains.
+      - file: HOW_THIS_WORKS.md
+        priority: 5
+        max_chars: 4000   # AMAI system orientation
+      - file: network/circles.yaml
+        priority: 5
+        max_chars: 3000   # Network tier definitions; safe Tier 3 file
+      - file: network/rhythms.yaml
+        priority: 5
+        max_chars: 2000   # Contact cadence definitions; safe Tier 3 file
+
+    exclude:
+      # Same Tier 1 and Tier 2 exclusions as other profiles.
+      - file: network/contacts.jsonl
+        reason: "Tier 1 — individual relationship records with personal assessments"
+      - file: network/interactions.jsonl
+        reason: "Tier 1 — candid interaction history; third-party privacy risk"
+      - file: memory/failures.jsonl
+        reason: "Tier 1 — candid failure records; professionally damaging if exposed"
+      - file: memory/experiences.jsonl
+        reason: "Tier 1 — personal experiences with emotional weight"
+      - file: network/organisations.jsonl
+        reason: "Tier 2 — organisation assessments; may contain confidential context"
+      - file: memory/decisions.jsonl
+        reason: "Tier 2 — decision reasoning; may reference confidential third-party context"
+      - file: signals/observations.jsonl
+        reason: "Tier 2 — raw session observations; candid and unresolved"
+      - file: calibration/divergence.jsonl
+        reason: "Tier 2 — classified divergences between declared and observed behaviour"
+      - file: calibration/pending_review.md
+        reason: "Tier 2 — unresolved calibration items"
+
+    staleness_header: true
+    metadata: true
+
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # PROFILE: generic
+  # Target:  Any AI platform's system instructions or custom instructions field
+  # Use:     Paste the generated output into any "system instructions" or
+  #          "custom instructions" field. Targets the lowest common denominator —
+  #          most such fields are limited to 1,500–15,000 characters.
+  #          Only the absolute essentials are included.
+  # ─────────────────────────────────────────────────────────────────────────────
+  - target: generic
+    description: "Generic — portable markdown for pasting into any system instructions field"
+    budget_chars: 15000  # Most custom instructions fields are very limited (often 1.5K–15K)
+    format: single_file_markdown
+
+    include:
+      # Priority 1 — Essentials only. Heavy truncation expected at these limits.
+      - file: BRAIN.md
+        priority: 1
+        max_chars: 4000   # AI instructions section only; heavy truncation expected
+      - file: identity/values.yaml
+        priority: 1
+        max_chars: 3000   # Core values + red lines only; secondary values may be truncated
+      - file: identity/heuristics.yaml
+        priority: 1
+        max_chars: 2000   # Universal heuristics only; domain-specific may be truncated
+      - file: goals/current_focus.yaml
+        priority: 1
+        max_chars: 1500   # Top 1–2 priorities only
+
+      # Priority 2 — Include only if budget remains after Priority 1 (~3–4K remaining).
+      - file: identity/voice.md
+        priority: 2
+        max_chars: 1500   # Summary of communication style; likely truncated
+
+      # Note: All narrative Markdown files (north_star.md, story.md, etc.) and
+      # all Tier 2 files are excluded by the budget constraint. The 15K limit
+      # means this profile is intentionally minimal — enough to orient an AI
+      # to your identity and current priorities, nothing more.
+
+    exclude:
+      # Tier 1 and Tier 2 exclusions — same as all other profiles.
+      - file: network/contacts.jsonl
+        reason: "Tier 1 — individual relationship records with personal assessments"
+      - file: network/interactions.jsonl
+        reason: "Tier 1 — candid interaction history; third-party privacy risk"
+      - file: memory/failures.jsonl
+        reason: "Tier 1 — candid failure records; professionally damaging if exposed"
+      - file: memory/experiences.jsonl
+        reason: "Tier 1 — personal experiences with emotional weight"
+      - file: network/organisations.jsonl
+        reason: "Tier 2 — organisation assessments; may contain confidential context"
+      - file: memory/decisions.jsonl
+        reason: "Tier 2 — decision reasoning; may reference confidential third-party context"
+      - file: signals/observations.jsonl
+        reason: "Tier 2 — raw session observations; candid and unresolved"
+      - file: calibration/divergence.jsonl
+        reason: "Tier 2 — classified divergences between declared and observed behaviour"
+      - file: calibration/pending_review.md
+        reason: "Tier 2 — unresolved calibration items"
+      # Additional narrative files excluded by budget intent (not just size).
+      - file: goals/north_star.md
+        reason: "budget — 15K limit means only essentials fit; use claude_project for full context"
+      - file: goals/goals.yaml
+        reason: "budget — 15K limit; current_focus.yaml covers immediate priorities"
+      - file: knowledge/frameworks.md
+        reason: "budget — 15K limit; not included in generic profile"
+      - file: knowledge/domain_landscape.md
+        reason: "budget — 15K limit; not included in generic profile"
+      - file: identity/story.md
+        reason: "budget — 15K limit; not included in generic profile"
+      - file: identity/principles.md
+        reason: "budget — 15K limit; not included in generic profile"
+      - file: MODULE_SELECTION.md
+        reason: "budget — 15K limit; module selection overhead not useful at this scale"
+      - file: operations/rituals.md
+        reason: "budget — 15K limit; operational detail not included in generic profile"
+      - file: operations/workflows.md
+        reason: "budget — 15K limit; operational detail not included in generic profile"
+      - file: HOW_THIS_WORKS.md
+        reason: "budget — 15K limit; AMAI orientation not included in generic profile"
+
+    staleness_header: true   # Always warn if current_focus.yaml is stale — budget is precious
+    metadata: true           # Minimal metadata (generated_on, profile_name) included in header

@@ -31,6 +31,17 @@ evaluation/results/scores_*.md
 # Org export bundles — never commit
 EXPORT/
 
+# Export outputs — generated, not committed
+# Profile-based exports land in export/<profile>_<YYYYMMDD>/
+export/claude_project_*/
+export/chatgpt_project_*/
+export/gemini_drive_*/
+export/generic_*/
+
+# Keep the profile config and README (these are configuration, not generated output)
+!export/profiles.yaml
+!export/README.md
+
 # Org tension logs contain personal data — exclude from public repos by default
 org/overlays/*/tension_log.jsonl
 
