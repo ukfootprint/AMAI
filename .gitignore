@@ -46,6 +46,11 @@ export/generic_*/
 org/overlays/*/tension_log.jsonl
 
 # ─────────────────────────────────────────────
+# Build documentation — internal planning docs, not for public repo
+# ─────────────────────────────────────────────
+BUILD_WEEKS_*.md
+
+# ─────────────────────────────────────────────
 # OS & Editor files
 # ─────────────────────────────────────────────
 .DS_Store
