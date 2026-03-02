@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# .githooks/pre-commit
+# Runs AMAI schema + quality validation before every commit.
+#
+# Behaviour:
+#   • ERRORs  → block the commit (exit 1)
+#   • WARNs   → print a summary, then allow the commit (exit 0)
+#   • Clean   → silent pass (exit 0)
+#
+# Skip this hook for a one-off commit:
+#   git commit --no-verify -m "your message"
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+VALIDATE="$REPO_ROOT/scripts/validate.sh"
+
+if [[ ! -x "$VALIDATE" ]]; then
+  echo "⚠️  pre-commit: $VALIDATE not found or not executable — skipping validation" >&2
+  exit 0
+fi
+
+# Capture stdout; stderr goes to terminal as-is.
+OUTPUT="$("$VALIDATE" --quiet 2>&1)" || {
+  # Non-zero exit from validate.sh means ERRORs were found.
+  echo ""
+  echo "╔══════════════════════════════════════╗"
+  echo "║  ❌  COMMIT BLOCKED — AMAI ERRORS    ║"
+  echo "╚══════════════════════════════════════╝"
+  echo ""
+  echo "$OUTPUT"
+  echo ""
+  echo "Fix the errors above, then commit again."
+  echo "To skip validation (not recommended): git commit --no-verify"
+  echo ""
+  exit 1
+}
+
+# Exit 0 from validate.sh — either clean or warn-only.
+if [[ -n "$OUTPUT" ]]; then
+  # Non-empty output means WARNs were present.
+  echo ""
+  echo "╔══════════════════════════════════════╗"
+  echo "║  ⚠️   AMAI WARNINGS (commit allowed) ║"
+  echo "╚══════════════════════════════════════╝"
+  echo ""
+  echo "$OUTPUT"
+  echo ""
+  echo "Commit proceeding. Resolve warnings when you get a chance."
+  echo ""
+fi
+# Empty output = fully clean — no noise, just commit.
+
+exit 0

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "divergence.schema.json",
+  "title": "AMAI Divergence Entry Schema",
+  "description": "Validates each line of calibration/divergence.jsonl",
+  "type": "object",
+  "required": ["date", "type", "source", "signal", "brained_ref", "tension", "disposition"],
+  "properties": {
+    "_example": {
+      "type": "boolean"
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["values", "identity", "operational", "relational"]
+    },
+    "source": {
+      "type": "string",
+      "enum": ["signals_override", "signals_friction", "signals_pattern", "signals_inference", "other"]
+    },
+    "signal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "brained_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tension": {
+      "type": "string",
+      "minLength": 1
+    },
+    "disposition": {
+      "type": "string",
+      "enum": ["CONFIRM", "CANDIDATE", "WARNING", "DEFER", "INCORPORATED", "REJECTED"]
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

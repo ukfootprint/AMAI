@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "experiences.schema.json",
+  "title": "AMAI Experience Entry Schema",
+  "description": "Validates each line of memory/experiences.jsonl",
+  "type": "object",
+  "required": [
+    "date",
+    "title",
+    "what_happened",
+    "why_it_matters",
+    "how_it_changed_you",
+    "emotional_weight"
+  ],
+  "properties": {
+    "_example": {
+      "type": "boolean"
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "what_happened": {
+      "type": "string",
+      "minLength": 1
+    },
+    "why_it_matters": {
+      "type": "string",
+      "minLength": 1
+    },
+    "how_it_changed_you": {
+      "type": "string",
+      "minLength": 1
+    },
+    "emotional_weight": {
+      "type": "string",
+      "enum": ["high", "medium", "low"]
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

@@ -428,6 +428,67 @@ To set up the org layer:
 
 ---
 
+## Development Setup
+
+AMAI ships with a schema-backed validation script and a Git pre-commit hook that runs it automatically before every commit.
+
+### First-time setup
+
+```bash
+bash scripts/setup-hooks.sh
+```
+
+This does two things: sets `core.hooksPath = .githooks` in your local Git config, and ensures the hook and validator are executable. Run it once after cloning.
+
+### Running validation manually
+
+```bash
+# Full report — ERRORs, WARNs, and INFOs
+bash scripts/validate.sh
+
+# Suppress INFO, show WARNs and ERRORs only
+bash scripts/validate.sh --quiet
+
+# Treat WARNs as non-blocking (exit 0 even when WARNs are present)
+bash scripts/validate.sh --allow-warn
+
+# Machine-readable JSON output
+bash scripts/validate.sh --json
+```
+
+### What gets validated
+
+The validator checks every YAML and JSONL file in the AMAI core against its JSON Schema (`schemas/`), then runs a suite of data-quality rules:
+
+| Severity | Code | Meaning |
+|----------|------|---------|
+| ERROR | `SCHEMA_INVALID` | File fails its JSON Schema — structural problem |
+| WARN | `PLACEHOLDER_DATA` | File still contains template placeholder text |
+| WARN | `STALE_MODULE` | `last_updated` is null or older than 60 days |
+| WARN | `STALE_FOCUS` | `current_focus.yaml` is older than 14 days |
+| WARN | `VAGUE_VALUE` | A value description is too short to be actionable |
+| WARN | `MISSING_EXAMPLES` | A value has fewer than 2 `in_practice` entries |
+| WARN | `VAGUE_HEURISTIC` | A heuristic rule is too short to be specific |
+| WARN | `EMPTY_RED_LINES` | `ethical_red_lines` is empty |
+| INFO | `ENTRY_COUNT` | How many entries are in each JSONL log |
+| INFO | `SCHEMA_VERSION` | Schema version declared in each YAML file |
+
+### Pre-commit hook behaviour
+
+| Validation result | Hook action |
+|---|---|
+| 0 ERRORs, 0 WARNs | Silent pass — no output |
+| 0 ERRORs, WARNs present | Prints warning summary, commit proceeds |
+| Any ERRORs | Prints errors, **blocks the commit** |
+
+To bypass the hook for a one-off commit (e.g. a WIP save):
+
+```bash
+git commit --no-verify -m "wip: your message"
+```
+
+---
+
 ## Credits & Inspiration
 
 **[Muratcan Koylan](https://x.com/koylanai)** — the context engineering approach that underpins AMAI. His insight: *the file system is the new database* — and an AI that knows your context is worth ten that don't.
