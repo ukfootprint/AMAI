@@ -1,0 +1,41 @@
+# knowledge/domains/domain_index.yaml
+# Registry of knowledge domains. Each domain has its own subdirectory
+# under knowledge/domains/ with domain-specific frameworks, landscape,
+# and terminology files.
+#
+# AI: When loading knowledge for a task, check domain_index.yaml to
+# find the most relevant domain. Load the domain-specific files
+# alongside (not replacing) the general knowledge/frameworks.md.
+#
+# Used by: MODULE_SELECTION.md, skills/context-loader/SKILL.md
+# Updated: add a domain by copying the template block below
+#
+_schema: domain_index
+_version: "1.0"
+last_updated: null
+
+domains:
+  - id: edtech
+    label: "Education Technology"
+    description: "EdTech market, school data systems, learning platforms, UK education policy"
+    path: "knowledge/domains/edtech/"
+    active: true
+    last_updated: null
+    tags: ["education", "technology", "schools", "data", "MIS"]
+
+  - id: ai_infrastructure
+    label: "AI & Personal Infrastructure"
+    description: "AI assistants, context systems, personal knowledge management, AMAI itself"
+    path: "knowledge/domains/ai_infrastructure/"
+    active: true
+    last_updated: null
+    tags: ["AI", "LLM", "context", "infrastructure", "automation"]
+
+  # Template — add more domains by copying this block:
+  # - id: domain_id           # snake_case identifier
+  #   label: "Human-Readable Label"
+  #   description: "What this domain covers — one or two sentences"
+  #   path: "knowledge/domains/domain_id/"   # must end with /
+  #   active: true
+  #   last_updated: null      # set to YYYY-MM-DD when files are populated
+  #   tags: ["keyword1", "keyword2"]

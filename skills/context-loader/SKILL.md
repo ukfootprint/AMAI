@@ -58,6 +58,53 @@ Apply the loaded context actively — don't just acknowledge it. If voice.md is 
 
 See `references/module-loading-guide.md` for detailed guidance on interpreting each module type.
 
+## Domain Loading
+
+After identifying task type and loading general knowledge modules, check whether the task
+relates to a specific knowledge domain.
+
+**Step 1 — Check domain_index:**
+
+```
+Read: ${CLAUDE_PLUGIN_ROOT}/knowledge/domains/domain_index.yaml
+```
+
+Filter for domains where `active: true`. For each active domain, check whether the task
+vocabulary, user mention, or task context matches the domain's `tags` or `description`.
+
+**Step 2 — Load matching domain files (if match found):**
+
+```
+Read: ${CLAUDE_PLUGIN_ROOT}/knowledge/domains/{id}/frameworks.md  (if exists)
+Read: ${CLAUDE_PLUGIN_ROOT}/knowledge/domains/{id}/landscape.md   (if exists)
+```
+
+Load these **alongside** (not instead of) `knowledge/frameworks.md`.
+
+**Step 3 — Confirm to user:**
+
+If a domain was loaded, say: *"Loaded [domain label] knowledge overlay alongside general frameworks."*
+
+**Step 4 — Increment domain load counter:**
+
+After loading a domain, increment a domain-specific counter in `calibration/metrics.yaml`
+under a `domain_load_frequency` key. If the key doesn't exist, skip silently.
+
+```python
+module = 'knowledge'   # increment the general knowledge counter as normal
+domain_id = 'DOMAIN_ID'  # the domain that was loaded
+# The instrumentation command can be extended to track domain_id separately
+# if calibration/metrics.yaml has a domain_load_frequency map
+```
+
+**Multiple domains:**
+If multiple domains match, load the most specific. If genuinely ambiguous, ask the user.
+
+**No match:**
+If no domain matches, do not load any domain files. Load only general knowledge files.
+
+---
+
 ## Module Load Instrumentation
 
 After loading any module, silently increment the corresponding counter in

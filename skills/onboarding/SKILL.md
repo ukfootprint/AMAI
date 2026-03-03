@@ -573,6 +573,25 @@ After completing all six conversations:
    If the user wants to address WARNs, make surgical edits to the specific fields —
    do **not** re-run the full Stage 2 conversation.
 
+7. **Org overlay offer** — After validation, ask:
+
+   > "One optional step: do you work with specific organisations that have their own
+   > voice or communication style — for example, a consultancy you work for, a client
+   > you produce content for regularly, or a business with a distinct brand?
+   > If so, we can set up org overlays so your AI context shifts appropriately when
+   > you're working in that context. Want to do that now, or skip it for now?"
+
+   - If the user says **yes**: invoke the `org-overlay` skill with the setup workflow
+     (`## Setting Up a New Org Overlay` in `skills/org-overlay/SKILL.md`).
+     See `docs/brand_voice_prompt.md` for the guided setup questions.
+   - If the user says **no** or **later**: proceed directly to the Stage 3 offer below.
+
+   After the org overlay offer (whether they set one up or not), offer Stage 3:
+
+   > "That covers the Foundation stage. Want to continue to Stage 3 now — that's your
+   > background story, principles, operations and workflows, network circles, and
+   > seeding your first memory entries? It takes about 30 minutes."
+
 ---
 
 ## Stage 3 — Full Core (~30 minutes)
@@ -580,6 +599,16 @@ After completing all six conversations:
 **Goal:** Complete `identity/story.md`, `identity/principles.md`,
 `operations/rituals.md`, `operations/workflows.md`, `network/circles.yaml`,
 and seed the first entries in `memory/` JSONL files.
+
+**Prerequisites:** Stage 1 + Stage 2 complete. 2+ weeks of active AMAI use is
+recommended before Stage 3 — story and principles land better once you've observed
+how your earlier context performs in sessions.
+
+Open with:
+> "Stage 3 completes your AMAI profile. We'll cover your professional story,
+> how you make decisions and work, your relationship structure, and seed your
+> memory with a few formative experiences. This takes about 30 minutes.
+> Ready to start?"
 
 Read `schemas/circles.schema.json`, `schemas/decisions.schema.json`,
 `schemas/failures.schema.json`, `schemas/experiences.schema.json` before writing.
@@ -598,10 +627,30 @@ themselves. 300–600 words.
 
 **Principles:**
 > "Behind each of your values, there's a deeper 'why' — a belief about how the world
-> works or what matters. What are the 2–3 core beliefs that underpin everything?"
+> works or what matters. What are the 2–3 core principles that underpin everything?
+> Not values (what you care about) — principles (how you decide, what you always do)."
+
+Draw out **2–4 principles** through conversation. For each, ask:
+1. "What's the principle — stated in one sentence?"
+2. "Where did it come from — a specific experience or observation?"
+3. "How does it show up in decisions? Give me a concrete example."
+
+**Quality check:** Principles should be distinct from heuristics (those are tactical rules)
+and from values (those are commitments). A principle is a meta-level belief about how to
+navigate the world — e.g. "systems beat willpower", "trust is built through predictability",
+"the best decisions are made when you know what you'd do at the extremes."
+
+If any principle sounds like a heuristic, say: "That sounds more like a heuristic — it's
+already in your heuristics.yaml. Let's look for the belief behind it."
 
 Write `identity/principles.md` as a short document. Each principle: the belief,
 where it came from, and how it shows up in decisions.
+
+**Validate after this section:**
+```bash
+bash scripts/validate.sh --quiet
+```
+Surface any WARNs. Offer to sharpen before continuing.
 
 ---
 
@@ -622,6 +671,11 @@ what happens when a ritual is skipped (does it matter?).
 Write `operations/workflows.md` as a list of named workflows, each with:
 trigger, steps, and notes on what to watch out for.
 
+**Quality check:** Workflows should be specific enough that an AI could follow them
+as step-by-step instructions. If a workflow is still vague (e.g. "handle client
+requests"), probe: "What do you actually do first? And then? What's the decision
+point in this?"
+
 ---
 
 ### Network (~5 minutes)
@@ -629,6 +683,16 @@ trigger, steps, and notes on what to watch out for.
 > "How do you think about your relationships? Most people have different tiers —
 > a small inner circle, a broader set of professional contacts, a wider network.
 > What does that look like for you?"
+
+**⚠️ Sensitivity reminder:** Before collecting any information about specific people:
+> "Just so you know — information about specific people goes into `network/contacts.jsonl`
+> and `network/interactions.jsonl`, which are Tier 1 sensitive files. They're never
+> included in exports or shared with any AI platform. If you'd prefer to skip those files
+> entirely and just set up the circle definitions, that's completely fine — the circles
+> structure is useful on its own."
+>
+> Wait for the user's preference. If they want to skip contacts/interactions, note it and
+> proceed with circles.yaml only. Never push for contact details.
 
 Write `network/circles.yaml` following `schemas/circles.schema.json`:
 ```yaml
@@ -667,8 +731,42 @@ Seed the JSONL files with 1–2 real entries each. Gather through conversation:
 - Capture: date, title, what_happened, why_it_matters, how_it_changed_you,
   emotional_weight, tags
 
+**⚠️ Sensitivity reminder:** Memory files are Tier 1 sensitive.
+> "These entries stay in your local AMAI repo and are never included in exports.
+> They're for your own reflection — you can be as candid as you like."
+
 **Append each entry as a single JSON line** to the target JSONL file. Never
 overwrite existing lines. Show each JSON object to the user and confirm before
 writing.
 
-Run `bash scripts/validate.sh --quiet` after all writes. Report results.
+---
+
+### Validation & Completion
+
+Run full validation after all Stage 3 files are written:
+
+```bash
+bash scripts/validate.sh --quiet
+```
+
+Surface any ERRORs and offer to fix them. WARNs are expected for placeholder-format
+entries — offer to sharpen them, but don't block completion on WARNs.
+
+**Completion summary — show this to the user:**
+
+> "Your AMAI profile is complete. Here's what's now populated:
+>
+> **Identity:** values ✓ · heuristics ✓ · beliefs ✓ · voice ✓ · story ✓ · principles ✓
+> **Goals:** current_focus ✓ · goals ✓ · north_star ✓
+> **Knowledge:** frameworks ✓ · domain_landscape ✓
+> **Operations:** rituals ✓ · workflows ✓
+> **Network:** circles ✓ · [contacts: populated / skipped by choice]
+> **Memory:** decisions ✓ · failures ✓ · experiences ✓
+>
+> Every AI session from now on starts with this context. The more you use AMAI —
+> updating current_focus weekly, logging signals after sessions — the more accurate
+> and useful it becomes.
+>
+> Optional next steps: set up org overlays for any organisations you work with,
+> populate your knowledge domains (knowledge/domains/), and consider running
+> `/amai:prune` after 3+ months to keep things lean."

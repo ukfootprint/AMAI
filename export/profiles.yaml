@@ -146,6 +146,30 @@ profiles:
     staleness_header: true   # Prepend staleness warnings if any module is overdue
     metadata: true           # Include generated_on, source_commit, profile_name, amai_version
 
+    # Org overlays are optional. If no org overlay is active, this section is skipped.
+    org_overlay:
+      enabled: true
+      budget_pct: 10        # ~9K chars reserved for org content when an overlay is active
+      note: "Org files are included after Priority 2 personal identity files."
+      files:
+        - file: "org/overlays/{org}/brand_voice.md"
+          priority: 2
+          max_chars: 4000   # Org voice and channel rules; Tier 2 — org context
+        - file: "org/overlays/{org}/behaviour_bands.yaml"
+          priority: 2
+          max_chars: 2000   # Behaviour bands; Tier 2 — org context
+      exclude_if_tier_above: 2  # Do not include org files rated above Tier 2 sensitivity
+
+    # Knowledge domains are optional. Only included if relevant to the task context.
+    # Domains with active: false in domain_index.yaml are always excluded.
+    knowledge_domains:
+      enabled: true
+      budget_pct: 5         # ~4.5K chars per domain; max 3 domains per export
+      max_domains: 3        # Include at most this many domain overlays per export
+      priority_by: load_frequency  # Most-loaded domains included first
+      per_domain_max_chars: 4000   # Max chars per domain (frameworks.md + landscape.md combined)
+      note: "Domain files supplement general knowledge/ files — both are included."
+
 
   # ─────────────────────────────────────────────────────────────────────────────
   # PROFILE: chatgpt_project
@@ -228,6 +252,29 @@ profiles:
 
     staleness_header: true
     metadata: true
+
+    # Org overlays are optional. If no org overlay is active, this section is skipped.
+    org_overlay:
+      enabled: true
+      budget_pct: 8         # ~4.8K chars reserved for org content when an overlay is active
+      note: "Org files are included after Priority 2 personal identity files."
+      files:
+        - file: "org/overlays/{org}/brand_voice.md"
+          priority: 2
+          max_chars: 3000   # Org voice and channel rules; Tier 2 — org context
+        - file: "org/overlays/{org}/behaviour_bands.yaml"
+          priority: 2
+          max_chars: 1500   # Behaviour bands; Tier 2 — org context
+      exclude_if_tier_above: 2  # Do not include org files rated above Tier 2 sensitivity
+
+    # Knowledge domains — tighter budget than claude_project.
+    knowledge_domains:
+      enabled: true
+      budget_pct: 5         # ~3K chars per domain at 60K budget
+      max_domains: 2        # Stricter limit; ChatGPT profile is budget-constrained
+      priority_by: load_frequency
+      per_domain_max_chars: 2500   # Max chars per domain — condensed
+      note: "Domain files supplement general knowledge/ files — both are included."
 
 
   # ─────────────────────────────────────────────────────────────────────────────
@@ -335,6 +382,29 @@ profiles:
     staleness_header: true
     metadata: true
 
+    # Org overlays are optional. If no org overlay is active, this section is skipped.
+    org_overlay:
+      enabled: true
+      budget_pct: 10        # ~12K chars reserved for org content when an overlay is active
+      note: "Org files are included after Priority 2 personal identity files."
+      files:
+        - file: "org/overlays/{org}/brand_voice.md"
+          priority: 2
+          max_chars: 5000   # Org voice and channel rules; Tier 2 — org context; larger budget
+        - file: "org/overlays/{org}/behaviour_bands.yaml"
+          priority: 2
+          max_chars: 3000   # Behaviour bands; Tier 2 — org context; full detail
+      exclude_if_tier_above: 2  # Do not include org files rated above Tier 2 sensitivity
+
+    # Knowledge domains — generous budget for Gemini's larger context.
+    knowledge_domains:
+      enabled: true
+      budget_pct: 8         # ~9.6K chars per domain; room for rich domain context
+      max_domains: 4        # Gemini can handle more files; allow more domains
+      priority_by: load_frequency
+      per_domain_max_chars: 6000   # Larger per-domain budget — full files likely fit
+      note: "Domain files are separate files in the folder, alongside general knowledge/ files."
+
 
   # ─────────────────────────────────────────────────────────────────────────────
   # PROFILE: generic
@@ -421,3 +491,23 @@ profiles:
 
     staleness_header: true   # Always warn if current_focus.yaml is stale — budget is precious
     metadata: true           # Minimal metadata (generated_on, profile_name) included in header
+
+    # Org overlays are optional. If no org overlay is active, this section is skipped.
+    # At 15K budget, org overlay is minimal — only brand voice; behaviour bands omitted.
+    org_overlay:
+      enabled: true
+      budget_pct: 12        # ~1.8K chars reserved; extremely tight — brand voice summary only
+      note: "At generic profile budget, only a condensed brand voice is included."
+      files:
+        - file: "org/overlays/{org}/brand_voice.md"
+          priority: 2
+          max_chars: 1500   # Org voice only; heavily truncated if needed
+        - file: "org/overlays/{org}/behaviour_bands.yaml"
+          priority: 2
+          max_chars: 500    # Minimal; likely omitted by budget; included only if space allows
+      exclude_if_tier_above: 2  # Do not include org files rated above Tier 2 sensitivity
+
+    # Knowledge domains — disabled at 15K budget. No room for domain overlays.
+    knowledge_domains:
+      enabled: false
+      note: "Generic profile is budget-constrained; domain overlays are not included."

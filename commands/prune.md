@@ -1,7 +1,7 @@
 ---
 name: prune
 description: Interactive AMAI pruning review — walks through archive candidates, consolidation opportunities, size warnings, and staleness flags one category at a time
-argument_hint: "[--conservative | --aggressive | --report-only | --category <name>]"
+argument_hint: "[--conservative | --aggressive | --data-driven | --report-only | --category <name> | --compare <path>]"
 allowed_tools:
   - Read
   - Write
@@ -26,6 +26,8 @@ Parse $ARGUMENTS:
 | `--category size` | Review size warnings only |
 | `--category freshness` | Review freshness candidates only |
 | `--category usage` | Review module usage warnings only |
+| `--data-driven` | Data-driven mode — only flags items that are BOTH stale AND unused (requires 90+ days of usage data) |
+| `--compare [path]` | Compare against a previous report — shows delta table of what's changed |
 
 If an unrecognised argument is provided:
 > "Unknown option: [arg]. Valid options: --conservative, --aggressive, --report-only,

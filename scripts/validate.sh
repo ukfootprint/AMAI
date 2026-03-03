@@ -783,6 +783,125 @@ def validate_brain():
         else:
             R.info('STATUS', f'BRAIN.md STATUS: {status}')
 
+# ── org/overlays — brand voice + behaviour bands ───────────────────────────────
+
+def validate_org_overlays():
+    overlays_dir = p('org/overlays')
+    if not os.path.isdir(overlays_dir):
+        return  # no overlays yet — skip silently
+    for org in sorted(os.listdir(overlays_dir)):
+        org_path = os.path.join(overlays_dir, org)
+        if not os.path.isdir(org_path): continue
+
+        bv_path = os.path.join(org_path, 'brand_voice.md')
+        if os.path.exists(bv_path):
+            R.begin(f'org/overlays/{org}/brand_voice.md')
+            with open(bv_path) as f: bv = f.read()
+            for section in ('Voice Characteristics', 'Audience Context', 'Examples'):
+                if section not in bv:
+                    R.warn('BRAND_VOICE_MISSING_SECTION', f'Required section "{section}" not found')
+            if 'Write like this' not in bv and '**Write' not in bv:
+                R.warn('BRAND_VOICE_NO_EXAMPLES', 'No "write like this / not like this" example pairs found')
+            if any(ph in bv for ph in ('[Organisation Name]', '[e.g.,', '[adjust', '[Paste')):
+                R.warn('BRAND_VOICE_UNPOPULATED', 'brand_voice.md still contains placeholder text')
+            else:
+                R.info('OK', 'brand_voice.md looks populated')
+
+        bb_path = os.path.join(org_path, 'behaviour_bands.yaml')
+        if os.path.exists(bb_path):
+            # Only validate new-format files (schema: behaviour_bands)
+            with open(bb_path) as _f: _bb_raw = _f.read()
+            if '_schema: behaviour_bands' not in _bb_raw:
+                continue  # legacy format — skip
+            R.begin(f'org/overlays/{org}/behaviour_bands.yaml')
+            data, err = load_yaml(bb_path)
+            if err:
+                R.warn('PARSE_ERROR', f'Cannot parse: {err}'); continue
+            if not isinstance(data, dict):
+                R.error('INVALID_FORMAT', 'Expected a YAML object'); continue
+            bands = data.get('bands', [])
+            if not isinstance(bands, list) or len(bands) == 0:
+                R.warn('NO_BANDS', 'No bands defined'); continue
+            for b in bands:
+                if not isinstance(b, dict): continue
+                bid = b.get('id', '?')
+                if '[adjust' in str(b.get('org_range', '')):
+                    R.warn('BAND_MISSING_ORG_RANGE', f'Band "{bid}" org_range still has placeholder text')
+                if not b.get('id'):
+                    R.error('MISSING_FIELD', 'A band entry is missing the required "id" field')
+            R.info('BANDS_COUNT', f'{len(bands)} behaviour band(s) defined')
+
+# ── knowledge/domains — domain registry + directory validation ─────────────────
+
+def validate_knowledge_domains():
+    domain_index_path = p('knowledge/domains/domain_index.yaml')
+    domains_root = p('knowledge/domains')
+
+    if not os.path.exists(domain_index_path):
+        # No domain_index yet — not an error, just note it
+        return
+
+    R.begin('knowledge/domains/domain_index.yaml')
+    data, err = load_yaml(domain_index_path)
+    if err:
+        R.error('PARSE_ERROR', f'Cannot parse domain_index.yaml: {err}'); return
+    if not isinstance(data, dict):
+        R.error('INVALID_FORMAT', 'Expected a YAML object'); return
+    if data.get('_schema') != 'domain_index':
+        R.warn('MISSING_SCHEMA', 'domain_index.yaml should have "_schema: domain_index"')
+
+    domains = data.get('domains', [])
+    if not isinstance(domains, list):
+        R.error('INVALID_FORMAT', '"domains" must be a list'); return
+
+    active_count = 0
+    inactive_count = 0
+    registered_paths = set()
+
+    for d in domains:
+        if not isinstance(d, dict): continue
+        domain_id = d.get('id', '?')
+        is_active = d.get('active', False)
+        domain_path = d.get('path', '')
+
+        # Validate required fields
+        for field in ('id', 'label', 'description', 'path', 'active'):
+            if field not in d:
+                R.warn('MISSING_FIELD', f'Domain "{domain_id}" is missing required field "{field}"')
+
+        # Validate path ends with /
+        if domain_path and not domain_path.endswith('/'):
+            R.warn('INVALID_PATH', f'Domain "{domain_id}" path must end with "/" — got: {domain_path}')
+
+        # Resolve domain directory
+        abs_domain_path = os.path.join(ROOT, domain_path.rstrip('/')) if domain_path else None
+        if domain_path:
+            registered_paths.add(os.path.normpath(abs_domain_path))
+
+        if is_active:
+            active_count += 1
+            # Check that the directory exists
+            if abs_domain_path and not os.path.isdir(abs_domain_path):
+                R.warn('MISSING_DOMAIN_DIR', f'Active domain "{domain_id}" path not found: {domain_path}')
+            elif abs_domain_path and os.path.isdir(abs_domain_path):
+                # Check that it has at least one .md file
+                md_files = [f for f in os.listdir(abs_domain_path) if f.endswith('.md')]
+                if not md_files:
+                    R.warn('EMPTY_DOMAIN', f'Domain "{domain_id}" directory exists but contains no .md files')
+        else:
+            inactive_count += 1
+
+    # Check for orphan domain directories (exist but not in domain_index)
+    if os.path.isdir(domains_root):
+        for entry in os.listdir(domains_root):
+            entry_path = os.path.normpath(os.path.join(domains_root, entry))
+            if os.path.isdir(entry_path) and entry_path not in registered_paths:
+                # Skip the domains_root itself and the domain_index.yaml file
+                R.warn('ORPHAN_DOMAIN', f'Directory knowledge/domains/{entry}/ exists but is not in domain_index.yaml')
+
+    R.info('DOMAIN_COUNT', f'{active_count} active domain(s), {inactive_count} inactive domain(s) registered')
+
+
 # ── Run all ────────────────────────────────────────────────────────────────────
 
 validate_values()
@@ -796,6 +915,8 @@ validate_rhythms()
 for rel in JSONL_SPECS:
     validate_jsonl(rel)
 validate_brain()
+validate_org_overlays()
+validate_knowledge_domains()
 
 # ── Output ─────────────────────────────────────────────────────────────────────
 

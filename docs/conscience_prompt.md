@@ -1,18 +1,21 @@
-# AMAI Conscience Check — Red Line Monitoring
+# AMAI Conscience Check — Red Lines + Heuristics
 
-**Platform-portable version of AMAI conscience checking.**
+**Platform-portable version of AMAI conscience checking (Phase 1 + Phase 2).**
 If you're using Claude Cowork, use `/amai:conscience` instead — it loads your AMAI context automatically.
 
-This prompt checks any piece of content against your structured ethical red lines. It is advisory only — it surfaces concerns for you to consider. You are always the final authority.
+This prompt checks any piece of content against your ethical red lines (Phase 1) and
+high-confidence heuristics (Phase 2). It is advisory only — it surfaces concerns for
+you to consider. You are always the final authority.
 
 ---
 
 ## Quick Start
 
 1. Paste this prompt into your AI's system instructions or at the start of a conversation
-2. Paste your `identity/values.yaml` ethical_red_lines section directly into the conversation
-3. Paste or describe the content you want checked
-4. Ask: *"Run a conscience check on this."*
+2. Paste your `identity/values.yaml` → `ethical_red_lines` section into the conversation
+3. (Phase 2) Also paste your `identity/heuristics.yaml` → high-confidence entries
+4. Paste or describe the content you want checked
+5. Ask: *"Run a conscience check on this."* or *"Red lines only"* for Phase 1 only
 
 ---
 
@@ -101,6 +104,37 @@ Summary:
   [X alerts, Y checks, Z compliant, N not in scope]
   [If all compliant: "No red line concerns detected."]
 
+PHASE 2 — HEURISTIC CHECKING (if heuristics.yaml provided)
+
+If the user has pasted high-confidence heuristics from identity/heuristics.yaml:
+
+HEURISTIC MATCHING LOGIC
+For each heuristic entry where confidence is "high":
+1. Does the current content's task domain or context match this heuristic's use_when?
+   - Yes → proceed to conflict check
+   - No → not in scope; skip
+2. Does the content contradict the heuristic's rule?
+   - Contradiction detected → CONSCIENCE:HEURISTIC notice
+   - No contradiction → ✓ Consistent
+
+HEURISTIC ALERT FORMAT:
+💡 CONSCIENCE:HEURISTIC — [id]
+Rule: [rule field]
+Domain: [use_when field]
+Concern: [what in the content may contradict this heuristic]
+Note: This is a heuristic, not a red line. Deviation may be intentional.
+
+Add to output structure after red lines section:
+
+High-confidence heuristics in scope:
+─────────────────────────────────────
+[evaluation for each matching heuristic]
+
+Heuristics not in scope: [id list]
+
+No high-confidence heuristics: (if none found)
+  "No heuristics with confidence: high found — Phase 2 requires at least one."
+
 WHAT TO DO WHEN NO STRUCTURED RED LINES EXIST
 
 If all entries are placeholders or string format:
@@ -116,10 +150,16 @@ If all entries are placeholders or string format:
 
 ## Logging Your Results (Manual)
 
-If you maintain `signals/observations.jsonl`, log any alerts manually:
+If you maintain `signals/observations.jsonl`, log alerts manually:
 
+**Red line alerts (type: conscience_alert):**
 ```jsonl
-{"date": "YYYY-MM-DD", "context": "Conscience check during [session description]", "signals": ["Conscience:ALERT — [id]: [one-line concern]", "User response: acknowledged / adjusted / dismissed"], "possible_divergence": "Type 1 (Values) — ethical_red_lines → [id]", "config_ref": "identity/values.yaml → ethical_red_lines → [id]"}
+{"date": "YYYY-MM-DD", "type": "conscience_alert", "context": "Conscience check during [session description]", "signals": ["Conscience:ALERT — [id]: [one-line concern]", "User response: acknowledged / adjusted / dismissed"], "possible_divergence": "Type 1 (Values) — ethical_red_lines → [id]", "config_ref": "identity/values.yaml → ethical_red_lines → [id]"}
+```
+
+**Heuristic notices (type: conscience_heuristic):**
+```jsonl
+{"date": "YYYY-MM-DD", "type": "conscience_heuristic", "context": "Heuristic notice during [session description]", "signals": ["Conscience:HEURISTIC — [id]: [one-line concern]", "User response: acknowledged / adjusted / dismissed"], "possible_divergence": "Type 3 (Operational) — heuristics → [id]", "config_ref": "identity/heuristics.yaml → [id]"}
 ```
 
 ---
@@ -155,8 +195,21 @@ Conscience check — strategy document for our Q3 product roadmap:
 
 ---
 
+**Example 4 — Phase 2 heuristic check:**
+```
+[Paste the conscience prompt]
+[Paste your ethical_red_lines]
+[Paste your high-confidence heuristics from heuristics.yaml]
+
+I'm about to accept a client project at a below-market rate. Check this against
+my red lines and heuristics: [describe the situation]
+```
+
+---
+
 ## Related
 
 - **Cowork:** `/amai:conscience` (automatic context loading, no copy-paste required)
+- **Red lines only:** add `--red-lines-only` flag or ask "red lines only"
 - **Upgrade string format:** `docs/red_line_migration.md`
 - **Validate your red lines:** `bash scripts/validate.sh`

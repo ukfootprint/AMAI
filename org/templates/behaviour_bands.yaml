@@ -1,0 +1,49 @@
+_schema: behaviour_bands
+_version: "1.0"
+_description: >
+  Behaviour bands define how personal values and heuristics flex in org context.
+  They don't override values — they define the operating range within which
+  org-specific norms apply.
+
+# AI INSTRUCTION: Behaviour bands narrow the operating range, they never expand it beyond
+# personal values. If an org band would require violating a personal value or ethical
+# red line, the red line wins.
+
+# ─────────────────────────────────────────────
+# BANDS
+# Copy to org/overlays/[org-name]/behaviour_bands.yaml and populate org_range fields.
+# ─────────────────────────────────────────────
+
+bands:
+
+  - id: communication_formality
+    personal_default: "direct, conversational"
+    org_range: "[adjust for org: e.g., 'formal for external, conversational for internal']"
+    applies_to: "all written communications for this org"
+    notes: ""
+
+  - id: decision_speed
+    personal_default: "deliberate, evidence-first"
+    org_range: "[adjust: e.g., 'faster iteration expected; 80% confidence threshold acceptable']"
+    applies_to: "project decisions, feature prioritisation"
+    notes: ""
+
+  - id: risk_tolerance
+    personal_default: "conservative, long-term oriented"
+    org_range: "[adjust: e.g., 'startup pace; higher risk acceptable for growth bets']"
+    applies_to: "strategic recommendations, resource allocation"
+    notes: ""
+
+  - id: conflict_style
+    personal_default: "direct but collaborative; address tension early"
+    org_range: "[adjust: e.g., 'feedback via structured process only; escalation path required']"
+    applies_to: "stakeholder management, team interactions"
+    notes: ""
+
+  - id: quality_threshold
+    personal_default: "high quality bar; no shortcuts on craft"
+    org_range: "[adjust: e.g., 'ship-and-iterate culture; good enough is acceptable for v1']"
+    applies_to: "deliverables, code, written outputs"
+    notes: ""
+
+last_updated: null  # ISO date — update when bands are reviewed or org context changes

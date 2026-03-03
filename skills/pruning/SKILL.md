@@ -43,6 +43,10 @@ command arguments, use that. Otherwise, default to **balanced** and mention it:
 | **conservative** | Completed/abandoned goals; explicit placeholder text; expired TTL entries; stale DEFER divergences (90+ days) |
 | **balanced** (default) | Conservative items + staleness flags (180+ days no update) + modules with zero load frequency |
 | **aggressive** | Balanced items + anything not accessed in 60+ days without a `keep: true` flag |
+| **data-driven** | Only items that are BOTH stale (180+ days) AND unused (0 loads in 90-day period) — recommended once usage data has been collecting for 90+ days |
+
+Check `calibration/metrics.yaml → module_load_frequency` to see if 90+ days of real data is available.
+If all values are 0 (fresh install), note: "Usage data not yet available — data-driven mode requires 90+ days of session history."
 
 ---
 
@@ -63,6 +67,26 @@ command arguments, use that. Otherwise, default to **balanced** and mention it:
 If a user asks to prune a protected item, say:
 > "[item] is protected and can't be pruned through this skill. If you want to
 > simplify it directly, I can help you edit it instead."
+
+---
+
+## Quality Baseline (Optional)
+
+Before generating the pruning report, offer a quality baseline:
+
+> "Would you like to run a quality evaluation first? This captures baseline confidence
+> ratings across 5 standard tasks so you can compare before and after pruning."
+
+If the user says yes:
+```bash
+bash scripts/eval_quality.sh
+```
+Open the generated file (`reports/quality_eval_<date>.md`), load AMAI context into your
+AI, paste each task, and record the confidence ratings before proceeding.
+
+See `docs/quality_tracking.md` for how to interpret results.
+
+If the user says no or skips this offer, proceed directly to Phase 1.
 
 ---
 
@@ -133,11 +157,18 @@ If user chooses "Walk through", present each item:
 Item: [item identifier — file path, entry ID, or goal ID]
 Location: [file]
 Flagged because: [specific reason from the report — e.g. "status: completed, horizon: Q1 2025"]
+Usage: [X loads in last 90 days (Y% of total) — Category: Stale AND unused / Stale BUT used / etc.]
 If archived: moved to _archive/[original-path] — restorable via git or by moving the file back
-Recommendation: [archive | keep | defer]
+Recommendation: [archive | keep | defer] — [adjusted if usage data changes the call]
 
 Your decision: [archive / keep / defer]
 ```
+
+**Usage-adjusted recommendations:**
+- Stale AND unused → archive (strongest signal — safe to remove)
+- Stale BUT used → keep with a note to update the content, not archive it
+- Fresh AND unused → defer (monitor — may be recently added or context-specific)
+- Fresh AND used → keep (no action)
 
 **Valid responses:**
 - `archive` / `a` / `yes` — accept the recommendation, queue for Phase 3
@@ -246,6 +277,17 @@ Validation: [N errors, N warnings]
 If anything was archived, remind the user:
 > "Archived items are in `_archive/`. To restore anything, move it back to its
 > original location or check git history."
+
+**Quality check offer (if a quality baseline was recorded before pruning):**
+
+> "Pruning complete. Run the quality evaluation again to check for regressions?"
+
+If yes:
+```bash
+bash scripts/eval_quality.sh --output reports/quality_eval_<date>_post.md
+```
+Compare with the pre-pruning baseline. If 2+ tasks drop a confidence level, consider
+restoring the most recently archived items from `_archive/`. See `docs/quality_tracking.md`.
 
 ---
 

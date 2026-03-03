@@ -86,6 +86,63 @@ These modules must **never** be loaded in the contexts below, regardless of appa
 
 ---
 
+## Org-Aware Loading Rules
+
+When the user indicates they are working in a specific organisational context (e.g. "we're writing for [org name]", "activate [org] overlay", "this is for a client deliverable"), load the following in addition to the trigger table row:
+
+| Org file | When to load |
+|----------|-------------|
+| `org/overlays/{org}/brand_voice.md` | Any writing, communication, or content task for that org |
+| `org/overlays/{org}/behaviour_bands.yaml` | Any session where personal defaults need to flex for org context |
+
+**Brand voice takes priority over personal voice for org-facing content.** When both `identity/voice.md` and an org `brand_voice.md` are loaded, apply the org brand voice for all content produced for that org. Personal voice applies to everything outside that org context.
+
+**Behaviour bands narrow the operating range — they never expand it.** If a band would require acting against a personal value or red line, the personal value wins. Behaviour bands adjust *how* you work, not *what* you will or won't do.
+
+**Loading order in an org session:**
+1. Default set (values, heuristics, current_focus)
+2. `org/overlays/{org}/brand_voice.md` — apply immediately to all content
+3. `org/overlays/{org}/behaviour_bands.yaml` — apply to behaviour calibration
+4. Task-specific modules from trigger table (voice.md loaded but deferring to brand voice)
+
+**If no org overlay is active**, these files are not loaded and do not affect the session.
+
+---
+
+## Domain-Aware Knowledge Loading
+
+When a task clearly relates to a specific domain, load domain-specific knowledge files alongside the general knowledge files.
+
+### Domain Detection
+
+Match tasks to domains using any of these signals:
+
+| Signal | Example |
+|--------|---------|
+| User explicitly names the domain | "this is for an EdTech client", "re: the AMAI build" |
+| Task vocabulary matches domain tags | "MIS", "academy trust", "Pupil Premium" → edtech |
+| Task context matches domain description | competitive analysis of LMS platforms → edtech |
+| User mentions a domain ID directly | "load the ai_infrastructure domain" |
+
+Check `knowledge/domains/domain_index.yaml` for the active domain list and their tags.
+
+### Loading Rules
+
+1. **If a single domain matches clearly**: load `{domain}/frameworks.md` and `{domain}/landscape.md` (if it exists) alongside `knowledge/frameworks.md`.
+2. **If multiple domains match**: load the most specific one. If genuinely ambiguous, ask: *"This task seems to relate to both [Domain A] and [Domain B] — which should I use for context?"*
+3. **If no domain matches**: load general knowledge files only. Do not load all domains speculatively.
+4. **Domain files supplement, not replace, general files.** Always load `knowledge/frameworks.md`; domain files add depth on top.
+
+### Domain Loading Confirmation
+
+When loading a domain, say: *"Loaded [domain label] knowledge overlay alongside general frameworks."*
+
+### Inactive Domains
+
+Domains with `active: false` in `domain_index.yaml` are not loaded. If a task clearly relates to an inactive domain, note it: *"I have a [domain] knowledge directory, but it's marked inactive. Want me to load it anyway?"*
+
+---
+
 ## Mid-Session Scope Changes
 
 Real sessions frequently shift scope. A task that starts as writing becomes strategy; a strategy conversation surfaces a relationship consideration. The trigger table handles session start — this section handles scope drift.
@@ -132,6 +189,10 @@ Every session:
 + Session end?     → signals/MODULE.md + signals/observations.jsonl
 + Calibration?     → calibration/MODULE.md + calibration/pending_review.md
 + Generating content (advanced)? → skills/conscience/SKILL.md [background, only if structured red lines exist]
++ Org context?      → org/overlays/{org}/brand_voice.md + org/overlays/{org}/behaviour_bands.yaml
+                      (brand voice overrides identity/voice.md for org-facing content)
++ Domain-specific? → check domain_index.yaml → load {domain}/frameworks.md + {domain}/landscape.md
+                      (alongside, not instead of, knowledge/frameworks.md)
 
 Never with public writing:
   network/contacts.jsonl
@@ -143,3 +204,19 @@ Never speculatively:
   calibration/divergence.jsonl
   signals/observations.jsonl
 ```
+
+---
+
+## Onboarding Stage Reference
+
+After completing all three onboarding stages, a full AMAI profile includes:
+
+| Stage | Files Populated |
+|-------|----------------|
+| **Stage 1** (Quickstart) | `identity/values.yaml`, `identity/heuristics.yaml`, `goals/current_focus.yaml` |
+| **Stage 2** (Foundation) | `identity/voice.md`, `goals/north_star.md`, `goals/goals.yaml`, `identity/beliefs.yaml`, `knowledge/frameworks.md`, `knowledge/domain_landscape.md` |
+| **Stage 3** (Full Core) | `identity/story.md`, `identity/principles.md`, `operations/rituals.md`, `operations/workflows.md`, `network/circles.yaml`, `memory/decisions.jsonl` (seed), `memory/experiences.jsonl` (seed) |
+
+**Optional additions (beyond Stage 3):** org overlays (`org/overlays/{org}/`), knowledge domains (`knowledge/domains/{id}/`), contacts and interactions (`network/contacts.jsonl`, `network/interactions.jsonl`).
+
+After Stage 3, the full module trigger table above applies. The default minimal set handles every session; load additional modules as task type dictates.

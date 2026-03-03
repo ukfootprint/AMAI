@@ -23,7 +23,14 @@ behaviour band selection, disclosure rules, and tension logging.
 - **S1** — Dual mode. AMAI core + org overlay both active. Full awareness.
 - **S2** — Org mode. Org overlay takes precedence. Personal context suppressed except where explicitly permitted.
 
-**Behaviour bands** (defined per overlay) specify how to behave within org context — tone, formality, disclosure limits, decision authority.
+**Behaviour bands** (defined per overlay in `behaviour_bands.yaml`) narrow how personal values and heuristics apply in org context — they never expand beyond personal values or red lines. If a band would require violating a personal value, the personal value wins. Template: `org/templates/behaviour_bands.yaml`.
+
+**Brand voice** (defined per overlay in `brand_voice.md`) specifies the org's tone, vocabulary, channel rules, and examples. When loaded:
+- Apply it to ALL content produced for this org
+- Brand voice takes priority over personal voice for org-facing content
+- Personal voice applies to everything outside this org
+- If brand voice would conflict with personal values (not just style), flag it to the user
+Template: `org/templates/brand_voice.md`
 
 **Disclosure rules** specify what personal information can be referenced or shared when in org mode.
 
@@ -35,7 +42,8 @@ behaviour band selection, disclosure rules, and tension logging.
 
 3. Read the overlay files:
    - `${CLAUDE_PLUGIN_ROOT}/org/overlays/{org-name}/overlay.yaml` — core overlay config
-   - `${CLAUDE_PLUGIN_ROOT}/org/overlays/{org-name}/behaviour_bands.yaml` — behaviour specifications
+   - `${CLAUDE_PLUGIN_ROOT}/org/overlays/{org-name}/behaviour_bands.yaml` — behaviour bands (how personal defaults flex)
+   - `${CLAUDE_PLUGIN_ROOT}/org/overlays/{org-name}/brand_voice.md` — org voice and channel rules (if present)
    - `${CLAUDE_PLUGIN_ROOT}/org/overlays/{org-name}/SESSION_STATES.md` — state transition rules
    - `${CLAUDE_PLUGIN_ROOT}/org/overlays/{org-name}/policy/disclosure_rules.yaml` — what can be shared
 
@@ -71,3 +79,19 @@ When in S1 or S2 mode, read `${CLAUDE_PLUGIN_ROOT}/org/overlays/{org-name}/polic
 - What decision authorities apply
 
 See `references/overlay-guide.md` for detailed interpretation guidance.
+
+## Setting Up a New Org Overlay
+
+If the user asks to set up a new org:
+
+1. Create the overlay directory: `org/overlays/[org-name]/`
+2. Copy the templates:
+   ```bash
+   cp org/templates/brand_voice.md org/overlays/[org-name]/brand_voice.md
+   cp org/templates/behaviour_bands.yaml org/overlays/[org-name]/behaviour_bands.yaml
+   ```
+3. Walk the user through populating `brand_voice.md` — see `docs/brand_voice_prompt.md` for guided questions
+4. Walk the user through setting `behaviour_bands.yaml` band org_range values
+5. Run `bash scripts/validate.sh` to confirm no errors
+
+For a guided setup, use `/amai:brand-voice` (see `commands/brand-voice.md`).

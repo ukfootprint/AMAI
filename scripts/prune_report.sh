@@ -30,6 +30,8 @@ cd "$REPO_ROOT"
 MODE="review"
 OUTPUT_DIR="reports"
 JSON_MODE=false
+USAGE_PERIOD=90
+COMPARE_PATH=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -53,6 +55,10 @@ while [[ $# -gt 0 ]]; do
       OUTPUT_DIR="$2"
       shift 2
       ;;
+    --usage-period)
+      USAGE_PERIOD="${2:-90}"; shift 2 ;;
+    --compare)
+      COMPARE_PATH="${2:-}"; shift 2 ;;
     --json)
       JSON_MODE=true
       shift
@@ -69,7 +75,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # ── Run analysis via Python3 ──────────────────────────────────────────────────
-python3 - "$REPO_ROOT" "$MODE" "$OUTPUT_DIR" "$JSON_MODE" << 'PYEOF'
+python3 - "$REPO_ROOT" "$MODE" "$OUTPUT_DIR" "$JSON_MODE" "$USAGE_PERIOD" "$COMPARE_PATH" << 'PYEOF'
 
 import sys
 import os
@@ -79,10 +85,12 @@ import subprocess
 import datetime
 from pathlib import Path
 
-REPO_ROOT = Path(sys.argv[1])
-MODE      = sys.argv[2]
-OUTPUT_DIR = Path(sys.argv[3])
-JSON_MODE = sys.argv[4].lower() == "true"
+REPO_ROOT    = Path(sys.argv[1])
+MODE         = sys.argv[2]
+OUTPUT_DIR   = Path(sys.argv[3])
+JSON_MODE    = sys.argv[4].lower() == "true"
+USAGE_PERIOD = int(sys.argv[5]) if len(sys.argv) > 5 else 90
+COMPARE_PATH = sys.argv[6] if len(sys.argv) > 6 else ""
 
 TODAY = datetime.date.today()
 TODAY_STR = TODAY.isoformat()
@@ -385,6 +393,123 @@ if module_freq:
                 'detail': 'Never loaded — candidate for archival or review',
             })
 
+# ── 5. USAGE ANALYSIS — cross-reference frequency with freshness ──────────────
+
+MODULE_NARRATIVE_MAP = {
+    'identity':    ['identity/voice.md', 'identity/story.md', 'identity/principles.md'],
+    'goals':       ['goals/north_star.md'],
+    'knowledge':   ['knowledge/frameworks.md', 'knowledge/domain_landscape.md'],
+    'operations':  ['operations/workflows.md', 'operations/rituals.md'],
+    'memory': [], 'network': [], 'signals': [], 'calibration': [],
+}
+
+stale_files = {r['file'] for r in freshness_reviews}
+total_loads = sum(v for v in module_freq.values() if isinstance(v, int)) or 1
+usage_analysis = []
+for module, count in sorted(module_freq.items()):
+    if not isinstance(count, int): continue
+    pct = round(100 * count / total_loads)
+    is_used   = count > 0
+    is_stale  = any(f in stale_files for f in MODULE_NARRATIVE_MAP.get(module, []))
+    is_high   = pct > 25
+    if not is_used and is_stale:
+        category, rec = "Stale AND unused", "archive"
+    elif not is_used:
+        category, rec = "Fresh AND unused", "monitor"
+    elif is_stale and is_high:
+        category, rec = "Stale AND high-use", "update (critical)"
+    elif is_stale:
+        category, rec = "Stale BUT used", "update"
+    else:
+        category, rec = "Fresh AND used", "none"
+    usage_analysis.append({'module': module, 'loads': count, 'pct': pct,
+                           'category': category, 'recommendation': rec})
+
+# ── 6. DOMAIN ANALYSIS — identify unused or stale knowledge domains ───────────
+
+domain_analysis = []
+domain_index_path = REPO_ROOT / 'knowledge/domains/domain_index.yaml'
+if domain_index_path.exists():
+    try:
+        import yaml as _yaml
+        with open(domain_index_path) as _f:
+            _domain_data = _yaml.safe_load(_f.read())
+        _domains = _domain_data.get('domains', []) if isinstance(_domain_data, dict) else []
+        # Load domain load frequency if tracked in metrics
+        _domain_freq = {}
+        try:
+            with open(REPO_ROOT / 'calibration/metrics.yaml') as _mf:
+                _metrics_raw = _mf.read()
+            _dom_section = re.search(r'domain_load_frequency:(.*?)(?=\n\w|\Z)', _metrics_raw, re.DOTALL)
+            if _dom_section:
+                for _dm in re.finditer(r'^\s+([a-z_]+):\s+(\d+)', _dom_section.group(1), re.MULTILINE):
+                    _domain_freq[_dm.group(1)] = int(_dm.group(2))
+        except Exception:
+            pass
+
+        for _d in _domains:
+            if not isinstance(_d, dict): continue
+            _did   = _d.get('id', '?')
+            _dlabel = _d.get('label', _did)
+            _active = _d.get('active', False)
+            _dpath  = REPO_ROOT / _d.get('path', '').rstrip('/')
+            _loads  = _domain_freq.get(_did, 0)
+            _last   = _d.get('last_updated')
+
+            # Calculate directory size
+            _size = 0
+            if _dpath.is_dir():
+                for _f in _dpath.rglob('*.md'):
+                    try: _size += _f.stat().st_size
+                    except Exception: pass
+
+            _stale = False
+            if _last:
+                try:
+                    _age = (TODAY - datetime.date.fromisoformat(str(_last))).days
+                    _stale = _age > int(USAGE_PERIOD)
+                except Exception:
+                    pass
+
+            if _active:
+                if _loads == 0 and _stale:
+                    _rec = "deactivate"
+                    _detail = f"0 loads and last_updated over {USAGE_PERIOD} days ago — candidate for active: false"
+                elif _loads == 0:
+                    _rec = "monitor"
+                    _detail = "0 loads recorded — newly added or not yet used"
+                elif _stale:
+                    _rec = "update"
+                    _detail = f"Used ({_loads} loads) but last_updated over {USAGE_PERIOD} days ago — refresh content"
+                else:
+                    _rec = "healthy"
+                    _detail = f"{_loads} load(s) — active and current"
+            else:
+                _rec = "inactive"
+                _detail = "active: false — excluded from export and loading"
+
+            domain_analysis.append({
+                'id': _did, 'label': _dlabel, 'active': _active,
+                'loads': _loads, 'size_bytes': _size,
+                'recommendation': _rec, 'detail': _detail
+            })
+    except Exception as _e:
+        domain_analysis = []  # skip domain analysis if yaml not available
+
+# ── 8. COMPARE — diff against a previous report ───────────────────────────────
+
+compare_delta = None
+if COMPARE_PATH:
+    try:
+        prev = Path(COMPARE_PATH).read_text()
+        prev_counts = {}
+        for m in re.finditer(r'\|\s*([\w ]+\w)\s*\|\s*(\d+)\s*\|', prev):
+            key = m.group(1).strip().lower().replace(' ', '_')
+            prev_counts[key] = int(m.group(2))
+        if prev_counts: compare_delta = prev_counts
+    except Exception:
+        pass
+
 # ── Assemble results ──────────────────────────────────────────────────────────
 
 total_archive       = len(archive_candidates)
@@ -411,6 +536,9 @@ if JSON_MODE:
         'size_warnings':            size_warnings,
         'freshness_reviews':        freshness_reviews,
         'frequency_warnings':       freq_warnings,
+        'usage_analysis':           usage_analysis,
+        'domain_analysis':          domain_analysis,
+        'compare_delta':            compare_delta,
         'protected': list(PROTECTED.keys()),
     }
     print(json.dumps(output, indent=2))
@@ -485,6 +613,66 @@ else:
         lines.append("")
         for w in freq_warnings:
             lines.append(f"- **{w['module']}** — {w['detail']}")
+        lines.append("")
+
+    # Usage Analysis
+    if usage_analysis:
+        lines.append("## 🔀 Usage Analysis")
+        lines.append(f"Cross-reference of module load frequency with content freshness (period: {USAGE_PERIOD} days)")
+        lines.append("")
+        lines.append("| Module | Loads | % | Category | Action |")
+        lines.append("|--------|-------|---|----------|--------|")
+        for u in usage_analysis:
+            icon = "🔴" if u['recommendation'] == 'archive' else ("🟡" if 'update' in u['recommendation'] or u['recommendation'] == 'monitor' else "✅")
+            lines.append(f"| {u['module']} | {u['loads']} | {u['pct']}% | {u['category']} | {icon} {u['recommendation']} |")
+        lines.append("")
+        stale_unused = [u for u in usage_analysis if u['recommendation'] == 'archive']
+        stale_used   = [u for u in usage_analysis if 'update' in u['recommendation']]
+        if stale_unused:
+            lines.append(f"🔴 **{len(stale_unused)} module(s) stale AND unused** — strongest prune candidates: {', '.join(u['module'] for u in stale_unused)}")
+        if stale_used:
+            lines.append(f"🟡 **{len(stale_used)} module(s) need updating** (used but stale): {', '.join(u['module'] for u in stale_used)}")
+        lines.append("")
+
+    # Domain Analysis
+    if domain_analysis:
+        active_domains = [d for d in domain_analysis if d['active']]
+        deactivate_candidates = [d for d in domain_analysis if d['recommendation'] == 'deactivate']
+        lines.append("## 🗂️ Knowledge Domain Analysis")
+        lines.append("")
+        lines.append("| Domain | Active | Loads | Size | Recommendation |")
+        lines.append("|--------|--------|-------|------|----------------|")
+        for da in domain_analysis:
+            icon = "🔴" if da['recommendation'] == 'deactivate' else ("🟡" if da['recommendation'] in ('update', 'monitor') else ("⚫" if da['recommendation'] == 'inactive' else "✅"))
+            size_kb = round(da['size_bytes'] / 1024, 1) if da['size_bytes'] else 0
+            lines.append(f"| {da['label']} | {'✓' if da['active'] else '✗'} | {da['loads']} | {size_kb}KB | {icon} {da['recommendation']} |")
+        lines.append("")
+        if deactivate_candidates:
+            lines.append(f"🔴 **{len(deactivate_candidates)} domain(s) unused and stale** — consider setting `active: false` in domain_index.yaml: {', '.join(d['id'] for d in deactivate_candidates)}")
+            lines.append("> Note: setting `active: false` excludes a domain from loading and export without deleting files.")
+        lines.append("")
+
+    # Compare with previous report
+    if compare_delta:
+        lines.append("## 🔄 Changes Since Last Review")
+        lines.append("")
+        lines.append("| Category | Previous | Current | Change |")
+        lines.append("|----------|----------|---------|--------|")
+        cat_map = [
+            ('archive_candidates', 'Archive candidates', total_archive),
+            ('consolidation_candidates', 'Consolidation candidates', total_consolidation),
+            ('size_warnings', 'Size warnings', total_size),
+            ('freshness_reviews', 'Freshness reviews', total_freshness),
+            ('frequency_warnings', 'Frequency warnings', total_freq),
+        ]
+        for key, label, current in cat_map:
+            prev = compare_delta.get(key, None)
+            if isinstance(prev, int):
+                delta = current - prev
+                change = (f"+{delta}" if delta > 0 else str(delta)) + (" ⬆️" if delta > 0 else " ⬇️" if delta < 0 else " →")
+            else:
+                change = "?"
+            lines.append(f"| {label} | {prev if prev is not None else '?'} | {current} | {change} |")
         lines.append("")
 
 # Protected Modules (always shown)

@@ -1,14 +1,15 @@
 ---
 name: conscience
 description: >
-  Real-time ethical red-line monitoring. Checks session content against the user's
-  structured ethical red lines (When/Do/Never/Except format). Runs silently in the
+  Real-time ethical red-line and heuristic monitoring. Phase 1: checks session content
+  against the user's structured ethical red lines (When/Do/Never/Except format).
+  Phase 2: also checks against high-confidence heuristics. Runs silently in the
   background during any content-generation session — surfaces an advisory alert only
   when a potential violation is detected. Never blocking. Always advisory.
   Trigger phrases include: "check this against my red lines", "conscience check",
   "ethical check", "red line check", "does this cross a line", "is this okay ethically",
-  "check my values on this", "run conscience".
-version: 0.1.0
+  "check my values on this", "run conscience", "check heuristics".
+version: 0.2.0
 triggers:
   - "check this against my red lines"
   - "conscience check"
@@ -18,34 +19,42 @@ triggers:
   - "is this okay ethically"
   - "check my values on this"
   - "run conscience"
+  - "check heuristics"
 tools:
   - Read
   - Bash
 ---
 
 The conscience skill monitors session content against the user's declared ethical red
-lines. Phase 1 scope: `ethical_red_lines` in `identity/values.yaml` only. It operates
-in two modes — background scan (automatic, silent unless flagged) and on-demand check
-(invoked explicitly via `/amai:conscience` or the trigger phrases above).
+lines and high-confidence heuristics. It operates in two modes — background scan
+(automatic, silent unless flagged) and on-demand check (invoked explicitly via
+`/amai:conscience` or the trigger phrases above).
 
 This skill does not replace judgment. It raises concerns for the user to consider.
 The user is always the final authority.
 
+**Phase 2 default behaviour:** Both red-line checking (Phase 1) and heuristic checking
+(Phase 2) are active by default. Use `--red-lines-only` to revert to Phase 1 behaviour.
+
 ---
 
-## Phase 1 Scope and Limitations
+## Phase Configuration
 
-**What this skill checks:**
-- `identity/values.yaml → ethical_red_lines` entries only
+| Phase | Scope | Status |
+|-------|-------|--------|
+| Phase 1 | `ethical_red_lines` in `identity/values.yaml` | Active |
+| Phase 2 | Phase 1 + high-confidence entries in `identity/heuristics.yaml` | Active (default) |
+| Phase 3 | Broader values-trajectory monitoring with calibration data | Future |
 
-**What this skill does NOT check (future phases):**
-- `core_values` or `secondary_values` (Phase 2)
-- `identity/heuristics.yaml` (Phase 2)
-- Broader values-trajectory monitoring with calibration data (Phase 3)
+**Mode flags (passed via command arguments or session context):**
+- `--include-heuristics` (default) — Phase 1 + Phase 2
+- `--red-lines-only` — Phase 1 only
+- `--heuristics-only` — Phase 2 only (no red-line checking)
 
 **Known limitations:**
 - The skill evaluates generated text, not intent — false positives are expected
 - String-format red lines get best-effort keyword matching only (encourage upgrade)
+- Heuristic alerts have a higher expected false-positive rate than red-line alerts
 - Background scan can only flag content after it has been generated; it cannot pre-empt
 - This skill does not block, modify, or delay any output
 
@@ -67,6 +76,7 @@ Background scan runs silently throughout any session where content is being gene
 
 **Background scan process (per generated response):**
 
+**Phase 1 — Red line check:**
 1. Load `identity/values.yaml → ethical_red_lines` if not already in session context
 2. For each response generated during the session, mentally scan the content against each red line:
    - Does the content touch the "when" context for this red line?
@@ -74,10 +84,19 @@ Background scan runs silently throughout any session where content is being gene
    - Does the "except" clause apply?
 3. If no violation detected: do nothing. Do not mention the scan.
 4. If a potential violation is detected: surface a CONSCIENCE:ALERT or CONSCIENCE:CHECK immediately after the response (see Alert Format below)
-5. Log the alert to `signals/observations.jsonl` (see Logging section below)
+5. Log the alert to `signals/observations.jsonl` as type `"conscience_alert"` (see Logging section below)
+
+**Phase 2 — Heuristic check (if mode includes heuristics):**
+6. Load `identity/heuristics.yaml` if not already in session context
+7. Filter for entries where `confidence: high` only (skip medium, low, or unset)
+8. For each high-confidence heuristic whose `use_when` or domain matches the current session:
+   - Does the generated content contradict the heuristic's `rule` or `action`?
+   - If yes: surface a CONSCIENCE:HEURISTIC notice (softer than ALERT — see Alert Format)
+   - Log to `signals/observations.jsonl` as type `"conscience_heuristic"`
+9. If no heuristic conflict detected: do nothing.
 
 **Silence is the normal state.** The user should rarely see conscience output during
-a session. If alerts are firing frequently, either the red lines are misspecified or
+a session. If alerts are firing frequently, either the rules are misspecified or
 the session topic is genuinely close to a boundary — either is worth noting.
 
 ---
@@ -202,6 +221,20 @@ Note: [what in the current output may be relevant to this constraint — stated 
 Question for you: [one specific question to help the user decide if this is a concern]
 ```
 
+### CONSCIENCE:HEURISTIC (Phase 2 — high-confidence heuristic conflict)
+
+```
+💡 CONSCIENCE:HEURISTIC — [heuristic_id]
+Rule: [rule field from heuristics.yaml]
+Domain: [domain or use_when field]
+Concern: [what in the current output may contradict this heuristic]
+Note: This is a heuristic, not a red line. The user may have good reasons to deviate.
+```
+
+Heuristic alerts are softer than red-line alerts — they are advisory observations,
+not warnings. They should appear less frequently than red-line checks and are logged
+separately as `"conscience_heuristic"` rather than `"conscience_alert"`.
+
 ### Legacy red line flag
 
 ```
@@ -219,11 +252,12 @@ edit identity/values.yaml directly using docs/red_line_migration.md
 Every alert (CONSCIENCE:ALERT or CONSCIENCE:CHECK) — regardless of whether the user
 acts on it — is logged to `signals/observations.jsonl` as a conscience-subtype entry.
 
-**Log format:**
+**Log format — red line alerts (type: conscience_alert):**
 
 ```jsonl
 {
   "date": "YYYY-MM-DD",
+  "type": "conscience_alert",
   "context": "Conscience alert during [session context]",
   "signals": [
     "Conscience:ALERT — [red_line_id]: [one-line concern]",
@@ -231,6 +265,22 @@ acts on it — is logged to `signals/observations.jsonl` as a conscience-subtype
   ],
   "possible_divergence": "Type 1 (Values) — ethical_red_lines → [red_line_id]",
   "config_ref": "identity/values.yaml → ethical_red_lines → [red_line_id]"
+}
+```
+
+**Log format — heuristic notices (type: conscience_heuristic):**
+
+```jsonl
+{
+  "date": "YYYY-MM-DD",
+  "type": "conscience_heuristic",
+  "context": "Heuristic notice during [session context]",
+  "signals": [
+    "Conscience:HEURISTIC — [heuristic_id]: [one-line concern]",
+    "User response: acknowledged / adjusted / dismissed / no_response"
+  ],
+  "possible_divergence": "Type 3 (Operational) — heuristics → [heuristic_id]",
+  "config_ref": "identity/heuristics.yaml → [section] → [heuristic_id]"
 }
 ```
 

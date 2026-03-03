@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "domain_index.schema.json",
+  "title": "Domain Index",
+  "description": "Registry of knowledge domains in knowledge/domains/",
+  "type": "object",
+  "required": ["_schema", "domains"],
+  "properties": {
+    "_schema": {
+      "type": "string",
+      "const": "domain_index"
+    },
+    "_version": {
+      "type": "string"
+    },
+    "last_updated": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "domains": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "description", "path", "active"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "snake_case domain identifier"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 3,
+            "description": "Human-readable domain name"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 20,
+            "description": "What this domain covers — one or two sentences"
+          },
+          "path": {
+            "type": "string",
+            "pattern": "/$",
+            "description": "Relative path to the domain directory — must end with /"
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Whether this domain is currently in use"
+          },
+          "last_updated": {
+            "type": ["string", "null"],
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+            "description": "Date domain files were last meaningfully updated"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Keywords for task-type matching"
+          }
+        }
+      }
+    }
+  }
+}

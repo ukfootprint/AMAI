@@ -1,13 +1,22 @@
 ---
 name: conscience
-description: On-demand ethical red-line check against structured entries in identity/values.yaml
-argument_hint: "[text or context to check — or empty to check current session content]"
+description: On-demand ethical check against red lines (Phase 1) and high-confidence heuristics (Phase 2)
+argument_hint: "[text or context to check] [--red-lines-only | --include-heuristics | --heuristics-only]"
+flags:
+  --include-heuristics: "Phase 2 mode (default) — check red lines + high-confidence heuristics"
+  --red-lines-only: "Phase 1 mode — check only ethical_red_lines (skip heuristics)"
+  --heuristics-only: "Check only high-confidence heuristics (skip red-line check)"
 allowed_tools:
   - Read
   - Bash
 ---
 
 Invoke the conscience skill at `skills/conscience/SKILL.md` in **on-demand check mode**.
+
+**Mode detection:** Parse $ARGUMENTS for mode flags before running the check:
+- `--red-lines-only` → run Phase 1 only (red lines)
+- `--heuristics-only` → run Phase 2 only (heuristics)
+- `--include-heuristics` or no flag → run Phase 1 + Phase 2 (default)
 
 **Step 1 — Load red lines:**
 
@@ -59,9 +68,36 @@ Red lines not in scope:
 If a CONSCIENCE:ALERT is raised, use the full alert format from the skill.
 If a CONSCIENCE:CHECK is raised, use the check format from the skill.
 
-**Step 5 — Log the result:**
+**Step 5 — Phase 2 heuristic check (if mode includes heuristics):**
 
-If any ALERT or CHECK was raised, note it for logging to `signals/observations.jsonl`
-at session end. Use the conscience log format from the skill's Logging section.
+Read `identity/heuristics.yaml`. Filter for entries where `confidence: high`.
+
+For each high-confidence heuristic:
+1. Check if the task's domain or context matches the heuristic's `use_when` field
+2. If yes: does the current content or proposed action contradict the heuristic's `rule`?
+3. If contradiction detected: surface a CONSCIENCE:HEURISTIC notice (softer format — see skill)
+
+Add heuristic results to the on-demand output format:
+
+```
+High-confidence heuristics in scope for this context:
+─────────────────────────────────────────────────────
+[heuristic_id]: [rule — one line]
+  Status: ✓ Consistent / 💡 POSSIBLE DEVIATION
+  [If flagged: concern + note that deviation may be intentional]
+
+Heuristics not in scope:
+  [id] — [why it doesn't apply]
+```
+
+If no heuristics are `confidence: high`, note: "No high-confidence heuristics found —
+heuristic checking requires at least one entry with `confidence: high` in heuristics.yaml."
+
+**Step 6 — Log the result:**
+
+If any ALERT, CHECK, or HEURISTIC notice was raised, note it for logging to
+`signals/observations.jsonl` at session end. Use the conscience log formats from
+the skill's Logging section — type `"conscience_alert"` for red lines,
+`"conscience_heuristic"` for heuristic notices.
 
 If the check was fully compliant with no flags, no logging is required.
