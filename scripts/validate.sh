@@ -326,9 +326,22 @@ def validate_values():
             R.warn('EMPTY_RED_LINES', 'ethical_red_lines array is empty — add at least 2 non-negotiable constraints')
         else:
             for idx, rl in enumerate(red_lines):
-                if isinstance(rl, str) and len(rl) < 10:
-                    R.warn('SHORT_RED_LINE',
-                           f'ethical_red_lines[{idx}] is only {len(rl)} chars — be more specific')
+                if isinstance(rl, str):
+                    # Legacy string format
+                    if len(rl) < 10:
+                        R.warn('SHORT_RED_LINE',
+                               f'ethical_red_lines[{idx}] is only {len(rl)} chars — be more specific')
+                    R.warn('DEPRECATED_RED_LINE_FORMAT',
+                           f'ethical_red_lines[{idx}] is a plain string — migrate to When/Do/Never/Except format (see docs/red_line_migration.md)')
+                elif isinstance(rl, dict):
+                    # Structured format — check recommended fields
+                    if not rl.get('do'):
+                        R.warn('REDLINE_MISSING_DO',
+                               f'ethical_red_lines[{idx}] ({rl.get("id","?")}) has no "do" field — add the required positive behaviour')
+                    examples = rl.get('examples')
+                    if not isinstance(examples, list) or len(examples) < 1:
+                        R.warn('REDLINE_MISSING_EXAMPLES',
+                               f'ethical_red_lines[{idx}] ({rl.get("id","?")}) has no examples — add at least 1 concrete example')
 
     # Placeholder scan
     for fp, snippet in check_placeholders(data):

@@ -80,9 +80,38 @@
     "ethical_red_lines": {
       "type": "array",
       "minItems": 1,
+      "description": "Accepts both legacy string format (deprecated) and structured When/Do/Never/Except objects. String format still validates but will produce WARN:DEPRECATED_RED_LINE_FORMAT. Migrate to structured format using docs/red_line_migration.md.",
       "items": {
-        "type": "string",
-        "minLength": 10
+        "oneOf": [
+          {
+            "type": "string",
+            "minLength": 10,
+            "description": "Legacy string format — deprecated. Use structured object format instead."
+          },
+          {
+            "type": "object",
+            "required": ["id", "when", "never", "examples"],
+            "properties": {
+              "id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+              "when": {"type": "string", "minLength": 10},
+              "do": {"type": "string", "minLength": 10},
+              "never": {"type": "string", "minLength": 10},
+              "except": {"type": "string"},
+              "examples": {
+                "type": "array",
+                "minItems": 1,
+                "items": {"type": "string", "minLength": 10}
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["absolute", "strong"],
+                "default": "absolute"
+              }
+            },
+            "additionalProperties": false,
+            "description": "Structured When/Do/Never/Except format — recommended."
+          }
+        ]
       }
     },
     "last_updated": {

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "red_lines.schema.json",
+  "title": "AMAI Red Line Schema",
+  "description": "Schema for a single structured ethical red line entry (When/Do/Never/Except). Used as an item type within the ethical_red_lines array in identity/values.yaml.",
+  "type": "object",
+  "required": ["id", "when", "never", "examples"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "Snake_case unique identifier for this red line"
+    },
+    "when": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Context or conditions where this rule applies — name the situations, roles, or relationships in scope"
+    },
+    "do": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Required behaviour in this context — what the positive obligation is (recommended but not strictly required)"
+    },
+    "never": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Prohibited behaviour — the actual red line. Should be specific enough that a third party could evaluate whether it was crossed."
+    },
+    "except": {
+      "type": "string",
+      "description": "Enumerated exceptions, or the string 'none' if there are no exceptions. If more than 1-2 narrow carve-outs are needed, this may not be a red line."
+    },
+    "examples": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      },
+      "description": "Concrete example phrases or scenarios showing the rule in action — either compliant behaviour or a clear violation"
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["absolute", "strong"],
+      "default": "absolute",
+      "description": "absolute = never violate under any circumstances; strong = near-absolute but rare acknowledged edge cases exist"
+    }
+  },
+  "additionalProperties": false
+}

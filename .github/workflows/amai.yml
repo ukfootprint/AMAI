@@ -1,0 +1,120 @@
+name: AMAI Validation
+
+on:
+  push:
+    paths:
+      - 'identity/**'
+      - 'goals/**'
+      - 'knowledge/**'
+      - 'memory/**'
+      - 'network/**'
+      - 'operations/**'
+      - 'signals/**'
+      - 'calibration/**'
+      - 'org/**'
+      - 'schemas/**'
+      - 'scripts/**'
+      - 'BRAIN.md'
+      - 'MODULE_SELECTION.md'
+      - 'export/profiles.yaml'
+  pull_request:
+    paths:
+      - 'identity/**'
+      - 'goals/**'
+      - 'knowledge/**'
+      - 'memory/**'
+      - 'network/**'
+      - 'operations/**'
+      - 'signals/**'
+      - 'calibration/**'
+      - 'org/**'
+      - 'schemas/**'
+      - 'scripts/**'
+      - 'BRAIN.md'
+      - 'MODULE_SELECTION.md'
+      - 'export/profiles.yaml'
+
+jobs:
+
+  # ── Job 1: Schema and quality validation ────────────────────────────────────
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Run validation
+        # --allow-warn: WARNs do not block CI. Only ERRORs fail the job.
+        # Data quality warnings are surfaced in the log but don't block commits.
+        run: bash scripts/validate.sh --allow-warn
+
+  # ── Job 2: Export smoke tests ────────────────────────────────────────────────
+  export-smoke-test:
+    name: Export Smoke Test
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Dry-run — claude_project
+        run: bash scripts/amai_export.sh --target claude_project --dry-run
+
+      - name: Dry-run — chatgpt_project
+        run: bash scripts/amai_export.sh --target chatgpt_project --dry-run
+
+      - name: Dry-run — gemini_drive
+        run: bash scripts/amai_export.sh --target gemini_drive --dry-run
+
+      - name: Dry-run — generic
+        run: bash scripts/amai_export.sh --target generic --dry-run
+
+      - name: Real export — generic (verify output exists)
+        run: |
+          bash scripts/amai_export.sh --target generic
+          # Verify at least one export file was created
+          count=$(find export/ -name "amai_export.md" | wc -l)
+          if [ "$count" -lt 1 ]; then
+            echo "ERROR: No export file found after running amai_export.sh --target generic"
+            exit 1
+          fi
+          echo "Export verified: $count file(s) found"
+
+  # ── Job 3: Staleness check (informational only) ─────────────────────────────
+  staleness-check:
+    name: Staleness Check
+    runs-on: ubuntu-latest
+    continue-on-error: true   # Staleness is informational — never blocks a commit
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Run staleness report
+        # This step always succeeds (continue-on-error: true on the job).
+        # Staleness output is surfaced in the CI log for visibility only.
+        run: bash scripts/staleness.sh

@@ -1,5 +1,7 @@
 # AMAI — Anchor My AI
 
+[![AMAI Validation](https://github.com/ukfootprint/AMAI/actions/workflows/amai.yml/badge.svg)](https://github.com/ukfootprint/AMAI/actions/workflows/amai.yml)
+
 > *A values-first, file-based personal AI infrastructure.*
 
 Give any AI assistant structured context about who you are, what you're building, and how you think — so it operates in alignment with your values from session one, without you re-explaining yourself each time.

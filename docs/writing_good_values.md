@@ -77,33 +77,59 @@ literal check when reviewing a draft message.
 Red lines are not values — they are constraints. They define what you will not
 do regardless of context, pressure, or apparent benefit.
 
-### What makes a red line weak — triggers `WARN:SHORT_RED_LINE`
+### Recommended format: When/Do/Never/Except (structured)
 
-**Weak:**
+The structured format is the recommended approach. It makes red lines
+machine-checkable and forces the edge-case thinking that vague strings skip:
+
+```yaml
+ethical_red_lines:
+  - id: client_capability_claims
+    when: "Client communications, proposals, capability claims, sales materials"
+    do: "State only capabilities that have been delivered or are in active development with named evidence"
+    never: "Claim capability that doesn't exist, hasn't been tested, or cite reference clients without their consent"
+    except: "Clearly labelled roadmap items with explicit caveats ('planned for Q3, not yet in production')"
+    examples:
+      - "We delivered X for Client Y in Q3 — here are the results"
+      - "X is on our roadmap for Q2. It's not yet in production and I can't guarantee the timeline"
+    severity: absolute
+```
+
+- **`when`** — the scope: which situations, roles, or relationships this applies to
+- **`do`** — the positive obligation: what you actively do in this context
+- **`never`** — the hard constraint: specific enough for a third party to evaluate
+- **`except`** — carve-outs, or "none" (more than 1–2 exceptions = not a red line)
+- **`examples`** — concrete anchors the AI uses as reference scenarios
+- **`severity`** — `absolute` (default) or `strong` (near-absolute, acknowledged edge cases)
+
+See `docs/red_line_migration.md` for step-by-step migration instructions.
+
+### Legacy format: plain strings (deprecated — triggers `WARN:DEPRECATED_RED_LINE_FORMAT`)
+
+Plain strings still validate but are deprecated. Migrate when you run `/amai:setup-advanced`.
+
+**Weak legacy string:**
 ```
 "Don't lie"
 ```
-Under 10 words. Too vague. When is omission a lie? What about framing?
-What counts as a lie in a negotiation? This gives an AI nothing to work with.
+Under 10 words. Too vague. Gives an AI nothing to evaluate against.
 
-**Strong:**
+**Strong legacy string (still deprecated, but better):**
 ```
 "Never claim a capability, qualification, or track record that hasn't been
 demonstrated in a real engagement — not in proposals, pitches, or casual
 conversation."
 ```
-Specific. Testable. Named contexts. Someone — or an AI — can look at a
-sentence and determine whether it crosses this line.
+Specific. Testable. Named contexts. Still better migrated to the structured format.
 
-### The When/Do/Never/Except structure
+### The thinking tool
 
-For maximum clarity, think about each red line in four parts (you don't have
-to write them this way — it's a thinking tool):
+If you're not sure whether something is a red line, run it through:
 
-- **When:** In commercial proposals and client conversations
-- **Do:** Describe experience accurately, including gaps
-- **Never:** Claim credentials or results that aren't documented and real
-- **Except:** No exceptions — this is a hard line
+- **When:** In what contexts does this apply?
+- **Do:** What should I actively do instead?
+- **Never:** What exactly is prohibited?
+- **Except:** Are there any legitimate exceptions?
 
 If you find yourself writing "Except in cases where…" with more than one or
 two narrow carve-outs, it's probably not a red line — it's a strong preference.
