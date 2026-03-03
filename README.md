@@ -63,10 +63,11 @@ Using AMAI with Claude Cowork and the included plugin is the highest-fidelity ex
 | Without plugin | With plugin |
 |----------------|-------------|
 | Manual prompt every session: *"Read my BRAIN.md…"* | `SessionStart` hook loads defaults automatically |
-| User manages what modules to load | `context-loader` skill reads the trigger table and loads the right modules |
+| User manages what modules to load | `context-loader` skill reads the trigger table and loads the right modules — including domain-specific knowledge when task vocabulary matches a registered domain |
 | Signal capture requires remembering | `Stop` hook detects signal-worthy moments and offers to log them |
-| No slash commands | `/amai:status`, `/amai:calibrate`, `/amai:capture`, `/amai:validate`, `/amai:lint`, `/amai:export` |
-| Org overlays require manual activation | `org-overlay` skill handles S0/S1/S2 transitions with confirmation |
+| No slash commands | `/amai:status`, `/amai:calibrate`, `/amai:capture`, `/amai:validate`, `/amai:lint`, `/amai:export`, `/amai:brand-voice`, `/amai:conscience` |
+| Org overlays require manual activation | `/amai:brand-voice` activates brand voice + behaviour bands; `org-overlay` skill handles S0/S1/S2 transitions with confirmation |
+| Onboarding is manual | `/amai:setup 1` (30 min), `/amai:setup 2` (45 min), `/amai:setup 3` (30 min) — three progressive stages building from quick-start to full core |
 
 **Setup:** Open Cowork, select your AMAI folder as the workspace, and install `amai.plugin`. That's it — the next session starts fully loaded.
 
@@ -199,28 +200,19 @@ If you're using Claude Cowork, install the plugin first — it makes every subse
 
 1. Open Cowork and select your AMAI folder as the workspace
 2. Install `amai.plugin` (included in this repository)
-3. Your next session will auto-load your context — then fill in the files below and they're immediately live
+3. Your next session will auto-load your context — then run the onboarding stages below
 
-**Step 1 — Fill in your identity (30 minutes)**
+**Onboarding stages** *(progressive — complete each before the next)*
 
-Start with the `identity/` module. This is the foundation everything else draws from.
+| Stage | Command | Time | What it builds |
+|-------|---------|------|----------------|
+| **Stage 1 — Quick Start** | `/amai:setup 1` | ~30 min | Values, heuristics, current focus — enough to start every session in alignment |
+| **Stage 2 — Foundation** | `/amai:setup 2` | ~45 min | Voice, north star, goals, beliefs, knowledge context — full professional context |
+| **Stage 3 — Full Core** | `/amai:setup 3` | ~30 min | Story, principles, operations, network circles, memory seeds — deep personal infrastructure |
 
-1. Open `identity/values.yaml` — define your core values and ethical red lines
-2. Open `identity/voice.md` — describe how you communicate
-3. Open `identity/heuristics.yaml` — add your fast decision rules
-4. Open `identity/story.md` — write a short narrative of who you are and what you're building
-5. Update the "Core Identity Summary" section in `BRAIN.md`
+Each stage is guided conversation — no blank files to stare at. Stage 1 alone gives you a working system. Return for Stage 2 and Stage 3 after 2+ weeks of Stage 1 use, when you have a feel for what the AI is missing.
 
-**Step 2 — Set your goals (20 minutes)**
-
-1. Open `goals/north_star.md` — write your 3–10 year vision
-2. Open `goals/goals.yaml` — set 3–5 current goals with status tracking
-3. Open `goals/current_focus.yaml` — set this week's priority stack
-
-**Step 3 — Add domain context (15 minutes)**
-
-1. Open `knowledge/domain_landscape.md` — describe the sector or market you operate in
-2. Open `knowledge/frameworks.md` — add the mental models you actually use
+Without the plugin, you can follow the same stages manually using the portable prompts in `docs/onboarding_stage3_prompt.md` and `docs/`.
 
 **Step 4 — Start using it**
 
@@ -228,7 +220,7 @@ Open a session with any AI assistant and say:
 
 > "Read my BRAIN.md and load the relevant modules for this task."
 
-Then describe what you want to work on. The AI has your context.
+Then describe what you want to work on. The AI has your context. With the plugin, this instruction runs automatically.
 
 **Step 5 — Build out over time**
 
@@ -240,7 +232,7 @@ Once the core modules feel natural, add `signals/` and `calibration/` to close t
 
 **If your work involves an organisation — add the Org Layer**
 
-If you work within an organisation — as an employee, consultant, or portfolio worker — add `org/` to separate your personal identity from how you show up in an institutional context. See the Org Layer section below.
+If you work within an organisation — as an employee, consultant, or portfolio worker — add `org/` to separate your personal identity from how you show up in an institutional context. Use `/amai:brand-voice --new <org-name>` to set up a new overlay. See the Org Layer section below.
 
 ---
 
@@ -300,7 +292,12 @@ AMAI/
 │   ├── learning.jsonl              ← Append-only insight and lesson log
 │   ├── frameworks.md               ← Mental models you rely on
 │   ├── domain_landscape.md         ← Your sector or domain context
-│   └── reading_list.md             ← Books, articles, resources
+│   ├── reading_list.md             ← Books, articles, resources
+│   └── domains/                    ← Sector-specific knowledge (optional)
+│       ├── domain_index.yaml       ← Registry of active domains with trigger tags
+│       └── <domain-id>/            ← One folder per domain (e.g. edtech/, ai_infrastructure/)
+│           ├── README.md           ← Domain file guide and expected contents
+│           └── frameworks.md       ← Domain-specific mental models and patterns
 │
 ├── network/                        ← Who you know
 │   ├── circles.yaml                ← Relationship tier definitions and criteria
@@ -337,6 +334,9 @@ AMAI/
 ├── org/                            ← Organisation overlay
 │   ├── MODULE.md                   ← When and how to load the org layer
 │   ├── org_index.yaml              ← Registry of overlays in this instance
+│   ├── templates/                  ← Starting templates for new overlays
+│   │   ├── brand_voice.md          ← Brand voice template (tone, style, examples)
+│   │   └── behaviour_bands.yaml    ← Behaviour bands template (5 dimensions × 5 levels)
 │   └── overlays/
 │       └── <org-id>/               ← One folder per organisation
 │           ├── overlay.yaml        ← Precedence, conflict protocol, session banner
@@ -347,8 +347,22 @@ AMAI/
 │               ├── data_classes.yaml      ← Org data classification
 │               └── disclosure_rules.yaml  ← Allowed classes by context
 │
+├── schemas/                        ← JSON Schema validation files
+│   ├── domain_index.schema.json    ← Schema for knowledge/domains/domain_index.yaml
+│   └── behaviour_bands.schema.json ← Schema for org overlay behaviour_bands.yaml
+│
+├── docs/                           ← Portable prompts and guides
+│   ├── conscience_prompt.md        ← Paste-in prompt for conscience checks (no plugin needed)
+│   ├── brand_voice_prompt.md       ← Paste-in guide for org overlay setup
+│   ├── onboarding_stage3_prompt.md ← Portable Stage 3 onboarding prompt
+│   └── maintenance_agent.md        ← Weekly maintenance agent documentation
+│
 └── scripts/                        ← Validation and export tooling
-    ├── validate.sh                 ← Schema and date integrity checks
+    ├── validate.sh                 ← Schema, date integrity, and domain checks
+    ├── staleness.sh                ← Module freshness report
+    ├── usage_report.sh             ← Module load frequency report
+    ├── prune_report.sh             ← Archive candidates, consolidation + domain analysis
+    ├── eval_quality.sh             ← Quality evaluation task generator
     ├── amai_lint.sh                ← Org overlay completeness validation
     └── amai_export.sh              ← Browser-safe bundle generator
 ```
@@ -404,6 +418,58 @@ If REJECT: behaviour corrected, config unchanged
 
 ---
 
+## Conscience Layer — Red Lines & Heuristics
+
+*Runs automatically in the background once your `identity/values.yaml` is populated.*
+
+The conscience layer monitors content you generate against two tiers of ethical constraint:
+
+**Phase 1 — Red lines** (`identity/values.yaml → ethical_red_lines`): Hard constraints in structured When/Do/Never/Except format. The AI checks every piece of generated content against these silently. If a potential violation is detected, it surfaces an advisory alert before proceeding — never blocking, always visible.
+
+```
+⚠️ CONSCIENCE:ALERT — [red_line_id]
+When: [when field]
+Concern: [what in the current task may cross this line]
+Proceed? (Yes / No / Modify)
+```
+
+**Phase 2 — High-confidence heuristics** (`identity/heuristics.yaml`): Softer checks against your domain-specific fast rules. Surfaced only for rules marked `confidence: high`. Presented as a lighter advisory distinct from hard red-line alerts.
+
+```
+💡 CONSCIENCE:HEURISTIC — [heuristic_id]
+Rule: [rule field]
+Concern: [what may contradict this heuristic]
+Note: This is a heuristic, not a red line. You may have good reasons to deviate.
+```
+
+**On demand:** Run `/amai:conscience` at any point, or use flags for targeted checks:
+- `/amai:conscience --red-lines-only` — Phase 1 only
+- `/amai:conscience --heuristics-only` — Phase 2 only
+- `/amai:conscience --include-heuristics` — both phases (default)
+
+The conscience layer is informational. It never blocks. Every alert is logged to `calibration/metrics.yaml` for pattern review. See `docs/conscience_prompt.md` for the portable prompt you can paste into any session without the plugin.
+
+---
+
+## Knowledge Domains
+
+*Optional. Add domain subdirectories when your work is concentrated in a specific sector.*
+
+The standard `knowledge/` module covers general frameworks and domain landscape. When your work is deeply embedded in a specific sector — education technology, AI infrastructure, healthcare, professional services — domain-specific knowledge supplements the general layer rather than replacing it.
+
+**Setup:**
+
+1. Check `knowledge/domains/domain_index.yaml` for currently registered domains
+2. To add a domain: create `knowledge/domains/<domain-id>/` and add `README.md` and `frameworks.md`
+3. Register it in `domain_index.yaml` with a list of `tags` (trigger vocabulary)
+4. The `context-loader` skill will auto-load domain files when session vocabulary matches the tags
+
+**Detection:** Domain loading is triggered when the session contains domain-specific vocabulary (e.g. "MIS", "academy trust", "MAT" → `edtech`; "agentic systems", "context window", "MCP" → `ai_infrastructure`). You can also state it explicitly: *"This is for an EdTech client."*
+
+**Pruning:** `bash scripts/prune_report.sh --mode review` includes a domain analysis section showing load frequency and staleness per domain — so unused or outdated domain files are visible before they bloat your context budget.
+
+---
+
 ## Org Layer — Organisation Overlay
 
 *Add this if your work involves an organisational context. Estimated setup: 30 minutes.*
@@ -422,11 +488,37 @@ The org layer separates two contexts that often collide: who you are as a person
 
 To set up the org layer:
 
+**With the Cowork plugin:**
+1. Run `/amai:brand-voice --new <org-name>` — guided setup creates all overlay files
+2. Run `/amai:brand-voice --activate <org-name>` to switch into that overlay for a session
+3. Run `/amai:brand-voice --list` to see all configured overlays
+
+**Manual setup:**
 1. Duplicate `org/overlays/example-org/` and rename it to your org slug (e.g. `acme-corp`)
-2. Update `org/org_index.yaml` with your org_id and display name
-3. Customise `overlay.yaml` context defaults and `behaviour_bands.yaml` examples for your org's culture
-4. Run `bash scripts/amai_lint.sh <org-id>` to validate
-5. For browser sessions with org context, run `bash scripts/amai_export.sh --org=<org-id> --context=<context_type>` to generate a safe upload bundle
+2. Use `org/templates/brand_voice.md` and `org/templates/behaviour_bands.yaml` as starting templates (more detailed than the example-org stubs)
+3. Update `org/org_index.yaml` with your org_id and display name
+4. Customise `overlay.yaml` context defaults and `behaviour_bands.yaml` examples for your org's culture
+5. Run `bash scripts/amai_lint.sh <org-id>` to validate
+6. For browser sessions with org context, run `bash scripts/amai_export.sh --org=<org-id> --context=<context_type>` to generate a safe upload bundle
+
+See `docs/brand_voice_prompt.md` for a portable prompt you can paste into any session to set up brand voice without the plugin.
+
+---
+
+## Weekly Maintenance Agent
+
+*Cowork + plugin only. Estimated setup: 2 minutes once.*
+
+The maintenance agent is a scheduled Cowork task that runs every Monday at 9am. It:
+
+- Runs `validate.sh`, `staleness.sh`, and `usage_report.sh` and flags any new issues
+- Checks signal cadence — prompts a review if it has been more than 10 days since the last observation
+- Reviews `goals/current_focus.yaml` staleness and drafts an update for your review
+- Writes a weekly report to `reports/weekly_maintenance_YYYY-MM-DD.md`
+
+**The agent never modifies AMAI files.** It only reads, analyses, and drafts. All changes require your explicit confirmation.
+
+Set it up with `/amai:setup` or by creating a Cowork scheduled task pointing to `docs/maintenance_agent.md`. See that file for configuration details.
 
 ---
 
@@ -472,6 +564,10 @@ The validator checks every YAML and JSONL file in the AMAI core against its JSON
 | WARN | `MISSING_EXAMPLES` | A value has fewer than 2 `in_practice` entries |
 | WARN | `VAGUE_HEURISTIC` | A heuristic rule is too short to be specific |
 | WARN | `EMPTY_RED_LINES` | `ethical_red_lines` is empty |
+| WARN | `DEPRECATED_RED_LINE_FORMAT` | Red line is a plain string — migrate to When/Do/Never/Except format |
+| WARN | `EMPTY_DOMAIN` | A registered active domain directory has no content files |
+| WARN | `ORPHAN_DOMAIN` | A `knowledge/domains/` subdirectory is not in `domain_index.yaml` |
+| INFO | `DOMAIN_COUNT` | Active and inactive domain count in `domain_index.yaml` |
 | INFO | `ENTRY_COUNT` | How many entries are in each JSONL log |
 | INFO | `SCHEMA_VERSION` | Schema version declared in each YAML file |
 
