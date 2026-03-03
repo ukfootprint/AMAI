@@ -44,7 +44,7 @@ Before starting any stage, read the relevant JSON Schemas so you know the exact
 structural requirements:
 - Stage 1: `schemas/values.schema.json`, `schemas/heuristics.schema.json`,
   `schemas/current_focus.schema.json`
-- Stage 2: `schemas/goals.schema.json` (plus narrative files which have no schema)
+- Stage 2: `schemas/goals.schema.json`, `schemas/beliefs.schema.json` (plus narrative files which have no schema)
 - Stage 3: `schemas/circles.schema.json`, `schemas/decisions.schema.json`,
   `schemas/failures.schema.json`, `schemas/experiences.schema.json`
 
@@ -239,19 +239,20 @@ After completing the conversation:
 
 ---
 
-## Stage 2 — Foundation (~30 minutes)
+## Stage 2 — Foundation (~35 minutes)
 
 **Goal:** Populate `identity/voice.md`, `goals/north_star.md`, `goals/goals.yaml`,
-`knowledge/frameworks.md`, `knowledge/domain_landscape.md` through structured
-conversation.
+`identity/beliefs.yaml`, `knowledge/frameworks.md`, `knowledge/domain_landscape.md`
+through structured conversation.
 
 Read `schemas/goals.schema.json` before writing `goals/goals.yaml`.
 
 **Files to check before starting:** Read `identity/voice.md`, `goals/north_star.md`,
-`goals/goals.yaml`, `knowledge/frameworks.md`, and `knowledge/domain_landscape.md`.
-If any contain non-placeholder data (no `[Replace`, `[Fill`, `[Add` markers), say:
-"It looks like [file] already has some content. Want to replace it, or add to it?"
-Wait for confirmation before overwriting.
+`goals/goals.yaml`, `identity/beliefs.yaml`, `knowledge/frameworks.md`, and
+`knowledge/domain_landscape.md`. If any contain non-placeholder data (no `[Replace`,
+`[Fill`, `[Add` markers, and no belief text matching `[PLACEHOLDER`), say: "It looks
+like [file] already has some content. Want to replace it, or add to it?" Wait for
+confirmation before overwriting.
 
 ---
 
@@ -446,6 +447,50 @@ goals:
 
 ---
 
+### Beliefs (~5 minutes)
+
+Open with:
+
+> "Now let's capture a few beliefs — things you hold to be true about your domain
+> and how the world works. These are different from your values (what you care about)
+> and your heuristics (what you do). Beliefs are claims about reality that inform
+> your reasoning."
+
+**Belief test** — validate each candidate before capturing it:
+- *"Could someone reasonable disagree with this?"* — If no, it's a fact, not a belief.
+- *"Is this about what you should do?"* — If yes, it's a heuristic or value, not a belief.
+- *"Is it specific enough to inform a decision?"* — If vague, probe for the actual claim.
+
+Draw out **2–5 beliefs** through conversation. For each:
+
+1. **Get the belief.** Prompt: "Finish the sentence: 'I believe that...' — make it a
+   specific claim about how your domain, market, or people actually work." The belief
+   should be at least 20 words and testably specific. If the first attempt is vague
+   (e.g., "I believe in transparency"), probe: "What specifically do you think is true
+   about how organisations work that makes transparency important?"
+
+2. **Assign confidence tier.** Explain briefly:
+   - *Foundational* — worldview-level; rarely changes; shapes how you see everything else
+   - *Held* — strong conviction; you'd revise it with enough evidence over time
+   - *Working* — current best understanding; actively open to revision
+   Ask: "How settled is this — foundational to your worldview, a strong conviction you'd
+   consider revising, or a working assumption you're still testing?"
+
+3. **Get evidence.** Ask: "What experience or evidence brought you to this?" A short
+   sentence or two is enough — this is for your own reference, not a justification.
+
+4. **Get domain.** Ask: "Where does this belief apply most — leadership, technology,
+   markets, operations, people?" Can be more than one area.
+
+Aim for at least one belief per confidence tier if possible. Gently steer away from
+beliefs that are actually values ("I believe integrity matters") or facts without
+reasonable disagreement. Keep the total under 10 — beliefs should represent the
+convictions that most shape your reasoning, not a comprehensive worldview.
+
+**Do NOT show the user YAML during this conversation.**
+
+---
+
 ### Knowledge (~5 minutes)
 
 **Frameworks:**
@@ -485,7 +530,7 @@ summaries. Use the user's language.
 
 ### Post-Write Steps
 
-After completing all five conversations:
+After completing all six conversations:
 
 1. **Summarise in plain language** — NOT raw YAML or Markdown. Use this format:
 
@@ -494,6 +539,7 @@ After completing all five conversations:
    > **Voice:** [2-sentence summary of the key voice characteristics]
    > **North Star:** [one-line vision + 3-year waypoint in a phrase]
    > **Goals ([N] active):** [comma-separated list of goal labels]
+   > **Beliefs ([N]):** [brief summary — e.g. "2 foundational, 1 held, 1 working"]
    > **Frameworks ([N]):** [comma-separated list of framework names]
    > **Domain:** [one-line characterisation of the sector description]
    >
@@ -501,15 +547,17 @@ After completing all five conversations:
 
 2. **Wait for explicit confirmation** before writing any files.
 
-3. **Write all five files** using the Write tool:
+3. **Write all six files** using the Write tool:
    - `identity/voice.md`
    - `goals/north_star.md`
    - `goals/goals.yaml`
+   - `identity/beliefs.yaml` (schema: `_schema: beliefs`, `_version: "1.0"`, `last_updated`,
+     `beliefs` array — each entry: `id`, `belief`, `confidence`, `evidence`, `last_tested: null`, `domain`)
    - `knowledge/frameworks.md`
    - `knowledge/domain_landscape.md`
 
-4. **Set `last_updated`** to today's date (YYYY-MM-DD) in `goals/goals.yaml`.
-   Add a `Last updated: YYYY-MM-DD` footer to the three Markdown files.
+4. **Set `last_updated`** to today's date (YYYY-MM-DD) in `goals/goals.yaml` and
+   `identity/beliefs.yaml`. Add a `Last updated: YYYY-MM-DD` footer to the three Markdown files.
 
 5. **Run validation:**
    ```bash

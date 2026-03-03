@@ -46,6 +46,13 @@ export/generic_*/
 org/overlays/*/tension_log.jsonl
 
 # ─────────────────────────────────────────────
+# Pruning archive — archived items from interactive pruning reviews
+# ─────────────────────────────────────────────
+# Ignored by default. If you want archive history tracked (private repo only),
+# remove this line and commit _archive/ explicitly.
+_archive/
+
+# ─────────────────────────────────────────────
 # Build documentation — internal planning docs, not for public repo
 # ─────────────────────────────────────────────
 BUILD_WEEKS_*.md

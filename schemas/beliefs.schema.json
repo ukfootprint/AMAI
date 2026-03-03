@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "beliefs.schema.json",
+  "title": "AMAI Beliefs Schema",
+  "description": "Validates identity/beliefs.yaml — confidence-weighted belief tracking",
+  "type": "object",
+  "required": ["_schema", "_version", "beliefs", "last_updated"],
+  "properties": {
+    "_schema": {
+      "type": "string",
+      "const": "beliefs"
+    },
+    "_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "_description": {
+      "type": "string"
+    },
+    "beliefs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "belief", "confidence", "domain"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "Snake_case unique identifier for this belief"
+          },
+          "belief": {
+            "type": "string",
+            "minLength": 20,
+            "description": "Clear statement of what you hold to be true — substantive, not vague"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": ["foundational", "held", "working"],
+            "description": "foundational: rarely changes, frames everything; held: strong conviction, open to revision; working: current best understanding, actively revisable"
+          },
+          "evidence": {
+            "type": "string",
+            "description": "Brief note on experience or evidence supporting this belief (optional but strongly recommended)"
+          },
+          "last_tested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ISO date when this belief was last challenged or reviewed"
+          },
+          "domain": {
+            "type": "string",
+            "minLength": 3,
+            "description": "Domain(s) this belief applies to (e.g. leadership, technology, markets)"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "last_updated": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false
+}

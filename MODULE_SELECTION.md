@@ -28,10 +28,10 @@ Once the task type is clear, load the additional modules below. Load only what i
 | **Writing — any content, comms, copy** | `identity/voice.md` |
 | **Writing — positioning or narrative** | `identity/voice.md`, `identity/story.md`, `identity/principles.md` |
 | **Decision — fast, low-stakes** | *(default set sufficient)* |
-| **Decision — complex or high-stakes** | `identity/principles.md`, `memory/decisions.jsonl` |
-| **Strategic planning** | `goals/goals.yaml`, `goals/north_star.md`, `identity/principles.md` |
+| **Decision — complex or high-stakes** | `identity/principles.md`, `identity/beliefs.yaml`, `memory/decisions.jsonl` |
+| **Strategic planning** | `goals/goals.yaml`, `goals/north_star.md`, `identity/principles.md`, `identity/beliefs.yaml` |
 | **Weekly or monthly review** | `goals/goals.yaml`, `operations/rituals.md` |
-| **Research or analysis** | `knowledge/frameworks.md`, `knowledge/domain_landscape.md` |
+| **Research or analysis** | `knowledge/frameworks.md`, `knowledge/domain_landscape.md`, `identity/beliefs.yaml` |
 | **Learning capture** | `knowledge/learning.jsonl` |
 | **Outreach — drafting a message** | `identity/voice.md`, `network/circles.yaml`, `network/rhythms.yaml` |
 | **Meeting preparation** | `network/contacts.jsonl`, `network/interactions.jsonl` |
@@ -40,6 +40,7 @@ Once the task type is clear, load the additional modules below. Load only what i
 | **Product or feature thinking** | `goals/north_star.md`, `knowledge/frameworks.md` |
 | **End-of-session signal capture** *(advanced)* | `signals/MODULE.md`, `signals/observations.jsonl` |
 | **Calibration review** *(advanced)* | `calibration/MODULE.md`, `calibration/pending_review.md`, `calibration/metrics.yaml`, `signals/observations.jsonl` |
+| **Content generation — writing, advice, plans, proposals** *(advanced — conscience Phase 1)* | `skills/conscience/SKILL.md` in background scan mode — **only if** `ethical_red_lines` contains at least one structured entry (not all placeholders or strings) |
 | **org: internal communication** | `org/MODULE.md` + org overlay (internal) + `identity/voice.md` + `identity/heuristics.yaml` |
 | **org: client-facing deliverable** | `org/MODULE.md` + org overlay (client_facing) — personal Tier 1/2 excluded |
 | **org: thought leadership** | `org/MODULE.md` + org overlay (thought_leadership) + `identity/voice.md` |
@@ -60,6 +61,8 @@ These modules must **never** be loaded in the contexts below, regardless of appa
 | `memory/experiences.jsonl` | Unless the task involves personal reflection or narrative work. Do not load for operational tasks. |
 | `calibration/divergence.jsonl` | During active task work — this is a review-only file, not a working context file |
 | `signals/observations.jsonl` | During active task work — load only at session end for capture, or at calibration review |
+| `skills/conscience/SKILL.md` | Pure research or reading tasks where no content is being generated — conscience monitors generation, not reading |
+| `identity/beliefs.yaml` | Pure writing or editing tasks, network/relationship tasks, and operations tasks — beliefs are reasoning context, not communication style or operational guidance |
 
 **Never load `memory/failures.jsonl` and `network/contacts.jsonl` in the same session** unless the task is explicitly a retrospective involving specific named relationships.
 
@@ -122,12 +125,13 @@ Every session:
   goals/current_focus.yaml
 
 + Writing?         → identity/voice.md
-+ Big decision?    → identity/principles.md + memory/decisions.jsonl
-+ Planning?        → goals/goals.yaml + goals/north_star.md
++ Big decision?    → identity/principles.md + identity/beliefs.yaml + memory/decisions.jsonl
++ Planning?        → goals/goals.yaml + goals/north_star.md + identity/beliefs.yaml
++ Research?        → knowledge/frameworks.md + knowledge/domain_landscape.md + identity/beliefs.yaml
 + Relationship?    → network/circles.yaml + network/contacts.jsonl
-+ Research?        → knowledge/frameworks.md + knowledge/domain_landscape.md
 + Session end?     → signals/MODULE.md + signals/observations.jsonl
 + Calibration?     → calibration/MODULE.md + calibration/pending_review.md
++ Generating content (advanced)? → skills/conscience/SKILL.md [background, only if structured red lines exist]
 
 Never with public writing:
   network/contacts.jsonl

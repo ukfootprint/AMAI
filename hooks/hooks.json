@@ -5,7 +5,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "printf '\\n=== AMAI CONTEXT LOADED ===\\n\\n--- BRAIN.md ---\\n' && cat \"${CLAUDE_PLUGIN_ROOT}/BRAIN.md\" && printf '\\n--- identity/values.yaml ---\\n' && cat \"${CLAUDE_PLUGIN_ROOT}/identity/values.yaml\" && printf '\\n--- identity/heuristics.yaml ---\\n' && cat \"${CLAUDE_PLUGIN_ROOT}/identity/heuristics.yaml\" && printf '\\n--- goals/current_focus.yaml ---\\n' && cat \"${CLAUDE_PLUGIN_ROOT}/goals/current_focus.yaml\" && printf '\\n--- MODULE_SELECTION.md (trigger table for on-demand loading) ---\\n' && cat \"${CLAUDE_PLUGIN_ROOT}/MODULE_SELECTION.md\" && printf '\\n=== END AMAI CONTEXT ===\\n'",
+          "command": "printf '\\n=== AMAI CONTEXT LOADED ===\\n\\n--- BRAIN.md ---\\n' && cat \"${CLAUDE_PLUGIN_ROOT}/BRAIN.md\" && printf '\\n--- identity/values.yaml ---\\n' && cat \"${CLAUDE_PLUGIN_ROOT}/identity/values.yaml\" && printf '\\n--- identity/heuristics.yaml ---\\n' && cat \"${CLAUDE_PLUGIN_ROOT}/identity/heuristics.yaml\" && printf '\\n--- goals/current_focus.yaml ---\\n' && cat \"${CLAUDE_PLUGIN_ROOT}/goals/current_focus.yaml\" && printf '\\n--- MODULE_SELECTION.md (trigger table for on-demand loading) ---\\n' && cat \"${CLAUDE_PLUGIN_ROOT}/MODULE_SELECTION.md\" && printf '\\n=== END AMAI CONTEXT ===\\n' && (python3 -c \"import re, os; path=os.path.join(os.environ.get('CLAUDE_PLUGIN_ROOT','.'), 'calibration/metrics.yaml'); [open(path,'w').write(re.sub(r'(^\\\\s+'+m+r':\\\\s+)(\\\\d+)', lambda x: x.group(1)+str(int(x.group(2))+1), open(path).read(), flags=re.MULTILINE)) for m in ('identity','goals') if os.path.exists(path)]\" 2>/dev/null || true)",
           "timeout": 10
         }
       ]

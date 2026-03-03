@@ -16,13 +16,14 @@ Stage 2 populates:
 - `identity/voice.md` — communication style and tone
 - `goals/north_star.md` — long-horizon vision
 - `goals/goals.yaml` — active strategic goals (schema-validated)
+- `identity/beliefs.yaml` — confidence-weighted beliefs about domain and reality
 - `knowledge/frameworks.md` — mental models and thinking tools
 - `knowledge/domain_landscape.md` — sector context and competitive landscape
 
 **Before you start:**
 - Do not show the user any YAML or Markdown code blocks during the conversation.
 - Keep questions natural — you are drawing out real information, not filling in a form.
-- The whole process should take about 30 minutes across five sections.
+- The whole process should take about 35 minutes across six sections.
 - Quality over speed: if an answer is vague, probe with a follow-up before moving on.
 - Complete all five sections before asking for confirmation and outputting files.
 
@@ -144,6 +145,37 @@ field in `current_focus.yaml` can be updated.
 
 ---
 
+## Section 3.5 — Beliefs (~5 minutes)
+
+Say:
+
+> "Now let's capture a few beliefs — things you hold to be true about your domain
+> and how the world works. Different from values (what you care about) or heuristics
+> (what you do) — beliefs are claims about reality that shape your reasoning."
+
+Use the **belief test** before recording each one:
+- *"Could someone reasonable disagree with this?"* — if no, it's a fact.
+- *"Is this about what you should do?"* — if yes, it's a heuristic.
+- *"Is it specific enough to inform a decision?"* — if vague, probe deeper.
+
+Draw out **2–5 beliefs**. For each, collect:
+
+**The belief:** "Finish the sentence: 'I believe that...' — make it a specific claim
+about how your domain, market, or people actually work." (Must be at least 20 words.)
+
+**Confidence tier:** "How settled is this for you?"
+- *Foundational* — worldview-level, rarely changes
+- *Held* — strong conviction, open to revision with evidence
+- *Working* — current best understanding, actively revisable
+
+**Evidence:** "What experience or evidence brought you to this?" (One or two sentences.)
+
+**Domain:** "Where does this apply most — leadership, technology, markets, operations?"
+
+Aim for at least one belief per confidence tier. Keep total under 10.
+
+---
+
 ## Section 4 — Frameworks (~5 minutes)
 
 Say:
@@ -184,13 +216,14 @@ first-person perspective — not a Wikipedia summary.
 
 ## Confirm Before Writing
 
-After completing all five sections, summarise in plain language:
+After completing all six sections, summarise in plain language:
 
 > "Here's what I've captured:
 >
 > **Voice:** [2-sentence summary of the key voice characteristics]
 > **North Star:** [one-line vision + 3-year waypoint in a phrase]
 > **Goals ([N] active):** [comma-separated list of goal labels]
+> **Beliefs ([N]):** [e.g. "2 foundational, 1 held, 1 working — key themes"]
 > **Frameworks ([N]):** [comma-separated list of framework names]
 > **Domain:** [one-line characterisation of the landscape]
 >
@@ -315,6 +348,39 @@ Stage 1, update those entries' `goal_ref` fields to reference the IDs above.
 
 ---
 
+### Output 3.5: `identity/beliefs.yaml`
+
+```yaml
+_schema: beliefs
+_version: "1.0"
+last_updated: YYYY-MM-DD
+
+# Beliefs are claims about reality that inform reasoning — not values (what you
+# care about) or heuristics (what you do). Keep under 10 entries total.
+
+beliefs:
+  - id: <snake_case_belief_id>
+    belief: >
+      <At least 20 words — a specific, testable claim about how your domain,
+      market, or people actually work.>
+    confidence: foundational  # foundational | held | working
+    evidence: "<Brief note on experience or evidence that brought you to this>"
+    last_tested: null
+    domain: "<Domain(s) this applies to — e.g. leadership, technology, markets>"
+
+  - id: <snake_case_belief_id>
+    belief: >
+      <Specific claim — at least 20 words.>
+    confidence: held
+    evidence: "<Evidence>"
+    last_tested: null
+    domain: "<Domain>"
+
+  # Repeat for each belief captured (2–5 recommended; keep total under 10)
+```
+
+---
+
 ### Output 4: `knowledge/frameworks.md`
 
 ```markdown
@@ -384,11 +450,12 @@ Suggest they run validation:
 bash scripts/validate.sh
 ```
 
-`goals/goals.yaml` is schema-validated. The Markdown files are checked for
-presence only. If validation flags anything on goals.yaml, the most common
-issues are: missing `key_results` (must have at least one), invalid `status`
-value (must be `active`, `on_hold`, `completed`, or `abandoned`), or a
-`last_updated` field that isn't in `YYYY-MM-DD` format.
+`goals/goals.yaml` and `identity/beliefs.yaml` are schema-validated. The Markdown
+files are checked for presence only. Common validation issues on goals.yaml:
+missing `key_results`, invalid `status` value, or `last_updated` not in YYYY-MM-DD.
+For beliefs.yaml: `belief` must be at least 20 characters, `confidence` must be
+`foundational`, `held`, or `working`, and held/foundational entries with
+`last_tested: null` will produce `WARN:BELIEF_NEVER_TESTED` (expected at setup).
 
 Also suggest they run a dry-run export to see how this data packages for their
 AI platform:

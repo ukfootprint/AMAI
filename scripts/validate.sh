@@ -412,6 +412,73 @@ def validate_heuristics():
     if is_stale(lu, 60):
         R.warn('STALE_MODULE', f'last_updated is {"null" if lu is None else lu} — threshold: 60 days')
 
+# ── identity/beliefs.yaml ─────────────────────────────────────────────────────
+
+def validate_beliefs():
+    path = p('identity/beliefs.yaml')
+    R.begin('identity/beliefs.yaml')
+    if not os.path.exists(path):
+        R.info('SKIPPED', 'identity/beliefs.yaml not found — skipping (optional file)'); return
+
+    data, err = load_yaml(path)
+    if err or data is None:
+        R.error('PARSE_ERROR', f'Could not parse YAML: {err}'); return
+
+    if data.get('_schema') != 'beliefs':
+        R.error('SCHEMA_MISMATCH', f'_schema should be "beliefs", got "{data.get("_schema")}"')
+    if data.get('_version') != '1.0':
+        R.error('VERSION_MISMATCH', f'_version should be "1.0", got "{data.get("_version")}"')
+    R.info('SCHEMA_VERSION', f'_schema=beliefs _version={data.get("_version")}')
+
+    CONF = {'foundational', 'held', 'working'}
+    beliefs = data.get('beliefs')
+    if not isinstance(beliefs, list):
+        R.error('SCHEMA_ERROR', 'beliefs must be an array'); return
+
+    counts = {c: 0 for c in CONF}
+    for b in beliefs:
+        c = b.get('confidence') if isinstance(b, dict) else None
+        if c in counts:
+            counts[c] += 1
+
+    R.info('BELIEF_COUNT',
+           f'{len(beliefs)} total — foundational: {counts["foundational"]}, '
+           f'held: {counts["held"]}, working: {counts["working"]}')
+
+    if len(beliefs) > 10:
+        R.warn('TOO_MANY_BELIEFS',
+               f'{len(beliefs)} entries — keep under 10. If you have more, some may belong '
+               f'in identity/heuristics.yaml (what to do) or identity/values.yaml (what you care about)')
+
+    for idx, b in enumerate(beliefs):
+        if not isinstance(b, dict): continue
+        for req in ['id', 'belief', 'confidence', 'domain']:
+            if req not in b or b[req] is None:
+                R.error('MISSING_FIELD', f'beliefs[{idx}].{req} is required but missing')
+        belief_text = b.get('belief', '')
+        if isinstance(belief_text, str) and 0 < len(belief_text) < 20:
+            R.warn('VAGUE_BELIEF',
+                   f'beliefs[{idx}] ({b.get("id","?")}).belief is only {len(belief_text)} chars — aim for 20+')
+        for field in ['belief', 'evidence']:
+            val = b.get(field, '')
+            if isinstance(val, str) and ('[PLACEHOLDER' in val or '[Replace' in val):
+                R.warn('PLACEHOLDER_BELIEF',
+                       f'beliefs[{idx}] ({b.get("id","?")}).{field} contains placeholder text — replace with your actual belief')
+        conf = b.get('confidence')
+        if conf is not None and conf not in CONF:
+            R.error('INVALID_ENUM',
+                    f'beliefs[{idx}].confidence "{conf}" must be foundational|held|working')
+        if not b.get('evidence'):
+            R.warn('BELIEF_MISSING_EVIDENCE',
+                   f'beliefs[{idx}] ({b.get("id","?")}) has no evidence field — add a brief note on what supports this belief')
+        if b.get('last_tested') is None and conf in ('held', 'foundational'):
+            R.warn('BELIEF_NEVER_TESTED',
+                   f'beliefs[{idx}] ({b.get("id","?")}) confidence={conf} but last_tested is null — record when this belief was last challenged')
+
+    lu = data.get('last_updated')
+    if is_stale(lu, 90):
+        R.warn('STALE_MODULE', f'last_updated is {"null" if lu is None else lu} — threshold: 90 days')
+
 # ── goals/goals.yaml ──────────────────────────────────────────────────────────
 
 def validate_goals():
@@ -720,6 +787,7 @@ def validate_brain():
 
 validate_values()
 validate_heuristics()
+validate_beliefs()
 validate_goals()
 validate_current_focus()
 validate_metrics()

@@ -62,6 +62,30 @@
 
 ---
 
+## beliefs.yaml
+
+**Schema version:** 1.0 (`_version` field) — optional file, validated when present
+
+| Field | Type | Required | Valid values / notes |
+|-------|------|----------|----------------------|
+| `_schema` | string | yes | `"beliefs"` |
+| `_version` | string | yes | `"1.0"` |
+| `beliefs[].id` | string | yes | Snake_case, unique; pattern `^[a-z][a-z0-9_]*$` |
+| `beliefs[].belief` | string | yes | The claim you hold to be true; minLength 20 |
+| `beliefs[].confidence` | string | yes | `foundational` \| `held` \| `working` |
+| `beliefs[].domain` | string | yes | Domain(s) the belief applies to; minLength 3 |
+| `beliefs[].evidence` | string | no | Why you believe this (WARN if missing) |
+| `beliefs[].last_tested` | ISO 8601 date or null | no | When last challenged (WARN if null for held/foundational) |
+| `last_updated` | ISO 8601 date or null | yes | Format: `YYYY-MM-DD`; threshold: 90 days |
+
+**Confidence tiers:** `foundational` (frames everything, rarely changes) → `held` (strong conviction, revisable) → `working` (current best understanding, actively revisable)
+
+**Distinction:** Values say "I care about X." Beliefs say "I think X is true." Heuristics say "When X, do Y."
+
+**Validation:** WARN:PLACEHOLDER_BELIEF, WARN:BELIEF_MISSING_EVIDENCE, WARN:BELIEF_NEVER_TESTED, WARN:TOO_MANY_BELIEFS (>10), INFO:BELIEF_COUNT
+
+---
+
 ## voice.md, story.md, principles.md
 
 Markdown narrative files. No fixed schema — free text with recommended structure defined in the file template. No validation required beyond presence.

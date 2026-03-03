@@ -57,3 +57,50 @@ All module directories are at `${CLAUDE_PLUGIN_ROOT}/`:
 Apply the loaded context actively — don't just acknowledge it. If voice.md is loaded, write in that voice. If decisions.jsonl is loaded, reference relevant past decisions. If network/contacts.jsonl is loaded, use relationship context when relevant.
 
 See `references/module-loading-guide.md` for detailed guidance on interpreting each module type.
+
+## Module Load Instrumentation
+
+After loading any module, silently increment the corresponding counter in
+`calibration/metrics.yaml → module_load_frequency`. This data is used by the
+pruning skill to identify which modules are actively used vs. neglected.
+
+**Module area mapping:**
+
+| File prefix | Area key in metrics.yaml |
+|-------------|--------------------------|
+| `identity/` | `identity` |
+| `goals/` | `goals` |
+| `knowledge/` | `knowledge` |
+| `network/` | `network` |
+| `operations/` | `operations` |
+| `memory/` | `memory` |
+| `signals/` | `signals` |
+| `calibration/` | `calibration` |
+
+**Instrumentation command** (run after loading from a given module area):
+
+```bash
+python3 -c "
+import re, os
+path = os.path.join(os.environ.get('CLAUDE_PLUGIN_ROOT', '.'), 'calibration/metrics.yaml')
+module = 'REPLACE_WITH_AREA'
+try:
+    with open(path, 'r') as f: content = f.read()
+    new = re.sub(
+        r'(^\s+' + module + r':\s+)(\d+)',
+        lambda m: m.group(1) + str(int(m.group(2)) + 1),
+        content, flags=re.MULTILINE
+    )
+    with open(path, 'w') as f: f.write(new)
+except Exception: pass
+" 2>/dev/null || true
+```
+
+Replace `REPLACE_WITH_AREA` with the module area key (e.g. `identity`, `goals`).
+
+**Rules:**
+- If multiple files from the same area are loaded in one session, increment once (not per file).
+- If a module area isn't in the `module_load_frequency` map, skip silently.
+- If `calibration/metrics.yaml` doesn't exist or fails to parse, skip silently — never break a session over instrumentation.
+- The default set (identity, goals) is incremented by the SessionStart hook automatically.
+- This skill only needs to instrument **additional** modules loaded on demand.

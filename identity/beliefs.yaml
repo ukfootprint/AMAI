@@ -1,0 +1,75 @@
+_schema: beliefs
+_version: "1.0"
+_description: >
+  Confidence-weighted beliefs — what you hold to be true about the world,
+  your domain, and how things work. Beliefs inform reasoning context but
+  never dismiss evidence or shut down inquiry.
+
+# ─── AI STANDING INSTRUCTION ────────────────────────────────────────────────
+# Beliefs inform reasoning context but never dismiss evidence or shut down inquiry.
+# When evidence contradicts a stated belief, present the evidence and let the
+# user decide — do not suppress it because a held or foundational belief says otherwise.
+#
+# Beliefs are NOT values — they describe what the user holds to be true about
+# the world, not what they consider important.
+#   A value says "I care about X."
+#   A belief says "I think X is true."
+#
+# Beliefs are NOT heuristics — heuristics say what to do; beliefs say why.
+#   A heuristic says "When X, do Y."
+#   A belief says "X is how the world works."
+#
+# When a belief is relevant to the task, surface it as context — not as a
+# constraint. Example: "You hold the belief that [X] — this may be relevant
+# to how you're framing this problem."
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CONFIDENCE TIERS
+#
+# foundational — non-negotiable worldview commitments. Frame how you interpret
+#   everything. Rarely change. Revising one is significant.
+#
+# held — strong convictions backed by experience and evidence. Open to revision
+#   given compelling counter-evidence. The working majority of beliefs.
+#
+# working — current best understanding. Actively revisable. Useful defaults
+#   until proven otherwise.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ─────────────────────────────────────────────────────────────────────────────
+# KEEP THIS DELIBERATELY SMALL.
+# If you have more than 10 beliefs, some are probably heuristics
+# (move to identity/heuristics.yaml) or values (move to identity/values.yaml).
+# ─────────────────────────────────────────────────────────────────────────────
+
+beliefs:
+
+  # ── FOUNDATIONAL ──────────────────────────────────────────────────────────
+
+  - id: systems_resist_top_down  # [PLACEHOLDER — replace with your own]
+    belief: "Complex systems — organisations, markets, ecosystems — resist top-down control far more than most leaders assume. Behaviour emerges from incentives, not mandates."
+    confidence: foundational
+    evidence: "Observed repeatedly in school IT rollouts, market entries, and team dynamics. Plans that rely on compliance without changing incentives consistently underdeliver."
+    last_tested: null
+    domain: "leadership, strategy, technology"
+
+  # ── HELD ──────────────────────────────────────────────────────────────────
+
+  - id: most_strategy_failures_are_execution  # [PLACEHOLDER — replace with your own]
+    belief: "Most strategy failures are execution failures, not idea failures. The bottleneck is usually follow-through, resourcing, or timing — not the underlying insight."
+    confidence: held
+    evidence: "Pattern across client engagements and personal projects. Ideas are rarely the weak point. Execution capacity and prioritisation almost always are."
+    last_tested: null
+    domain: "strategy, business"
+
+  # ── WORKING ───────────────────────────────────────────────────────────────
+
+  - id: ai_most_useful_with_structured_context  # [PLACEHOLDER — replace with your own]
+    belief: "AI assistants produce significantly better outputs when given structured, personal context rather than generic prompts. The investment in setup compounds quickly."
+    confidence: working
+    evidence: "Direct experience building and using AMAI. Output quality gap between generic and contextualised prompting is large and consistent."
+    last_tested: null
+    domain: "technology, AI, productivity"
+
+last_updated: null  # ISO date — update when beliefs change, or at quarterly review
