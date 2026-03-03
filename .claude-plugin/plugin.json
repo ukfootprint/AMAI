@@ -1,7 +1,8 @@
 {
   "name": "amai",
-  "version": "0.1.0",
-  "description": "Automatic context loading, module selection, org overlay management, signal capture, and identity application for AMAI",
+  "version": "0.3.0",
+  "updated": "2026-03-03",
+  "description": "AMAI context loading, conscience monitoring, org brand voice, knowledge domains, progressive onboarding, signal capture, and identity application",
   "author": {
     "name": "Simon"
   },
