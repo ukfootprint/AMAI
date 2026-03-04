@@ -705,6 +705,26 @@ JSONL_SPECS = {
         'minLength': {},
         'arrays':    {},
     },
+    'changelog_audit.jsonl': {
+        'required': ['uid', 'timestamp', 'actor', 'actor_id', 'module', 'category', 'description', 'files_changed'],
+        'enums': {
+            'actor':    ['human', 'ai', 'system'],
+            'category': ['create', 'update', 'delete', 'prune', 'calibrate', 'onboard', 'export'],
+        },
+        'minLength': {'description': 10},
+        'arrays':    {'files_changed': 1},
+    },
+    'calibration/entry_references.jsonl': {
+        'required': ['date', 'entry_id', 'entry_type', 'source_file', 'event', 'context'],
+        'enums': {
+            'entry_type': ['red_line', 'heuristic', 'framework', 'goal', 'belief', 'value'],
+            'event': ['conscience_alert', 'conscience_heuristic', 'critique_applied',
+                      'calibration_reviewed', 'calibration_updated', 'goal_status_change',
+                      'belief_challenged'],
+        },
+        'minLength': {'context': 10},
+        'arrays': {},
+    },
 }
 
 def validate_jsonl(rel_path):

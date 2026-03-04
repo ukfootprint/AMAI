@@ -216,6 +216,48 @@ if metrics and isinstance(metrics, dict):
     if isinstance(freq, dict):
         module_freq = freq
 
+# ── Load entry reference data ─────────────────────────────────────────────────
+
+entry_ref_entries = read_jsonl('calibration/entry_references.jsonl')
+entry_ref_counts = {}
+entry_ref_last = {}
+for _e in entry_ref_entries:
+    _eid = _e.get('entry_id')
+    if _eid:
+        entry_ref_counts[_eid] = entry_ref_counts.get(_eid, 0) + 1
+        _date = _e.get('date', '')
+        if _date and (_eid not in entry_ref_last or _date > entry_ref_last[_eid]):
+            entry_ref_last[_eid] = _date
+
+# Track when tracking began
+_ref_dates = sorted(_e.get('date', '') for _e in entry_ref_entries if _e.get('date'))
+ref_tracking_start = _ref_dates[0] if _ref_dates else None
+ref_tracking_days = 0
+if ref_tracking_start:
+    try:
+        ref_tracking_days = (TODAY - datetime.date.fromisoformat(ref_tracking_start)).days
+    except Exception:
+        pass
+
+# Collect all declared entry ids from values, heuristics, beliefs
+declared_ids = {}  # id -> (entry_type, source_file)
+_vdata = try_load_yaml('identity/values.yaml') or {}
+for _cv in _vdata.get('core_values', []):
+    if isinstance(_cv, dict) and _cv.get('id'):
+        declared_ids[_cv['id']] = ('value', 'identity/values.yaml')
+for _rl in _vdata.get('ethical_red_lines', []):
+    if isinstance(_rl, dict) and _rl.get('id'):
+        declared_ids[_rl['id']] = ('red_line', 'identity/values.yaml')
+_hdata = try_load_yaml('identity/heuristics.yaml') or {}
+for _sect in ('universal', 'domain', 'commercial', 'people'):
+    for _h in _hdata.get(_sect, []):
+        if isinstance(_h, dict) and _h.get('id'):
+            declared_ids[_h['id']] = ('heuristic', 'identity/heuristics.yaml')
+_bdata = try_load_yaml('identity/beliefs.yaml') or {}
+for _b in _bdata.get('beliefs', []):
+    if isinstance(_b, dict) and _b.get('id'):
+        declared_ids[_b['id']] = ('belief', 'identity/beliefs.yaml')
+
 # ── 1. YAML FILES — per-entry analysis ───────────────────────────────────────
 
 # goals/goals.yaml — completed or abandoned goals
@@ -425,6 +467,44 @@ for module, count in sorted(module_freq.items()):
     usage_analysis.append({'module': module, 'loads': count, 'pct': pct,
                            'category': category, 'recommendation': rec})
 
+# ── 5b. ENTRY REFERENCE ANALYSIS — cross-reference with declared entries ──────
+
+# Classify declared entries by ref count + freshness (git age)
+# Note: zero references only becomes meaningful as a prune signal after 90+ days of tracking.
+entry_ref_analysis = []
+for eid, (etype, src_file) in sorted(declared_ids.items()):
+    ref_count = entry_ref_counts.get(eid, 0)
+    last_ref  = entry_ref_last.get(eid)
+    git_days  = git_last_modified(src_file)
+    is_stale_entry  = git_days is not None and git_days > USAGE_PERIOD
+    is_referenced   = ref_count > 0
+    is_recent_add   = git_days is not None and git_days < 30
+
+    if is_stale_entry and not is_referenced:
+        if ref_tracking_days >= 90:
+            signal = "strong_prune"
+            detail = f"Stale AND unreferenced ({ref_tracking_days}d of tracking, 0 references) — strongest prune signal"
+        else:
+            signal = "watch"
+            detail = f"Stale AND unreferenced — only {ref_tracking_days}d of tracking, watch for 90d before acting"
+    elif is_stale_entry and is_referenced:
+        signal = "update"
+        detail = f"Referenced ({ref_count}×, last: {last_ref}) but entry file is stale ({git_days}d) — update not prune"
+    elif is_recent_add and not is_referenced:
+        signal = "new"
+        detail = f"Recently added (<30d), not yet referenced — watch"
+    elif is_referenced:
+        signal = "healthy"
+        detail = f"Referenced {ref_count}× (last: {last_ref}) — load-bearing, no action"
+    else:
+        signal = "no_data"
+        detail = "Not yet referenced — insufficient tracking data"
+
+    entry_ref_analysis.append({
+        'entry_id': eid, 'entry_type': etype, 'source_file': src_file,
+        'ref_count': ref_count, 'last_ref': last_ref, 'signal': signal, 'detail': detail
+    })
+
 # ── 6. DOMAIN ANALYSIS — identify unused or stale knowledge domains ───────────
 
 domain_analysis = []
@@ -538,6 +618,8 @@ if JSON_MODE:
         'frequency_warnings':       freq_warnings,
         'usage_analysis':           usage_analysis,
         'domain_analysis':          domain_analysis,
+        'entry_ref_analysis':       entry_ref_analysis,
+        'entry_ref_tracking_days':  ref_tracking_days,
         'compare_delta':            compare_delta,
         'protected': list(PROTECTED.keys()),
     }
@@ -674,6 +756,60 @@ else:
                 change = "?"
             lines.append(f"| {label} | {prev if prev is not None else '?'} | {current} | {change} |")
         lines.append("")
+
+# Entry Reference Analysis
+if entry_ref_analysis or declared_ids:
+    lines.append("## 🔍 Entry Reference Analysis")
+    if ref_tracking_days == 0:
+        lines.append(f"**Tracking not yet started** — `calibration/entry_references.jsonl` is empty.")
+        lines.append("References accumulate automatically from conscience alerts, critiques, and calibrations.")
+    else:
+        lines.append(f"Based on **{ref_tracking_days} days** of entry-level tracking (since {ref_tracking_start}).")
+        if ref_tracking_days < 90:
+            lines.append(f"> ⚠️ Note: Only {ref_tracking_days} of 90 days of tracking complete. Zero-reference signals are noted but not yet recommended for pruning.")
+    lines.append("")
+
+    strong_prune = [e for e in entry_ref_analysis if e['signal'] == 'strong_prune']
+    update_needed = [e for e in entry_ref_analysis if e['signal'] == 'update']
+    watch = [e for e in entry_ref_analysis if e['signal'] == 'watch']
+    healthy = [e for e in entry_ref_analysis if e['signal'] == 'healthy']
+    new_entries = [e for e in entry_ref_analysis if e['signal'] == 'new']
+
+    if strong_prune:
+        lines.append("### 🔴 Stale AND Unreferenced (strongest prune signal)")
+        lines.append("These entries have not been modified recently AND have never been explicitly referenced:")
+        lines.append("")
+        for e in strong_prune:
+            lines.append(f"- `{e['entry_id']}` ({e['entry_type']}) — {e['detail']}")
+        lines.append("")
+
+    if update_needed:
+        lines.append("### 🟡 Referenced BUT Stale (update, not prune)")
+        lines.append("These entries are still being used but their source file is stale — update the content:")
+        lines.append("")
+        for e in update_needed:
+            lines.append(f"- `{e['entry_id']}` ({e['entry_type']}) — {e['detail']}")
+        lines.append("")
+
+    if watch:
+        lines.append("### 🟠 Stale AND Unreferenced (< 90d tracking — watch)")
+        lines.append("These entries are stale and unreferenced but tracking is too new to recommend pruning:")
+        lines.append("")
+        for e in watch:
+            lines.append(f"- `{e['entry_id']}` ({e['entry_type']}) — {e['detail']}")
+        lines.append("")
+
+    zero_ref_ids = [e['entry_id'] for e in entry_ref_analysis if e['ref_count'] == 0]
+    if zero_ref_ids and ref_tracking_days > 0:
+        lines.append(f"**Entries with 0 references** ({len(zero_ref_ids)} of {len(declared_ids)} declared): {', '.join(f'`{eid}`' for eid in zero_ref_ids)}")
+        lines.append("")
+
+    if healthy:
+        healthy_ids = ', '.join('`' + e['entry_id'] + '`' for e in healthy)
+        lines.append(f"✅ **{len(healthy)} load-bearing entries** (referenced ≥1×): {healthy_ids}")
+        lines.append("")
+
+lines.append("")
 
 # Protected Modules (always shown)
 lines.append("## 🛡️ Protected Modules (never pruned)")

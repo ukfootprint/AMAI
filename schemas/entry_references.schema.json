@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "entry_references.schema.json",
+  "title": "AMAI Entry Reference Log Entry",
+  "description": "Schema for a single JSONL entry in calibration/entry_references.jsonl. Each entry records an explicit, observable interaction with a specific AMAI entry (value, heuristic, framework, goal, or belief) at a defined action touchpoint. This file does NOT track what the LLM passively 'thought about' — only deterministic, auditable events.",
+  "type": "object",
+  "required": ["date", "entry_id", "entry_type", "source_file", "event", "context"],
+  "properties": {
+    "date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "ISO 8601 date of the event (YYYY-MM-DD)"
+    },
+    "entry_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "The id field of the specific AMAI entry that participated in this event. Must exactly match the id field in the source file — no paraphrasing or abbreviation."
+    },
+    "entry_type": {
+      "type": "string",
+      "enum": ["red_line", "heuristic", "framework", "goal", "belief", "value"],
+      "description": "Type of the AMAI entry referenced"
+    },
+    "source_file": {
+      "type": "string",
+      "minLength": 5,
+      "description": "Relative path to the file containing the entry (e.g. 'identity/values.yaml')"
+    },
+    "event": {
+      "type": "string",
+      "enum": [
+        "conscience_alert",
+        "conscience_heuristic",
+        "critique_applied",
+        "calibration_reviewed",
+        "calibration_updated",
+        "goal_status_change",
+        "belief_challenged"
+      ],
+      "description": "The type of explicit event that triggered this reference log entry"
+    },
+    "context": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Brief description of the session or task where this event occurred"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": ["fired", "applied", "reviewed", "updated", "completed", "deferred", "challenged", "confirmed", "dismissed"],
+      "description": "The outcome of the referenced event. Optional — omit if outcome is not yet known."
+    }
+  },
+  "additionalProperties": false
+}

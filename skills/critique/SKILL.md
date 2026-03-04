@@ -216,3 +216,38 @@ critique observations in the user's own declared context — never critique gene
 
 If a relevant module is missing or placeholder, proceed but note it:
 > "I don't have your frameworks loaded yet — running this critique against general standards rather than your personal mental models. Run /amai:setup 2 to populate this."
+
+---
+
+## Entry Reference Logging
+
+After completing a critique, append entries to `calibration/entry_references.jsonl` for each
+AMAI entry that was **explicitly referenced** in the critique output — i.e., cited by name
+using the language patterns above (e.g., "Applying your [framework name] framework...",
+"Your heuristic '[rule]' applies here...", "Your stated value of [X]...").
+
+**For frameworks used as lenses** (slugify the section heading: lowercase, spaces → underscores):
+
+```jsonl
+{"date": "YYYY-MM-DD", "entry_id": "FRAMEWORK_SLUG", "entry_type": "framework", "source_file": "knowledge/frameworks.md", "event": "critique_applied", "context": "Level N critique of [TOPIC]", "outcome": "applied"}
+```
+
+**For values used as criteria:**
+
+```jsonl
+{"date": "YYYY-MM-DD", "entry_id": "VALUE_ID", "entry_type": "value", "source_file": "identity/values.yaml", "event": "critique_applied", "context": "Level N critique of [TOPIC]", "outcome": "applied"}
+```
+
+**For heuristics used as tests:**
+
+```jsonl
+{"date": "YYYY-MM-DD", "entry_id": "HEURISTIC_ID", "entry_type": "heuristic", "source_file": "identity/heuristics.yaml", "event": "critique_applied", "context": "Level N critique of [TOPIC]", "outcome": "applied"}
+```
+
+**Rules:**
+- Only log entries that were **explicitly referenced** in the critique output — not every entry loaded into context.
+- Do not log entries that were loaded but not cited.
+- For framework slugs: take the section heading, lowercase, replace spaces with underscores (e.g., "First Principles Thinking" → `first_principles_thinking`).
+- Batch all reference entries and append them **after** the critique is complete, not during.
+- `entry_id` must match the `id` field in the source file, or (for frameworks) the slugified section heading.
+- If `calibration/entry_references.jsonl` does not exist, skip silently — never block critique output.

@@ -297,6 +297,55 @@ ends without an opportunity to append, the alert is noted in the Stop hook outpu
 
 ---
 
+## Entry Reference Logging
+
+In addition to the `signals/observations.jsonl` log above, conscience alerts also append
+to `calibration/entry_references.jsonl` for per-entry frequency tracking. This enables
+the pruning system to answer "how often does this red line actually fire?" without any
+LLM introspection.
+
+**When a red line alert fires, append to `calibration/entry_references.jsonl`:**
+
+```jsonl
+{"date": "YYYY-MM-DD", "entry_id": "RED_LINE_ID", "entry_type": "red_line", "source_file": "identity/values.yaml", "event": "conscience_alert", "context": "BRIEF_SESSION_CONTEXT", "outcome": "fired"}
+```
+
+**When a heuristic notice fires, append to `calibration/entry_references.jsonl`:**
+
+```jsonl
+{"date": "YYYY-MM-DD", "entry_id": "HEURISTIC_ID", "entry_type": "heuristic", "source_file": "identity/heuristics.yaml", "event": "conscience_heuristic", "context": "BRIEF_SESSION_CONTEXT", "outcome": "fired"}
+```
+
+**After the user responds, update the outcome in the same entry if possible, or append a follow-up entry:**
+- User adjusted their work → `"outcome": "applied"` (the constraint was applied)
+- User explicitly dismissed → `"outcome": "dismissed"`
+- User acknowledged but continued → `"outcome": "confirmed"` (they confirmed their approach is fine)
+
+**Rules:**
+- The `entry_id` must exactly match the `id` field from the red line or heuristic entry in the YAML file. Never paraphrase or abbreviate.
+- Append entry reference logs at the same time as the `signals/observations.jsonl` entry (session end), not immediately on alert.
+- If `calibration/entry_references.jsonl` does not exist, skip silently — never block conscience monitoring.
+- This log is separate from `signals/observations.jsonl`. Do not duplicate data between them. The `signals/` file captures qualitative observations; `entry_references.jsonl` tracks entry-level event counts.
+
+**Belief challenge tracking:**
+
+When the conscience skill (or any session) encounters evidence that clearly and articulably
+contradicts a stated belief from `identity/beliefs.yaml`, log to `calibration/entry_references.jsonl`:
+
+```jsonl
+{"date": "YYYY-MM-DD", "entry_id": "BELIEF_ID", "entry_type": "belief", "source_file": "identity/beliefs.yaml", "event": "belief_challenged", "context": "Evidence: BRIEF_DESCRIPTION_OF_CONTRADICTING_EVIDENCE", "outcome": "challenged"}
+```
+
+Rules for belief challenges:
+- Only log when there is a clear, articulable contradiction between observed evidence and a stated belief.
+- Do not log vague "this might not be true" intuitions.
+- The `entry_id` must exactly match the `id` field in `identity/beliefs.yaml`.
+- Log to `entry_references.jsonl` only — NOT to `signals/observations.jsonl` (beliefs are not operational signals).
+- The calibration review process picks up these entries and asks the user whether to revise the belief's confidence level.
+- If `calibration/entry_references.jsonl` does not exist, skip silently.
+
+---
+
 ## No-Red-Lines Handling
 
 If `ethical_red_lines` is empty, contains only placeholder strings (containing
@@ -413,3 +462,23 @@ require explicit invocation for background scan mode.
 **calibration:** Conscience alerts that are acknowledged or that the user acts on become
 Type 1 (Values) divergence candidates during the next calibration review. Include
 conscience-prefixed signals when reviewing `signals/observations.jsonl` during calibration.
+
+---
+
+## Audit Logging
+
+The conscience skill logs alerts to `signals/observations.jsonl` — those log entries are the primary record. Additionally, when a conscience alert results in the user *modifying* their work (i.e., the alert was actionable), log that to the audit trail:
+
+```bash
+bash scripts/audit_log.sh \
+  --actor ai \
+  --actor-id conscience \
+  --module "signals/observations" \
+  --category update \
+  --description "Conscience alert: RED_LINE_ID — user acknowledged/adjusted" \
+  --files "signals/observations.jsonl"
+```
+
+Only log when an alert fires and the user responds. Silent background scans with no violations do not generate audit entries.
+
+If the script isn't found, skip silently — never block conscience monitoring over audit logging.
