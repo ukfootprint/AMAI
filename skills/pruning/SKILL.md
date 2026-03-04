@@ -311,3 +311,23 @@ Any archive action is reversible:
 | Size warnings | `prune_report.sh` | JSONL > 50KB | Review only — don't auto-archive |
 | Freshness reviews | `prune_report.sh` | Narrative > 180 days | Flag for update, not archive |
 | Module usage | `calibration/metrics.yaml` | zero load frequency | Verify before removing |
+
+---
+
+## Audit Logging
+
+After executing pruning decisions (Phase 3), log a summary to the audit trail:
+
+```bash
+bash scripts/audit_log.sh \
+  --actor ai \
+  --actor-id pruning \
+  --module "AFFECTED_MODULES" \
+  --category prune \
+  --description "Pruning review: archived X items, kept Y, deferred Z" \
+  --files "FILE1,FILE2"
+```
+
+List all files that were moved to `_archive/` in the `--files` argument. Log once per pruning session (not per item). The pruning skill already logs individual decisions to `memory/decisions.jsonl` — the audit log captures the session-level summary.
+
+If the script isn't found, skip silently — never block pruning over audit logging.

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "changelog_audit.schema.json",
+  "title": "AMAI Changelog Audit Entry",
+  "description": "Schema for a single audit trail entry in changelog_audit.jsonl. Each entry records an AI-mediated change to AMAI files.",
+  "type": "object",
+  "required": ["uid", "timestamp", "actor", "actor_id", "module", "category", "description", "files_changed"],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "UUID v4 unique identifier for this audit entry"
+    },
+    "timestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}",
+      "description": "ISO-8601 timestamp of the change"
+    },
+    "actor": {
+      "type": "string",
+      "enum": ["human", "ai", "system"],
+      "description": "Who made the change: human (manual), ai (skill/command), system (hook/scheduled task)"
+    },
+    "actor_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Specific identity of the actor — e.g. 'onboarding', 'pruning', 'conscience', 'calibrate', 'simon', 'maintenance-agent'"
+    },
+    "module": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The AMAI module area affected — e.g. 'identity/values', 'goals/current_focus', 'signals/observations'"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["create", "update", "delete", "prune", "calibrate", "onboard", "export"],
+      "description": "Type of change"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Human-readable description of what changed and why"
+    },
+    "files_changed": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Relative paths of files that were modified"
+    }
+  },
+  "additionalProperties": false
+}

@@ -75,3 +75,23 @@ When the user asks to review signals or observations:
 2. Parse and display the most recent entries (last 10 unless a different count is requested)
 3. Format readably — not raw JSON
 4. Offer to filter by tag or type if the file is large
+
+---
+
+## Audit Logging
+
+After appending an entry to any JSONL file, log the change to the audit trail:
+
+```bash
+bash scripts/audit_log.sh \
+  --actor ai \
+  --actor-id signal-capture \
+  --module "MODULE_AREA" \
+  --category update \
+  --description "Logged TYPE signal: BRIEF_SUMMARY" \
+  --files "TARGET_FILE"
+```
+
+Example: `--module "signals/observations" --description "Logged override signal: rewrote AI's formal tone to conversational" --files "signals/observations.jsonl"`
+
+If the script isn't found, skip silently — never block signal capture over audit logging.

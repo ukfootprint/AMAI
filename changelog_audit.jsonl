@@ -1,0 +1,1 @@
+{"uid": "2b3b6189-c8fb-4e58-8e90-795efff1000f", "timestamp": "2026-03-04T11:10:43Z", "actor": "system", "actor_id": "setup", "module": "changelog_audit", "category": "create", "description": "Initialised changelog_audit.jsonl — best-effort audit trail for AI-mediated changes", "files_changed": ["changelog_audit.jsonl", "schemas/changelog_audit.schema.json"]}

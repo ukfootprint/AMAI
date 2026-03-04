@@ -66,3 +66,13 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# ─────────────────────────────────────────────
+# Generated reports — output files, not source
+# ─────────────────────────────────────────────
+reports/
+
+# ─────────────────────────────────────────────
+# Plugin backups — created during rebuild
+# ─────────────────────────────────────────────
+*.plugin.bak

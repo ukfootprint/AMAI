@@ -770,3 +770,26 @@ entries — offer to sharpen them, but don't block completion on WARNs.
 > Optional next steps: set up org overlays for any organisations you work with,
 > populate your knowledge domains (knowledge/domains/), and consider running
 > `/amai:prune` after 3+ months to keep things lean."
+
+---
+
+## Audit Logging
+
+After each stage completes and files have been written, log the changes to the audit trail:
+
+```bash
+bash scripts/audit_log.sh \
+  --actor ai \
+  --actor-id onboarding \
+  --module "MODULE_AREA" \
+  --category onboard \
+  --description "DESCRIPTION_OF_WHAT_WAS_WRITTEN" \
+  --files "FILE1,FILE2"
+```
+
+**Examples:**
+- Stage 1: `--module "identity" --description "Stage 1: populated core values, heuristics, and current focus" --files "identity/values.yaml,identity/heuristics.yaml,goals/current_focus.yaml"`
+- Stage 2: `--module "identity" --description "Stage 2: populated voice, north star, goals, frameworks, beliefs" --files "identity/voice.md,goals/north_star.md,goals/goals.yaml,knowledge/frameworks.md,identity/beliefs.yaml"`
+- Stage 3: `--module "identity" --description "Stage 3: populated story, principles, operations, network, memory seeds" --files "identity/story.md,identity/principles.md,operations/rituals.md,operations/workflows.md,network/circles.yaml"`
+
+Log once per stage (not per file). If the script isn't found, skip silently — never block onboarding over audit logging.

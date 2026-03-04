@@ -334,3 +334,26 @@ If the user's `identity/values.yaml → ethical_red_lines` contains plain string
 4. Construct the structured YAML for each red line, show for confirmation, then
    write to `identity/values.yaml`.
 5. Run `bash scripts/validate.sh` to confirm no more WARN:DEPRECATED_RED_LINE_FORMAT.
+
+---
+
+## Audit Logging
+
+After each part of the advanced setup that writes files, log the change:
+
+```bash
+bash scripts/audit_log.sh \
+  --actor ai \
+  --actor-id advanced-setup \
+  --module "MODULE_AREA" \
+  --category onboard \
+  --description "DESCRIPTION" \
+  --files "FILE1,FILE2"
+```
+
+**Examples:**
+- After seeding signals: `--module "signals" --description "Advanced setup: seeded first observation entries" --files "signals/observations.jsonl"`
+- After initialising metrics: `--module "calibration" --description "Advanced setup: initialised calibration metrics" --files "calibration/metrics.yaml"`
+- After red-line upgrade: `--module "identity/values" --description "Advanced setup: upgraded red lines to structured format" --files "identity/values.yaml"`
+
+If the script isn't found, skip silently — never block setup over audit logging.
