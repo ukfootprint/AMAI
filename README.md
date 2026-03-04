@@ -65,7 +65,7 @@ Using AMAI with Claude Cowork and the included plugin is the highest-fidelity ex
 | Manual prompt every session: *"Read my BRAIN.md…"* | `SessionStart` hook loads defaults automatically |
 | User manages what modules to load | `context-loader` skill reads the trigger table and loads the right modules — including domain-specific knowledge when task vocabulary matches a registered domain |
 | Signal capture requires remembering | `Stop` hook detects signal-worthy moments and offers to log them |
-| No slash commands | `/amai:status`, `/amai:calibrate`, `/amai:capture`, `/amai:validate`, `/amai:lint`, `/amai:export`, `/amai:brand-voice`, `/amai:conscience` |
+| No slash commands | `/amai:status`, `/amai:calibrate`, `/amai:capture`, `/amai:validate`, `/amai:lint`, `/amai:export`, `/amai:brand-voice`, `/amai:conscience`, `/amai:goal-update` |
 | Org overlays require manual activation | `/amai:brand-voice` activates brand voice + behaviour bands; `org-overlay` skill handles S0/S1/S2 transitions with confirmation |
 | Onboarding is manual | `/amai:setup 1` (30 min), `/amai:setup 2` (45 min), `/amai:setup 3` (30 min) — three progressive stages building from quick-start to full core |
 
@@ -326,6 +326,7 @@ AMAI/
 │   ├── protocol.md                 ← Divergence taxonomy and incorporation rules
 │   ├── metrics.yaml                ← Quantitative tracking across sessions
 │   ├── divergence.jsonl            ← Append-only log of detected divergences
+│   ├── entry_references.jsonl      ← Per-entry event log (conscience, critique, calibration)
 │   └── pending_review.md           ← Items awaiting deliberate human review
 │
 │   ── ORG LAYER ──────────────────────────────────────────────────────────────
@@ -348,6 +349,7 @@ AMAI/
 │               └── disclosure_rules.yaml  ← Allowed classes by context
 │
 ├── schemas/                        ← JSON Schema validation files
+│   ├── entry_references.schema.json← Schema for calibration/entry_references.jsonl
 │   ├── domain_index.schema.json    ← Schema for knowledge/domains/domain_index.yaml
 │   └── behaviour_bands.schema.json ← Schema for org overlay behaviour_bands.yaml
 │
@@ -360,8 +362,8 @@ AMAI/
 └── scripts/                        ← Validation and export tooling
     ├── validate.sh                 ← Schema, date integrity, and domain checks
     ├── staleness.sh                ← Module freshness report
-    ├── usage_report.sh             ← Module load frequency report
-    ├── prune_report.sh             ← Archive candidates, consolidation + domain analysis
+    ├── usage_report.sh             ← Module load frequency + entry reference summary
+    ├── prune_report.sh             ← Archive candidates, consolidation, entry ref analysis
     ├── eval_quality.sh             ← Quality evaluation task generator
     ├── amai_lint.sh                ← Org overlay completeness validation
     └── amai_export.sh              ← Browser-safe bundle generator
@@ -397,6 +399,8 @@ The advanced layer closes a feedback loop that the core modules leave open: the 
 
 **`calibration/`** compares those signals against your declared config monthly. Divergences are classified as confirmations, update candidates, or drift warnings — and presented for your deliberate review. Your config only changes when you decide it should.
 
+**`calibration/entry_references.jsonl`** tracks which specific entries (individual values, heuristics, red lines, beliefs, goals) participated in explicit, observable events — a conscience alert, a critique application, a calibration review, a goal status change. After 90+ days this tells the pruning system which entries are load-bearing ("this heuristic has fired 12 times") and which are dormant ("this belief has never been challenged — is it still relevant?"). No LLM introspection. Deterministic, auditable events only.
+
 ```
 AI session happens
         ↓
@@ -404,9 +408,13 @@ Notable override / friction / pattern observed
         ↓
 AI drafts signal entry → you confirm → appended to signals/observations.jsonl
         ↓
+Conscience alert fires → entry_id logged to calibration/entry_references.jsonl
+        ↓
 Monthly calibration review: signals compared against config
         ↓
 Divergences classified: CONFIRM / CANDIDATE / WARNING / DEFER
+        ↓
+Reviewed entries logged to calibration/entry_references.jsonl
         ↓
 You review pending_review.md → decide: INCORPORATE / REJECT / DEFER
         ↓
@@ -447,7 +455,7 @@ Note: This is a heuristic, not a red line. You may have good reasons to deviate.
 - `/amai:conscience --heuristics-only` — Phase 2 only
 - `/amai:conscience --include-heuristics` — both phases (default)
 
-The conscience layer is informational. It never blocks. Every alert is logged to `calibration/metrics.yaml` for pattern review. See `docs/conscience_prompt.md` for the portable prompt you can paste into any session without the plugin.
+The conscience layer is informational. It never blocks. Every alert is logged to `signals/observations.jsonl`, and the specific `entry_id` (which red line or heuristic fired) is logged to `calibration/entry_references.jsonl` for long-run frequency tracking. See `docs/conscience_prompt.md` for the portable prompt you can paste into any session without the plugin.
 
 ---
 
