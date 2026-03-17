@@ -32,6 +32,8 @@ a generic "find problems" prompt — it uses the user's own declared values, heu
 frameworks, and domain context as the evaluation criteria. The result is critique that
 reflects this person's judgment, not a generic standard.
 
+**Path convention:** All user data file paths (identity/, signals/, calibration/, etc.) resolve to `${AMAI_USER_ROOT}` — the user's personal AMAI directory, set in `~/.amai/config.yaml`. If not configured, fall back to `${CLAUDE_PLUGIN_ROOT}`.
+
 ---
 
 ## Critique Levels

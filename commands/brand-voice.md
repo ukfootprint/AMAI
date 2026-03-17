@@ -13,6 +13,8 @@ allowed_tools:
   - Bash
 ---
 
+**Path convention:** All user data files are in `${AMAI_USER_ROOT}` — the user's personal AMAI directory, resolved at session start from `~/.amai/config.yaml`. If not resolved, fall back to `${CLAUDE_PLUGIN_ROOT}`.
+
 Invoke the org-overlay skill at `skills/org-overlay/SKILL.md` in brand voice setup or
 activation mode.
 
@@ -30,7 +32,7 @@ for the detected mode.
 
 **Step 2 — For `--list`:**
 
-Read `${CLAUDE_PLUGIN_ROOT}/org/org_index.yaml`. Output a summary table:
+Read `${AMAI_USER_ROOT}/org/org_index.yaml`. Output a summary table:
 
 ```
 Configured org overlays:
@@ -56,7 +58,7 @@ template files, then offer to activate immediately.
 
 After any write operation (new or updated overlay), run:
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/scripts/validate.sh --quiet
+bash "${AMAI_USER_ROOT}/scripts/validate.sh" --quiet
 ```
 
 Report any ERRORs. WARNs about placeholder data are expected for new overlays.

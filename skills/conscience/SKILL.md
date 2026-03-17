@@ -33,6 +33,8 @@ lines and high-confidence heuristics. It operates in two modes — background sc
 This skill does not replace judgment. It raises concerns for the user to consider.
 The user is always the final authority.
 
+**Path convention:** All user data file paths (identity/, signals/, calibration/, etc.) resolve to `${AMAI_USER_ROOT}` — the user's personal AMAI directory, set in `~/.amai/config.yaml`. If not configured, fall back to `${CLAUDE_PLUGIN_ROOT}`.
+
 **Phase 2 default behaviour:** Both red-line checking (Phase 1) and heuristic checking
 (Phase 2) are active by default. Use `--red-lines-only` to revert to Phase 1 behaviour.
 
@@ -470,7 +472,7 @@ conscience-prefixed signals when reviewing `signals/observations.jsonl` during c
 The conscience skill logs alerts to `signals/observations.jsonl` — those log entries are the primary record. Additionally, when a conscience alert results in the user *modifying* their work (i.e., the alert was actionable), log that to the audit trail:
 
 ```bash
-bash scripts/audit_log.sh \
+bash "${AMAI_USER_ROOT}/scripts/audit_log.sh" \
   --actor ai \
   --actor-id conscience \
   --module "signals/observations" \

@@ -27,6 +27,8 @@ It identifies archive candidates, consolidation opportunities, size warnings, an
 stale entries — then walks the user through decisions one category at a time. It
 archives, never deletes. Every decision is logged to `memory/decisions.jsonl`.
 
+**Path convention:** All user data file paths (identity/, signals/, calibration/, etc.) resolve to `${AMAI_USER_ROOT}` — the user's personal AMAI directory, set in `~/.amai/config.yaml`. If not configured, fall back to `${CLAUDE_PLUGIN_ROOT}`.
+
 ---
 
 ## Pruning Preferences
@@ -79,7 +81,7 @@ Before generating the pruning report, offer a quality baseline:
 
 If the user says yes:
 ```bash
-bash scripts/eval_quality.sh
+bash "${AMAI_USER_ROOT}/scripts/eval_quality.sh"
 ```
 Open the generated file (`reports/quality_eval_<date>.md`), load AMAI context into your
 AI, paste each task, and record the confidence ratings before proceeding.
@@ -95,12 +97,12 @@ If the user says no or skips this offer, proceed directly to Phase 1.
 **Step 1 — Run the report:**
 
 ```bash
-bash scripts/prune_report.sh --mode review --json
+bash "${AMAI_USER_ROOT}/scripts/prune_report.sh" --mode review --json
 ```
 
 If the script fails or is not found:
 > "I can't run prune_report.sh — it may not exist or there may be an error.
-> Run `bash scripts/prune_report.sh` in your terminal to check. If this is a fresh
+> Run `bash "${AMAI_USER_ROOT}/scripts/prune_report.sh"` in your terminal to check. If this is a fresh
 > AMAI setup, there may be nothing to prune yet."
 
 **Step 2 — Parse the JSON output:**
@@ -256,7 +258,7 @@ Append one entry to `memory/decisions.jsonl` for the pruning session:
 **Step 5 — Validate:**
 
 ```bash
-bash scripts/validate.sh --quiet
+bash "${AMAI_USER_ROOT}/scripts/validate.sh" --quiet
 ```
 
 Surface any new ERRORs or WARNs that weren't present before pruning. If errors appear,
@@ -284,7 +286,7 @@ If anything was archived, remind the user:
 
 If yes:
 ```bash
-bash scripts/eval_quality.sh --output reports/quality_eval_<date>_post.md
+bash "${AMAI_USER_ROOT}/scripts/eval_quality.sh" --output reports/quality_eval_<date>_post.md
 ```
 Compare with the pre-pruning baseline. If 2+ tasks drop a confidence level, consider
 restoring the most recently archived items from `_archive/`. See `docs/quality_tracking.md`.
@@ -319,7 +321,7 @@ Any archive action is reversible:
 After executing pruning decisions (Phase 3), log a summary to the audit trail:
 
 ```bash
-bash scripts/audit_log.sh \
+bash "${AMAI_USER_ROOT}/scripts/audit_log.sh" \
   --actor ai \
   --actor-id pruning \
   --module "AFFECTED_MODULES" \

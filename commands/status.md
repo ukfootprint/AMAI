@@ -3,12 +3,14 @@ description: Show AMAI system status, calibration health, and active context
 allowed-tools: Read, Bash
 ---
 
+**Path convention:** All user data files are in `${AMAI_USER_ROOT}` — the user's personal AMAI directory, resolved at session start from `~/.amai/config.yaml`. If not resolved, fall back to `${CLAUDE_PLUGIN_ROOT}`.
+
 Report the current AMAI system status. Read the following files:
 
-1. `${CLAUDE_PLUGIN_ROOT}/BRAIN.md` — overall system status and entry point
-2. `${CLAUDE_PLUGIN_ROOT}/calibration/metrics.yaml` — freshness metrics per module
-3. `${CLAUDE_PLUGIN_ROOT}/calibration/pending_review.md` — items awaiting review
-4. `${CLAUDE_PLUGIN_ROOT}/org/org_index.yaml` — available and active org overlays
+1. `${AMAI_USER_ROOT}/BRAIN.md` — overall system status and entry point
+2. `${AMAI_USER_ROOT}/calibration/metrics.yaml` — freshness metrics per module
+3. `${AMAI_USER_ROOT}/calibration/pending_review.md` — items awaiting review
+4. `${AMAI_USER_ROOT}/org/org_index.yaml` — available and active org overlays
 
 Then produce a concise status report in this format:
 

@@ -14,9 +14,9 @@ No database. No app. No API keys. No platform lock-in. Plain files that both hum
 
 > **The best AMAI experience is zero-ceremony.** The `amai.plugin` for [Claude Cowork](https://claude.ai/download) eliminates the manual session-start prompt entirely.
 
-Install `amai.plugin` with your AMAI folder as the Cowork workspace and every session starts already loaded — values, heuristics, current focus, and the full module trigger table injected automatically. Commands like `/amai:status`, `/amai:calibrate`, and `/amai:capture` are available from the first message. Signal-worthy moments are detected and offered for logging at session end without you having to remember.
+Install `amai.plugin` and point it at your personal AMAI data folder via `~/.amai/config.yaml`. Every session starts already loaded — values, heuristics, current focus, and the full module trigger table injected automatically. Commands like `/amai:status`, `/amai:calibrate`, and `/amai:capture` are available from the first message. Signal-worthy moments are detected and offered for logging at session end without you having to remember.
 
-The plugin is included in this repository alongside your AMAI files. See [PLUGIN.md](PLUGIN.md) for full details, and [Getting Started](#getting-started) for installation instructions.
+The plugin separates read-only plugin code (skills, commands, hooks) from your read-write personal data. See [PLUGIN.md](PLUGIN.md) for full details, and [Getting Started](#getting-started) for installation instructions.
 
 ---
 
@@ -69,7 +69,14 @@ Using AMAI with Claude Cowork and the included plugin is the highest-fidelity ex
 | Org overlays require manual activation | `/amai:brand-voice` activates brand voice + behaviour bands; `org-overlay` skill handles S0/S1/S2 transitions with confirmation |
 | Onboarding is manual | `/amai:setup 1` (30 min), `/amai:setup 2` (45 min), `/amai:setup 3` (30 min) — three progressive stages building from quick-start to full core |
 
-**Setup:** Open Cowork, select your AMAI folder as the workspace, and install `amai.plugin`. That's it — the next session starts fully loaded.
+**Setup:**
+
+1. Create `~/.amai/config.yaml` pointing to your personal AMAI data folder:
+   ```yaml
+   user_root: ~/code/AMAI-simon
+   ```
+2. Install `amai.plugin` in Cowork
+3. The next session loads your context automatically — you can use any workspace folder
 
 ---
 
@@ -198,9 +205,13 @@ Load additional module files when the task calls for them — network files for 
 
 If you're using Claude Cowork, install the plugin first — it makes every subsequent step better:
 
-1. Open Cowork and select your AMAI folder as the workspace
-2. Install `amai.plugin` (included in this repository)
-3. Your next session will auto-load your context — then run the onboarding stages below
+1. Create your personal AMAI data folder (clone this repo, or copy the template structure)
+2. Create `~/.amai/config.yaml` to tell the plugin where your data lives:
+   ```yaml
+   user_root: ~/code/AMAI-yourname
+   ```
+3. Install `amai.plugin` in Cowork (included in this repository)
+4. Your next session will auto-load your context — then run the onboarding stages below
 
 **Onboarding stages** *(progressive — complete each before the next)*
 

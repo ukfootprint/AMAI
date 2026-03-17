@@ -16,6 +16,8 @@ The org-overlay skill manages the separation between personal identity (AMAI cor
 and organisational context. It handles overlay activation, session state transitions,
 behaviour band selection, disclosure rules, and tension logging.
 
+**Path convention:** All user data file paths (identity/, signals/, calibration/, etc.) resolve to `${AMAI_USER_ROOT}` — the user's personal AMAI directory, set in `~/.amai/config.yaml`. If not configured, fall back to `${CLAUDE_PLUGIN_ROOT}`.
+
 ## Concepts
 
 **Session states** control how much of the AMAI core is active alongside an org overlay:
@@ -36,16 +38,16 @@ Template: `org/templates/brand_voice.md`
 
 ## Activation workflow
 
-1. Read `${CLAUDE_PLUGIN_ROOT}/org/org_index.yaml` to list available overlays.
+1. Read `${AMAI_USER_ROOT}/org/org_index.yaml` to list available overlays.
 
 2. Ask the user which overlay to activate (or use the one they named).
 
 3. Read the overlay files:
-   - `${CLAUDE_PLUGIN_ROOT}/org/overlays/{org-name}/overlay.yaml` — core overlay config
-   - `${CLAUDE_PLUGIN_ROOT}/org/overlays/{org-name}/behaviour_bands.yaml` — behaviour bands (how personal defaults flex)
-   - `${CLAUDE_PLUGIN_ROOT}/org/overlays/{org-name}/brand_voice.md` — org voice and channel rules (if present)
-   - `${CLAUDE_PLUGIN_ROOT}/org/overlays/{org-name}/SESSION_STATES.md` — state transition rules
-   - `${CLAUDE_PLUGIN_ROOT}/org/overlays/{org-name}/policy/disclosure_rules.yaml` — what can be shared
+   - `${AMAI_USER_ROOT}/org/overlays/{org-name}/overlay.yaml` — core overlay config
+   - `${AMAI_USER_ROOT}/org/overlays/{org-name}/behaviour_bands.yaml` — behaviour bands (how personal defaults flex)
+   - `${AMAI_USER_ROOT}/org/overlays/{org-name}/brand_voice.md` — org voice and channel rules (if present)
+   - `${AMAI_USER_ROOT}/org/overlays/{org-name}/SESSION_STATES.md` — state transition rules
+   - `${AMAI_USER_ROOT}/org/overlays/{org-name}/policy/disclosure_rules.yaml` — what can be shared
 
 4. Confirm activation explicitly: "Activating [org name] overlay in S[n] mode. Behaviour band: [band name]. [Brief description of what this means for this session.]"
 
@@ -55,8 +57,8 @@ Template: `org/templates/brand_voice.md`
 
 When the user experiences a conflict between personal values and org requirements, log it:
 
-1. Read `${CLAUDE_PLUGIN_ROOT}/org/overlays/{org-name}/tension_log.jsonl` to see existing log format.
-2. Read `${CLAUDE_PLUGIN_ROOT}/signals/SCHEMA.md` for field definitions.
+1. Read `${AMAI_USER_ROOT}/org/overlays/{org-name}/tension_log.jsonl` to see existing log format.
+2. Read `${AMAI_USER_ROOT}/signals/SCHEMA.md` for field definitions.
 3. Construct the tension entry with the user's input.
 4. Append to `tension_log.jsonl` (using the Write/Edit tool with append semantics).
 5. Confirm the entry was logged.
@@ -73,7 +75,7 @@ Always state the transition explicitly and what it means for the session.
 
 ## Precedence rules
 
-When in S1 or S2 mode, read `${CLAUDE_PLUGIN_ROOT}/org/overlays/{org-name}/policy/` files to understand:
+When in S1 or S2 mode, read `${AMAI_USER_ROOT}/org/overlays/{org-name}/policy/` files to understand:
 - What data classes exist and how they're classified
 - Which personal context elements can surface in org mode
 - What decision authorities apply
@@ -92,6 +94,6 @@ If the user asks to set up a new org:
    ```
 3. Walk the user through populating `brand_voice.md` — see `docs/brand_voice_prompt.md` for guided questions
 4. Walk the user through setting `behaviour_bands.yaml` band org_range values
-5. Run `bash scripts/validate.sh` to confirm no errors
+5. Run `bash "${AMAI_USER_ROOT}/scripts/validate.sh"` to confirm no errors
 
 For a guided setup, use `/amai:brand-voice` (see `commands/brand-voice.md`).

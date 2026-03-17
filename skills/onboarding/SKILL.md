@@ -23,6 +23,8 @@ The onboarding skill populates AMAI's core modules through structured conversati
 It never shows the user raw YAML during the conversation phase. All output is written
 only after the user confirms what was captured.
 
+**Path convention:** All user data file paths (identity/, signals/, calibration/, etc.) resolve to `${AMAI_USER_ROOT}` — the user's personal AMAI directory, set in `~/.amai/config.yaml`. If not configured, fall back to `${CLAUDE_PLUGIN_ROOT}`.
+
 ---
 
 ## Stage Detection
@@ -228,7 +230,7 @@ After completing the conversation:
 
 5. **Run validation:**
    ```bash
-   bash scripts/validate.sh --quiet
+   bash "${AMAI_USER_ROOT}/scripts/validate.sh" --quiet
    ```
 
 6. **Report results.** If WARNs are present, surface them plainly:
@@ -561,7 +563,7 @@ After completing all six conversations:
 
 5. **Run validation:**
    ```bash
-   bash scripts/validate.sh --quiet
+   bash "${AMAI_USER_ROOT}/scripts/validate.sh" --quiet
    ```
 
 6. **Report results.** Only `goals/goals.yaml` is schema-validated; the Markdown
@@ -648,7 +650,7 @@ where it came from, and how it shows up in decisions.
 
 **Validate after this section:**
 ```bash
-bash scripts/validate.sh --quiet
+bash "${AMAI_USER_ROOT}/scripts/validate.sh" --quiet
 ```
 Surface any WARNs. Offer to sharpen before continuing.
 
@@ -746,7 +748,7 @@ writing.
 Run full validation after all Stage 3 files are written:
 
 ```bash
-bash scripts/validate.sh --quiet
+bash "${AMAI_USER_ROOT}/scripts/validate.sh" --quiet
 ```
 
 Surface any ERRORs and offer to fix them. WARNs are expected for placeholder-format
@@ -778,7 +780,7 @@ entries — offer to sharpen them, but don't block completion on WARNs.
 After each stage completes and files have been written, log the changes to the audit trail:
 
 ```bash
-bash scripts/audit_log.sh \
+bash "${AMAI_USER_ROOT}/scripts/audit_log.sh" \
   --actor ai \
   --actor-id onboarding \
   --module "MODULE_AREA" \

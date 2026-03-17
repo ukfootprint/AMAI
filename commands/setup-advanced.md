@@ -8,6 +8,8 @@ allowed_tools:
   - Bash
 ---
 
+**Path convention:** All user data files are in `${AMAI_USER_ROOT}` — the user's personal AMAI directory, resolved at session start from `~/.amai/config.yaml`. If not resolved, fall back to `${CLAUDE_PLUGIN_ROOT}`. All data file paths (identity/, goals/, signals/, calibration/, etc.) are relative to `${AMAI_USER_ROOT}`.
+
 Invoke the `advanced-setup` skill to run a guided 30-minute session that activates
 the signals and calibration layer.
 
@@ -27,7 +29,7 @@ If any check fails, stop and redirect:
 
 ## If Prerequisites Pass
 
-Read `skills/advanced-setup/SKILL.md` and follow the full setup flow:
+Read `${CLAUDE_PLUGIN_ROOT}/skills/advanced-setup/SKILL.md` and follow the full setup flow:
 
 - **Part 1** — Explain signals and the trigger cue list
 - **Part 2** — Seed first observations in `signals/observations.jsonl`

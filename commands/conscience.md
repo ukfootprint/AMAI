@@ -11,6 +11,8 @@ allowed_tools:
   - Bash
 ---
 
+**Path convention:** All user data files are in `${AMAI_USER_ROOT}` — the user's personal AMAI directory, resolved at session start from `~/.amai/config.yaml`. If not resolved, fall back to `${CLAUDE_PLUGIN_ROOT}`. All data file paths (identity/, signals/, etc.) are relative to `${AMAI_USER_ROOT}`.
+
 Invoke the conscience skill at `skills/conscience/SKILL.md` in **on-demand check mode**.
 
 **Mode detection:** Parse $ARGUMENTS for mode flags before running the check:

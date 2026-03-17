@@ -15,6 +15,8 @@ The signal-capture skill guides structured observation logging to AMAI's memory
 modules. It ensures entries follow the correct schema and are appended without
 corrupting existing data.
 
+**Path convention:** All user data file paths (identity/, signals/, calibration/, etc.) resolve to `${AMAI_USER_ROOT}` — the user's personal AMAI directory, set in `~/.amai/config.yaml`. If not configured, fall back to `${CLAUDE_PLUGIN_ROOT}`.
+
 ## Step 1: Determine the signal type
 
 Ask the user what they want to capture if not already clear. Signal types map to files:
@@ -31,9 +33,9 @@ Ask the user what they want to capture if not already clear. Signal types map to
 ## Step 2: Read the schema
 
 Before logging, read the SCHEMA.md file in the relevant directory:
-- `${CLAUDE_PLUGIN_ROOT}/signals/SCHEMA.md` for observations
-- `${CLAUDE_PLUGIN_ROOT}/memory/SCHEMA.md` for decisions, experiences, failures
-- `${CLAUDE_PLUGIN_ROOT}/knowledge/SCHEMA.md` for learning
+- `${AMAI_USER_ROOT}/signals/SCHEMA.md` for observations
+- `${AMAI_USER_ROOT}/memory/SCHEMA.md` for decisions, experiences, failures
+- `${AMAI_USER_ROOT}/knowledge/SCHEMA.md` for learning
 
 Parse one or two recent entries from the target JSONL file to confirm the exact schema in use.
 
@@ -83,7 +85,7 @@ When the user asks to review signals or observations:
 After appending an entry to any JSONL file, log the change to the audit trail:
 
 ```bash
-bash scripts/audit_log.sh \
+bash "${AMAI_USER_ROOT}/scripts/audit_log.sh" \
   --actor ai \
   --actor-id signal-capture \
   --module "MODULE_AREA" \

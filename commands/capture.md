@@ -8,6 +8,8 @@ Capture a signal or observation to AMAI memory. This command invokes the signal-
 $ARGUMENTS may contain a pre-stated observation (e.g., `/amai:capture I decided to X because Y`).
 If provided, use it as the starting point for the capture. If empty, ask the user what they want to log.
 
+**Path convention:** All user data files are in `${AMAI_USER_ROOT}` — the user's personal AMAI directory, resolved at session start from `~/.amai/config.yaml`. If not resolved, fall back to `${CLAUDE_PLUGIN_ROOT}`.
+
 Follow the signal-capture skill workflow:
 
 1. Determine the signal type (observation, decision, experience, failure, learning, org tension).
@@ -15,9 +17,9 @@ Follow the signal-capture skill workflow:
    - If ambiguous, ask: "What type of signal is this — a decision, experience, learning, or general observation?"
 
 2. Read the SCHEMA.md for the target file:
-   - General observations: `${CLAUDE_PLUGIN_ROOT}/signals/SCHEMA.md`
-   - Decisions/experiences/failures: `${CLAUDE_PLUGIN_ROOT}/memory/SCHEMA.md`
-   - Learning: `${CLAUDE_PLUGIN_ROOT}/knowledge/SCHEMA.md`
+   - General observations: `${AMAI_USER_ROOT}/signals/SCHEMA.md`
+   - Decisions/experiences/failures: `${AMAI_USER_ROOT}/memory/SCHEMA.md`
+   - Learning: `${AMAI_USER_ROOT}/knowledge/SCHEMA.md`
 
 3. Read one or two recent entries from the target JSONL file to confirm the schema in use.
 

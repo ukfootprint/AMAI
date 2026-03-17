@@ -9,6 +9,8 @@ allowed_tools:
   - Bash
 ---
 
+**Path convention:** All user data files are in `${AMAI_USER_ROOT}` — the user's personal AMAI directory, resolved at session start from `~/.amai/config.yaml`. If not resolved, fall back to `${CLAUDE_PLUGIN_ROOT}`. Plugin skill definitions remain at `${CLAUDE_PLUGIN_ROOT}`.
+
 Invoke the onboarding skill to populate AMAI's core modules through conversation.
 
 $ARGUMENTS may contain a stage number or name (e.g., `/amai:setup 1`, `/amai:setup stage 2`,
@@ -32,5 +34,5 @@ $ARGUMENTS may contain a stage number or name (e.g., `/amai:setup 1`, `/amai:set
 **Important constraints:**
 - Never show raw YAML to the user during the conversation phase.
 - Always confirm what was captured in plain language before writing files.
-- Always run `bash scripts/validate.sh --quiet` after writing files and report results.
+- Always run `bash "${AMAI_USER_ROOT}/scripts/validate.sh" --quiet` after writing files and report results.
 - If validation flags WARNs, offer to address them before finishing.

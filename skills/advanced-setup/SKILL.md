@@ -25,6 +25,8 @@ initialise metrics → schedule and close.
 
 Do not rush between parts. Each part has a specific conversation goal.
 
+**Path convention:** All user data file paths (identity/, signals/, calibration/, etc.) resolve to `${AMAI_USER_ROOT}` — the user's personal AMAI directory, set in `~/.amai/config.yaml`. If not configured, fall back to `${CLAUDE_PLUGIN_ROOT}`.
+
 ---
 
 ## Prerequisites Check
@@ -296,8 +298,8 @@ If the user agrees, add a note to `goals/current_focus.yaml → notes` field or
 
 After completing all five parts:
 
-1. Run `bash scripts/validate.sh --quiet` — must pass with 0 errors.
-2. Run `bash scripts/staleness.sh` — calibration should show as CURRENT.
+1. Run `bash "${AMAI_USER_ROOT}/scripts/validate.sh" --quiet` — must pass with 0 errors.
+2. Run `bash "${AMAI_USER_ROOT}/scripts/staleness.sh"` — calibration should show as CURRENT.
 3. Confirm `signals/observations.jsonl` has at least 1 real entry.
 4. Confirm `calibration/metrics.yaml` has today's date in `last_updated` and
    a populated `review_history` entry.
@@ -333,7 +335,7 @@ If the user's `identity/values.yaml → ethical_red_lines` contains plain string
    - "Give me a concrete example of this rule in action."
 4. Construct the structured YAML for each red line, show for confirmation, then
    write to `identity/values.yaml`.
-5. Run `bash scripts/validate.sh` to confirm no more WARN:DEPRECATED_RED_LINE_FORMAT.
+5. Run `bash "${AMAI_USER_ROOT}/scripts/validate.sh"` to confirm no more WARN:DEPRECATED_RED_LINE_FORMAT.
 
 ---
 
@@ -342,7 +344,7 @@ If the user's `identity/values.yaml → ethical_red_lines` contains plain string
 After each part of the advanced setup that writes files, log the change:
 
 ```bash
-bash scripts/audit_log.sh \
+bash "${AMAI_USER_ROOT}/scripts/audit_log.sh" \
   --actor ai \
   --actor-id advanced-setup \
   --module "MODULE_AREA" \

@@ -5,11 +5,13 @@ allowed-tools: Read, Write, Edit
 
 Run an interactive AMAI calibration session.
 
-1. Read `${CLAUDE_PLUGIN_ROOT}/calibration/protocol.md` — this is the authoritative source for the calibration steps. Follow it exactly.
+**Path convention:** All user data files are in `${AMAI_USER_ROOT}` — the user's personal AMAI directory, resolved at session start from `~/.amai/config.yaml`. If not resolved, fall back to `${CLAUDE_PLUGIN_ROOT}`.
 
-2. Read `${CLAUDE_PLUGIN_ROOT}/calibration/metrics.yaml` to understand which modules are stale or due for review.
+1. Read `${AMAI_USER_ROOT}/calibration/protocol.md` — this is the authoritative source for the calibration steps. Follow it exactly.
 
-3. Read `${CLAUDE_PLUGIN_ROOT}/calibration/pending_review.md` to surface any items that were flagged for this calibration.
+2. Read `${AMAI_USER_ROOT}/calibration/metrics.yaml` to understand which modules are stale or due for review.
+
+3. Read `${AMAI_USER_ROOT}/calibration/pending_review.md` to surface any items that were flagged for this calibration.
 
 4. Walk the user through the calibration protocol step by step:
    - Present each step from protocol.md
@@ -52,7 +54,7 @@ Do not skip steps in protocol.md. If the user wants to defer a step, add it to p
 
 9. After calibration completes, log a summary to the audit trail:
 ```bash
-bash scripts/audit_log.sh \
+bash "${AMAI_USER_ROOT}/scripts/audit_log.sh" \
   --actor ai \
   --actor-id calibrate \
   --module "calibration" \

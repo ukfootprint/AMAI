@@ -3,6 +3,8 @@ description: Update the status of a goal and log the change to the entry referen
 allowed-tools: Read, Write, Edit, Bash
 ---
 
+**Path convention:** All user data files are in `${AMAI_USER_ROOT}` — the user's personal AMAI directory, resolved at session start from `~/.amai/config.yaml`. If not resolved, fall back to `${CLAUDE_PLUGIN_ROOT}`.
+
 Update the status of a specific goal in `goals/goals.yaml`.
 
 **Usage:** `/amai:goal-update [goal_id] [new_status]`
@@ -13,7 +15,7 @@ Valid statuses: `active` | `on_hold` | `completed` | `abandoned`
 
 ## Steps
 
-1. Read `${CLAUDE_PLUGIN_ROOT}/goals/goals.yaml` to load current goals.
+1. Read `${AMAI_USER_ROOT}/goals/goals.yaml` to load current goals.
 
 2. Find the goal with `id` matching the provided `goal_id`. If not found, list available goal ids and ask the user to confirm the correct one.
 
@@ -43,7 +45,7 @@ If `calibration/entry_references.jsonl` does not exist, skip silently.
 8. Log to the audit trail:
 
 ```bash
-bash scripts/audit_log.sh \
+bash "${AMAI_USER_ROOT}/scripts/audit_log.sh" \
   --actor ai \
   --actor-id goal-update \
   --module "goals" \

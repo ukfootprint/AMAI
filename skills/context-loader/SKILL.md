@@ -16,9 +16,11 @@ The context-loader skill implements AMAI's progressive disclosure model. The def
 session context (values, heuristics, current_focus, MODULE_SELECTION) is already loaded
 via the SessionStart hook. This skill handles on-demand loading of additional modules.
 
+**Path convention:** All user data file paths (identity/, signals/, calibration/, etc.) resolve to `${AMAI_USER_ROOT}` — the user's personal AMAI directory, set in `~/.amai/config.yaml`. If not configured, fall back to `${CLAUDE_PLUGIN_ROOT}`.
+
 ## How to use this skill
 
-1. Read `${CLAUDE_PLUGIN_ROOT}/MODULE_SELECTION.md` if not already fully parsed — specifically the trigger table that maps task types to module files.
+1. Read `${AMAI_USER_ROOT}/MODULE_SELECTION.md` if not already fully parsed — specifically the trigger table that maps task types to module files.
 
 2. Identify the task type from the user's request. Common categories: writing/communication, decision-making, research/learning, network/relationship, org/work, operations, memory recall, calibration.
 
@@ -30,7 +32,7 @@ via the SessionStart hook. This skill handles on-demand loading of additional mo
 
 ## Module locations
 
-All module directories are at `${CLAUDE_PLUGIN_ROOT}/`:
+All module directories are at `${AMAI_USER_ROOT}/`:
 
 | Module area | Directory | Key files |
 |-------------|-----------|-----------|
@@ -66,7 +68,7 @@ relates to a specific knowledge domain.
 **Step 1 — Check domain_index:**
 
 ```
-Read: ${CLAUDE_PLUGIN_ROOT}/knowledge/domains/domain_index.yaml
+Read: ${AMAI_USER_ROOT}/knowledge/domains/domain_index.yaml
 ```
 
 Filter for domains where `active: true`. For each active domain, check whether the task
@@ -75,8 +77,8 @@ vocabulary, user mention, or task context matches the domain's `tags` or `descri
 **Step 2 — Load matching domain files (if match found):**
 
 ```
-Read: ${CLAUDE_PLUGIN_ROOT}/knowledge/domains/{id}/frameworks.md  (if exists)
-Read: ${CLAUDE_PLUGIN_ROOT}/knowledge/domains/{id}/landscape.md   (if exists)
+Read: ${AMAI_USER_ROOT}/knowledge/domains/{id}/frameworks.md  (if exists)
+Read: ${AMAI_USER_ROOT}/knowledge/domains/{id}/landscape.md   (if exists)
 ```
 
 Load these **alongside** (not instead of) `knowledge/frameworks.md`.
@@ -128,8 +130,11 @@ pruning skill to identify which modules are actively used vs. neglected.
 
 ```bash
 python3 -c "
-import re, os
-path = os.path.join(os.environ.get('CLAUDE_PLUGIN_ROOT', '.'), 'calibration/metrics.yaml')
+import re, os, subprocess
+_ur = subprocess.run(['sed', '-n', 's/^user_root:[[:space:]]*//p', os.path.expanduser('~/.amai/config.yaml')], capture_output=True, text=True).stdout.strip().replace(\"'\",\"\").replace('\"','')
+if _ur and _ur.startswith('~'): _ur = os.path.expanduser(_ur)
+if not _ur: _ur = os.environ.get('CLAUDE_PLUGIN_ROOT', '.')
+path = os.path.join(_ur, 'calibration/metrics.yaml')
 module = 'REPLACE_WITH_AREA'
 try:
     with open(path, 'r') as f: content = f.read()

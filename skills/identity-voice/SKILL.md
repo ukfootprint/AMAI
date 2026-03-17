@@ -17,14 +17,16 @@ The identity-voice skill actively applies this person's identity context to shap
 output — tone, vocabulary, reasoning patterns, and values. This is not passive
 reference reading. The goal is output that sounds like it came from this person.
 
+**Path convention:** All user data file paths (identity/, signals/, calibration/, etc.) resolve to `${AMAI_USER_ROOT}` — the user's personal AMAI directory, set in `~/.amai/config.yaml`. If not configured, fall back to `${CLAUDE_PLUGIN_ROOT}`.
+
 ## What to load
 
 Read the following files if not already in session context:
 
-1. `${CLAUDE_PLUGIN_ROOT}/identity/voice.md` — primary voice reference
-2. `${CLAUDE_PLUGIN_ROOT}/identity/heuristics.yaml` — decision and reasoning shortcuts
-3. `${CLAUDE_PLUGIN_ROOT}/identity/values.yaml` — values to apply as constraints
-4. `${CLAUDE_PLUGIN_ROOT}/identity/principles.md` — deeper reasoning behind values (load for complex or high-stakes content)
+1. `${AMAI_USER_ROOT}/identity/voice.md` — primary voice reference
+2. `${AMAI_USER_ROOT}/identity/heuristics.yaml` — decision and reasoning shortcuts
+3. `${AMAI_USER_ROOT}/identity/values.yaml` — values to apply as constraints
+4. `${AMAI_USER_ROOT}/identity/principles.md` — deeper reasoning behind values (load for complex or high-stakes content)
 
 ## Applying voice.md
 

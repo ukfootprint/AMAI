@@ -3,6 +3,8 @@ description: Export AMAI context bundle for a target AI platform
 allowed-tools: Bash, Read
 ---
 
+**Path convention:** All user data files are in `${AMAI_USER_ROOT}` — the user's personal AMAI directory, resolved at session start from `~/.amai/config.yaml`. If not resolved, fall back to `${CLAUDE_PLUGIN_ROOT}`.
+
 Export your AMAI context as a platform-specific bundle using profile-based export.
 
 ## Determine target
@@ -16,13 +18,13 @@ use that as the target. Otherwise, ask:
 > 3. **gemini_drive** — Gemini via Google Drive (multi-file folder, ~120K chars)
 > 4. **generic** — Any system instructions field (minimal bundle, ~15K chars)
 
-Read `${CLAUDE_PLUGIN_ROOT}/export/profiles.yaml` to confirm available profiles and their
+Read `${AMAI_USER_ROOT}/export/profiles.yaml` to confirm available profiles and their
 current budget settings before listing options.
 
 ## Run the export
 
 ```bash
-bash "${CLAUDE_PLUGIN_ROOT}/scripts/amai_export.sh" --target <target>
+bash "${AMAI_USER_ROOT}/scripts/amai_export.sh" --target <target>
 ```
 
 Capture the full console output. It will show:
@@ -68,4 +70,4 @@ After export, remind the user how to use the bundle:
 - If the script exits non-zero, parse the error output and explain it in plain language.
 - If `export/profiles.yaml` is missing: "Run `bash scripts/amai_export.sh` to see setup
   instructions, or check that `export/profiles.yaml` exists."
-- Make the script executable if needed: `chmod +x "${CLAUDE_PLUGIN_ROOT}/scripts/amai_export.sh"`
+- Make the script executable if needed: `chmod +x "${AMAI_USER_ROOT}/scripts/amai_export.sh"`

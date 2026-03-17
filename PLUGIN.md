@@ -47,26 +47,44 @@ decision, learning, or interpersonal interaction), Claude offers to capture it.
 
 ## Setup
 
-No additional configuration required. The plugin lives in the AMAI directory itself —
-when the AMAI folder is your Cowork workspace, `${CLAUDE_PLUGIN_ROOT}` resolves to the
-root of your AMAI repo and all file references work automatically.
+### 1. Configure your personal AMAI data path
 
-### Installing the plugin
+The plugin code (skills, commands, hooks) is read-only when installed as a Cowork plugin. Your personal AMAI data lives in a separate folder — your own AMAI instance (e.g., `AMAI-simon`). Tell the plugin where to find it:
 
-1. Open Cowork and select your AMAI folder as the workspace
+Create `~/.amai/config.yaml`:
+
+```yaml
+# AMAI user configuration
+# Points the Cowork plugin to your personal AMAI data directory.
+user_root: ~/code/AMAI-simon
+```
+
+Replace the path with your actual AMAI data folder. This is the directory that contains your `identity/`, `goals/`, `signals/`, `memory/`, and other personal data directories.
+
+If `~/.amai/config.yaml` is not present, the plugin falls back to `${CLAUDE_PLUGIN_ROOT}` (the plugin's own directory) — which works when the plugin and data live in the same folder, but will fail with write errors when the plugin is installed as a read-only Cowork plugin.
+
+### 2. Install the plugin
+
+1. Open Cowork (your AMAI data folder does not need to be the workspace)
 2. Install the `amai.plugin` file
-3. The SessionStart hook will fire on your next session
+3. The SessionStart hook will fire on your next session, resolve your data path from `~/.amai/config.yaml`, and load your context
+
+### How path resolution works
+
+The plugin uses two path variables:
+
+| Variable | Points to | Used for |
+|----------|-----------|----------|
+| `${CLAUDE_PLUGIN_ROOT}` | The plugin's installed location (read-only) | Skill definitions, command definitions, hook definitions |
+| `${AMAI_USER_ROOT}` | Your personal AMAI data directory (read-write) | All user data: identity, goals, memory, signals, calibration, scripts, schemas |
+
+The SessionStart hook resolves `${AMAI_USER_ROOT}` from `~/.amai/config.yaml` at the start of every session and prints it in the session context. All commands and skills use this path for reading and writing your data.
 
 ## Architecture
 
-This plugin implements **Option 1: plugin alongside AMAI files, single branch.** The plugin
-infrastructure (`.claude-plugin/`, `commands/`, `skills/`, `hooks/`) lives in the same git
-repo and branch as your AMAI data files. This keeps everything in one place and makes
-the plugin configuration part of your AMAI version history.
+The plugin separates **plugin code** (read-only, distributable) from **user data** (read-write, personal). The plugin infrastructure (`.claude-plugin/`, `commands/`, `skills/`, `hooks/`) is versioned in this repository and installed as a Cowork plugin. Your personal data (values, voice, memory, network, org overlays, scripts, schemas) lives in your own AMAI instance directory, pointed to by `~/.amai/config.yaml`.
 
-The plugin does not contain any personal data — it only contains instructions for how
-Claude should read and use your AMAI files. Your personal data (values, voice, memory,
-network, org overlays) remains in the AMAI data directories unchanged.
+This separation means you can install plugin updates without affecting your personal data, and your data folder remains a standalone AMAI instance that works with any AI platform.
 
 ## What this doesn't cover
 
